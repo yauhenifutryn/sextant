@@ -31,14 +31,26 @@ export function LandingFinalCta() {
           </Link>
         </div>
         <div className="l-cta-side l-reveal delay-3">
-          <div className="h">Validation grid</div>
+          <div className="h">
+            <span>Validation grid</span>
+            <span className="pill">6 / 6 pass</span>
+          </div>
           <div className="list">
-            <div>✓&nbsp;&nbsp;Every reagent has a catalog URL</div>
-            <div>✓&nbsp;&nbsp;Budget sums correctly</div>
-            <div>✓&nbsp;&nbsp;No orphan protocol step</div>
-            <div>✓&nbsp;&nbsp;Citations resolve to real sources</div>
-            <div>✓&nbsp;&nbsp;Timeline dependencies valid</div>
-            <div>✓&nbsp;&nbsp;Compliance pipeline passes</div>
+            {[
+              "Every reagent has a catalog URL",
+              "Budget sums correctly",
+              "No orphan protocol step",
+              "Citations resolve to real sources",
+              "Timeline dependencies valid",
+              "Compliance pipeline passes",
+            ].map((line) => (
+              <div className="item" key={line}>
+                <span className="check" aria-hidden="true">
+                  ✓
+                </span>
+                <span>{line}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -26,10 +26,6 @@ export function LandingMethod() {
             <path className="link" d="M 500 110 Q 500 170 500 230" />
             <path className="link" d="M 500 350 Q 500 290 500 230" />
             <path className="link" d="M 805 230 Q 650 230 500 230" />
-            <path
-              className="link dotted"
-              d="M 195 230 Q 195 110 500 110 Q 805 110 805 230 Q 805 350 500 350 Q 195 350 195 230 Z"
-            />
           </svg>
 
           <div className="l-agent-node" data-i="0">
