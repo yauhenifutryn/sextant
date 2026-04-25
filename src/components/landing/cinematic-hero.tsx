@@ -1,0 +1,135 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+import { SextantMark } from "./sextant-mark";
+
+/**
+ * Cinematic hero (Option B). Fullscreen looping video background with a
+ * glassmorphic nav, large display headline, and primary CTA. Inspired by
+ * the Velorah spec — adapted for Sextant's "scientific instrument" tone
+ * instead of the original aspirational "deep work" tone.
+ *
+ * Video source: REPLACE the placeholder URL below with a real Pexels (or
+ * licensed) clip. Top picks for Sextant context — close-up science work,
+ * NOT outdoor or person-at-field shots:
+ *
+ *   1. Pexels 8533372 — Male scientist looking at a volumetric flask
+ *   2. Pexels 8531297 — Scientist putting specimen on microscope slide
+ *   3. Pexels 8490414 — Person putting test tube on a rack
+ *   4. Pexels 31005354 — Female scientist conducting laboratory tests
+ *   5. Pexels 11218535 — Close-up on devices in laboratory
+ *   6. Pexels 8852694 — Variety of laboratory glassware
+ *
+ * Pexels download URL pattern:
+ *   https://videos.pexels.com/video-files/<ID>/<ID>-hd_1920_1080_24fps.mp4
+ *
+ * Drop the file in `public/hero.mp4` for fastest LCP, or paste a CDN URL
+ * directly into VIDEO_SRC. The video must be muted + autoPlay + playsInline
+ * to autoplay across browsers.
+ *
+ * Reduced-motion: video pauses, falls back to a single frame poster.
+ */
+
+const VIDEO_SRC =
+  // PLACEHOLDER — replace with the chosen Pexels / licensed clip.
+  "https://videos.pexels.com/video-files/8533372/8533372-hd_1920_1080_24fps.mp4";
+
+const POSTER_SRC = "/hero-poster.jpg"; // optional; ok if 404
+
+export function CinematicHero() {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(m.matches);
+    const onChange = () => setReduced(m.matches);
+    m.addEventListener("change", onChange);
+    return () => m.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (reduced) v.pause();
+    else v.play().catch(() => {});
+  }, [reduced]);
+
+  return (
+    <header className="l-cine">
+      <video
+        ref={videoRef}
+        className="l-cine-video"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        poster={POSTER_SRC}
+        aria-hidden="true"
+      >
+        <source src={VIDEO_SRC} type="video/mp4" />
+      </video>
+
+      {/* Tint + vignette so the headline stays readable on any frame */}
+      <div className="l-cine-scrim" aria-hidden="true" />
+
+      <nav className="l-cine-nav">
+        <div className="l-cine-nav-inner">
+          <Link href="#top" className="l-cine-brand" aria-label="Sextant home">
+            <SextantMark size={22} className="text-white" />
+            <span>Sextant</span>
+          </Link>
+          <div className="l-cine-links">
+            <a href="#problem">Problem</a>
+            <a href="#method">Method</a>
+            <a href="#loop">Lab rules</a>
+            <Link href="/app" className="l-cine-cta">
+              Open Sextant
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      <div className="l-cine-stage">
+        <div className="l-cine-eyebrow">
+          <span className="bar" />
+          <span>An instrument for experiment design</span>
+        </div>
+        <h1 className="l-cine-title">
+          From hypothesis to <em>fundable plan</em>
+          <br />
+          in three minutes.
+        </h1>
+        <p className="l-cine-sub">
+          Frame a scientific question. Four agents draft a citation-grounded protocol — every claim
+          cited, every reagent linked, every test green before the document is called ready.
+        </p>
+        <div className="l-cine-actions">
+          <Link href="/app" className="l-cine-btn primary">
+            Open Sextant
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={1.75}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+          </Link>
+          <a href="#method" className="l-cine-btn ghost">
+            See the method
+          </a>
+        </div>
+      </div>
+    </header>
+  );
+}
