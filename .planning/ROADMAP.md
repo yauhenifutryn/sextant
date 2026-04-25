@@ -33,7 +33,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Four example hypothesis chips are rendered in the empty state and are keyboard reachable
   4. Tavily and Anthropic API keys resolve from `process.env` in the deployed environment (verified via a health-check route)
   5. A push to main triggers a Vercel deploy that completes and becomes reachable in under 60 seconds
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Scaffold Next.js 15 + TS + Tailwind, wire brief design tokens and 3 fonts (D-01..D-12, D-30..D-32; DESIGN-01)
+- [ ] 01-02-PLAN.md — Install shadcn minimum set, build three-column shell + empty-state hero with 4 chips, add lib/env.ts + /api/health (D-13..D-22, D-27..D-29; DESIGN-01/02/04, INPUT-03)
+- [ ] 01-03-PLAN.md — GitHub repo + Vercel project + env vars + auto-deploy verification + STATE.md update (D-23..D-26; DEPLOY-01/02/03, DESIGN-03)
 **UI hint**: yes
 
 ### Phase 2: Literature QC
