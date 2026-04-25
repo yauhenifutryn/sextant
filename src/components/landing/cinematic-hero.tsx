@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import { Magnetic } from "./magnetic";
 import { SextantMark } from "./sextant-mark";
 
 /**
@@ -108,23 +109,25 @@ export function CinematicHero() {
           cited, every reagent linked, every test green before the document is called ready.
         </p>
         <div className="l-cine-actions">
-          <Link href="/app" className="l-cine-btn primary">
-            Open Sextant
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.75}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14" />
-              <path d="m13 6 6 6-6 6" />
-            </svg>
-          </Link>
+          <Magnetic strength={10} radius={140}>
+            <Link href="/app" className="l-cine-btn primary">
+              Open Sextant
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={1.75}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 12h14" />
+                <path d="m13 6 6 6-6 6" />
+              </svg>
+            </Link>
+          </Magnetic>
           <a href="#method" className="l-cine-btn ghost">
             See the method
           </a>
