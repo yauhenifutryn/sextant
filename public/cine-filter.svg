@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden;pointer-events:none" aria-hidden="true">
+  <defs>
+    <filter id="sx-cine-illustrate" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="saturate" values="1.55" result="sat"/>
+      <feComponentTransfer in="sat" result="poster">
+        <feFuncR type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1"/>
+        <feFuncG type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1"/>
+        <feFuncB type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1"/>
+      </feComponentTransfer>
+      <feGaussianBlur in="poster" stdDeviation="0.55"/>
+    </filter>
+  </defs>
+</svg>
