@@ -1,39 +1,48 @@
-import Link from "next/link";
+import "@/components/landing/landing.css";
 
-import { Button } from "@/components/ui/button";
+import { LandingClosedLoop } from "@/components/landing/closed-loop";
+import { LandingFinalCta } from "@/components/landing/final-cta";
+import { LandingFooter } from "@/components/landing/site-footer";
+import { LandingHero } from "@/components/landing/hero";
+import { LandingMethod } from "@/components/landing/method";
+import { LandingNav } from "@/components/landing/nav";
+import { LandingObservers } from "@/components/landing/landing-observers";
+import { LandingProblem } from "@/components/landing/problem";
+import { LandingTechStrip } from "@/components/landing/tech-strip";
 
 /**
- * Landing-page placeholder (D-18a, D-26a).
+ * Sextant landing — porting Claude Design output (Sextant Landing.html).
  *
- * Phase 1 ships a token-correct, animation-free placeholder: centered
- * Sextant wordmark, tagline, single forest-green "Open Sextant" CTA that
- * links to `/app`. No header bar (the header lives in the nested
- * `/app/layout.tsx`, not in the root layout).
+ * Composition:
+ *   - LandingNav      fixed, scroll-aware (toggles `.scrolled` border)
+ *   - LandingHero     copy + live ASCII sextant instrument (12 FPS)
+ *   - LandingProblem  one-line strikethrough headline
+ *   - LandingMethod   four-agent radial diagram + 4-cell explainer grid
+ *   - LandingClosedLoop  three-step correction → rule → applied diagram
+ *   - LandingTechStrip   Anthropic / Gemini / Tavily / Vercel marks
+ *   - LandingFinalCta   secondary CTA + validation-grid sidecar
+ *   - LandingFooter   minimal mark + meta line
+ *   - LandingObservers   single client component owning IntersectionObserver
+ *                        + nav scroll listener; enhances static markup.
  *
- * Phase 8 replaces this entire file with the Claude Design output —
- * animated, scroll-driven landing using Framer Motion (D-27, D-28a).
+ * Reduced-motion: handled in landing.css; ASCII renders one static frame
+ * (see ascii-stage.tsx). Per project CLAUDE.md the locked palette is
+ * forest green / warm off-white — design tweaks-panel + tone presets dropped.
  */
 export default function Landing() {
   return (
-    <main className="min-h-screen bg-paper text-ink flex items-center justify-center px-6">
-      <div className="flex flex-col items-center text-center gap-8 max-w-2xl">
-        <h1 className="font-display text-6xl md:text-8xl font-semibold tracking-tight text-ink">
-          Sextant
-        </h1>
-        <p className="font-sans text-lg text-muted-foreground max-w-xl">
-          From hypothesis to fundable, citation-grounded experiment plan in
-          three minutes.
-        </p>
-        <Link href="/app">
-          <Button
-            type="button"
-            size="lg"
-            className="bg-forest text-primary-foreground hover:bg-forest/90 font-sans px-6 py-3"
-          >
-            Open Sextant
-          </Button>
-        </Link>
-      </div>
-    </main>
+    <div className="landing-root">
+      <LandingNav />
+      <main>
+        <LandingHero />
+        <LandingProblem />
+        <LandingMethod />
+        <LandingClosedLoop />
+        <LandingTechStrip />
+        <LandingFinalCta />
+      </main>
+      <LandingFooter />
+      <LandingObservers />
+    </div>
   );
 }

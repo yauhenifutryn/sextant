@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none" stroke="#0F4C3A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-label="Sextant logomark">
+  
+  <path d="M8 62 A 52 52 0 0 1 72 62"></path>
+  
+  <path d="M16 62 A 44 44 0 0 1 64 62"></path>
+  
+  <path d="M8 62 L 72 62"></path>
+
+  
+  <path d="M12 58 l 2 0.8"></path>
+  <path d="M18 50 l 1.6 1.4"></path>
+  <path d="M27 43 l 1 1.8"></path>
+  <path d="M40 39 l 0 2"></path>
+  <path d="M53 43 l -1 1.8"></path>
+  <path d="M62 50 l -1.6 1.4"></path>
+  <path d="M68 58 l -2 0.8"></path>
+
+  
+  <path d="M40 18 L 22 60"></path>
+  <path d="M40 18 L 40 60"></path>
+  <path d="M40 18 L 58 60"></path>
+
+  
+  <circle cx="31" cy="50" r="5"></circle>
+  <circle cx="49" cy="50" r="5"></circle>
+  <circle cx="40" cy="36" r="4"></circle>
+
+  
+  <path d="M40 18 L 26 64"></path>
+  
+  <circle cx="40" cy="18" r="2.2"></circle>
+
+  
+  <path d="M14 30 l 6 0 l 0 6 l -6 0 z"></path>
+  <path d="M17 33 l 7 5"></path>
+
+  
+  <path d="M44 22 L 70 14"></path>
+  <path d="M44 26 L 70 18"></path>
+  <path d="M44 22 L 44 26"></path>
+  
+  <path d="M70 12 L 74 11"></path>
+  <path d="M70 20 L 74 21"></path>
+  <path d="M74 11 L 74 21"></path>
+</svg>
