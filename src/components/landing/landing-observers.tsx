@@ -22,12 +22,30 @@ const NAV_OFFSET_PX = 80;
 export function LandingObservers() {
   useEffect(() => {
     const nav = document.getElementById("sx-nav");
-    const onScroll = () => {
-      if (!nav) return;
-      if (window.scrollY > 8) nav.classList.add("scrolled");
-      else nav.classList.remove("scrolled");
+    const root = document.documentElement;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let rafId = 0;
+    let pending = false;
+    const updateScrollVars = () => {
+      pending = false;
+      if (nav) {
+        if (window.scrollY > 8) nav.classList.add("scrolled");
+        else nav.classList.remove("scrolled");
+      }
+      // Hero parallax progress — 0 at top of page, 1 once we've scrolled
+      // a full viewport past it. Drives the cinematic hero fade-out.
+      if (!reduced) {
+        const progress = Math.max(0, Math.min(1, window.scrollY / window.innerHeight));
+        root.style.setProperty("--hero-progress", progress.toFixed(3));
+      }
     };
-    onScroll();
+    const onScroll = () => {
+      if (pending) return;
+      pending = true;
+      rafId = requestAnimationFrame(updateScrollVars);
+    };
+    updateScrollVars();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     const targets = document.querySelectorAll<HTMLElement>(".l-reveal, [data-anim]");
@@ -67,6 +85,7 @@ export function LandingObservers() {
     document.addEventListener("click", onAnchorClick);
 
     return () => {
+      cancelAnimationFrame(rafId);
       window.removeEventListener("scroll", onScroll);
       document.removeEventListener("click", onAnchorClick);
       io.disconnect();

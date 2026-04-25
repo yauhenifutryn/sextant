@@ -126,6 +126,13 @@
   max-width: 980px;
   padding: 96px 0 80px;
   animation: l-cine-rise 800ms ease-out 100ms both;
+  /* Scroll parallax: stage fades + lifts as the user scrolls past the hero.
+   * `--hero-progress` is updated by LandingObservers (0 at top, 1 after one
+   * viewport of scroll). Reduced-motion users get no parallax (the var
+   * isn't set, so calc() falls back to 0). */
+  opacity: calc(1 - var(--hero-progress, 0) * 1.4);
+  transform: translateY(calc(var(--hero-progress, 0) * -48px));
+  transition: opacity 80ms linear, transform 80ms linear;
 }
 @keyframes l-cine-rise {
   from {
@@ -136,6 +143,12 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* The video itself drifts down very subtly as we scroll — Ken-Burns-y
+ * depth without overdoing it. */
+.l-cine-video {
+  transform: translateY(calc(var(--hero-progress, 0) * 24px)) scale(1.04);
+  will-change: transform;
 }
 .l-cine-eyebrow {
   display: inline-flex;
