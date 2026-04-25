@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-04-25)
 
 **Core value:** A scientist enters a hypothesis, watches four agents debate it in parallel, and receives a fundable, citation-grounded experiment plan in under three minutes — and every correction they make compounds into the next plan, automatically.
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 2 — Literature QC (context gathered, ready to plan)
 
 ## Current Position
 
@@ -81,6 +81,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-25T21:10Z
-Stopped at: Plan 01-02 complete (shadcn 5 components + lib/env.ts + /api/health + landing placeholder at / + three-column dashboard shell at /app + 4 keyboard-accessible chips + Toaster mounted). Ready for Plan 01-03.
-Resume file: .planning/phases/01-foundation/01-03-PLAN.md
+Last session: 2026-04-26
+Stopped at: Phase 2 context gathered. CONTEXT.md captures Tavily call shape (one broad call + post-filter, advanced/10/no-raw), novelty scoring (LLM-as-judge with conservative thresholds + 3 citations), streaming UI (streamObject + Zod, verdict on canvas + chat echo), ambiguity (skip for chips, post-search for freeform), error handling (typed discriminated union — never confabulate), per-session in-memory cache, <8s latency budget. Ready for /gsd-plan-phase 2.
+Resume file: .planning/phases/02-literature-qc/02-CONTEXT.md
