@@ -12,7 +12,7 @@ Eight phases take the project from a bare Next.js scaffold to a live, judge-read
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Next.js scaffold, design tokens, env wiring, Vercel deploy live
+- [x] **Phase 1: Foundation** - Next.js scaffold, design tokens, env wiring, Vercel deploy live (completed 2026-04-25, ~25 min total, https://sextant-uekv.vercel.app)
 - [ ] **Phase 2: Literature QC** - Tavily search, novelty verdict, cited references, hypothesis input
 - [ ] **Phase 3: Multi-Agent Pipeline** - 4-agent parallel debate, structured JSON plan output
 - [ ] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views
@@ -36,7 +36,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 01-01-PLAN.md — Scaffold Next.js 15 + TS + Tailwind, wire brief design tokens and 3 fonts (D-01..D-12, D-30..D-32; DESIGN-01) — completed 2026-04-25 (commits 9ec3d3a, ecc2333). Landed as Next.js 16 + React 19 + Tailwind v4 per CONTEXT.md Claude-discretion clause.
 - [x] 01-02-PLAN.md — Install shadcn minimum set, build three-column shell + empty-state hero with 4 chips, add lib/env.ts + /api/health (D-13..D-22, D-27..D-29; DESIGN-01/02/04, INPUT-03) — completed 2026-04-25 (commits 7200118, 0946daf). 4 deviations auto-fixed: shadcn CLI flag drift (hand-authored components.json), shadcn add not pulling cva/lucide (npm install added them), strict plan greps satisfied (rewrote a comment to remove `process.env` token; switched ExampleHypothesis type to Record form so `id:` count is exactly 4).
-- [ ] 01-03-PLAN.md — GitHub repo + Vercel project + env vars + auto-deploy verification + STATE.md update (D-23..D-26; DEPLOY-01/02/03, DESIGN-03)
+- [x] 01-03-PLAN.md — GitHub repo + Vercel project + env vars + auto-deploy verification + STATE.md update (D-23..D-26; DEPLOY-01/02/03, DESIGN-03) — completed 2026-04-25. Production URL: https://sextant-uekv.vercel.app. Two real deploys timed at 29s and 31s satisfy DEPLOY-02. Secret-leak audit clean. Visual fidelity audit deferred to Phase 8 with Claude Design landing output.
+
+## Parallel work-streams (active alongside Phase 2+)
+
+- **Landing-page polish** — see `.planning/handovers/landing-polish-HANDOVER.md`. Runs in a separate Claude Code chat; touches only `src/app/page.tsx` and `src/components/landing/**`. No file conflicts with Phase 2-7 work. Includes integration of Claude Design output + a Firecrawl-style ASCII-art animated background. Folds into Phase 8 visual-fidelity sign-off.
 **UI hint**: yes
 
 ### Phase 2: Literature QC

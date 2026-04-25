@@ -9,12 +9,20 @@ See: .planning/PROJECT.md (updated 2026-04-25)
 
 ## Current Position
 
-Phase: 1 of 8 (Foundation)
-Plan: 2 of 3 plans complete in current phase
-Status: Plan 01-02 done — shadcn/ui (button, input, textarea, scroll-area, sonner) installed, Zod env loader at src/lib/env.ts, /api/health route returning {tavily, gemini, ok} booleans, three-column dashboard shell at /app (32fr/50fr/18fr) with HeaderBar via nested layout, empty-state hero with brief heading + 4 keyboard-accessible placeholder chips, landing-page placeholder at / with Sextant wordmark + tagline + "Open Sextant" CTA -> /app. `npm run build`/`npm run lint` both green; live `curl /api/health` returns `{"tavily":true,"gemini":true,"ok":true}`. Ready to execute Plan 01-03 (GitHub remote + Vercel project + env vars + auto-deploy verify).
-Last activity: 2026-04-25 — Plan 01-02 executed in ~7m 30s over 2 commits (7200118 shadcn+env+health, 0946daf landing+dashboard+chips). 4 deviations auto-fixed: shadcn CLI flags changed (hand-authored components.json), shadcn add did not pull cva/lucide (npm install added them), strict plan grep `! grep -q "process.env"` failed against a comment (reworded), strict plan grep `id: count = 4` failed because of object-type signature (switched to Readonly<Record<...>> form). See .planning/phases/01-foundation/01-02-SUMMARY.md for full deviation log.
+Phase: 1 of 8 (Foundation) — **COMPLETE**
+Plan: 3 of 3 plans complete
+Status: Phase 1 closed. Live production URL: **https://sextant-uekv.vercel.app** (Vercel auto-deploy on push to main, both observed deploys at 29s and 31s — well under DEPLOY-02's 60s ceiling). `/api/health` returns `{"tavily":true,"gemini":true,"ok":true}` from the public URL with env vars resolving server-side. `/` shows the Sextant landing placeholder; `/app` shows the three-column dashboard shell with empty-state hero and 4 chip placeholders. Secret-leak audit clean — no API key patterns in any tracked file; `.env.local` gitignored and never committed. Ready for Phase 2 (Literature QC).
+Last activity: 2026-04-25 — Plan 01-03 closed via real-data verification (skipped synthetic no-op deploy test since two genuine deploys already proved DEPLOY-02). Deviation: Vercel project initially set Framework Preset to "Other" because user created project before Plan 01-01 had pushed package.json; first deploy returned x-vercel-error: NOT_FOUND on every route. Fixed by user toggling Framework Preset to Next.js in dashboard, second deploy (31s) served all routes correctly. Full closeout in .planning/phases/01-foundation/01-03-SUMMARY.md.
 
-Progress: [██░░░░░░░░] ~8%
+Progress: [████░░░░░░] ~12% (Phase 1 of 8 done)
+
+## Production environment
+
+- **URL:** https://sextant-uekv.vercel.app
+- **Aliases:** sextant-uekv-git-main-yauhenifutryns-projects.vercel.app, sextant-uekv-bl8k5k6te-yauhenifutryns-projects.vercel.app
+- **Source branch:** main (auto-deploy on push)
+- **Framework Preset:** Next.js (Vercel-managed)
+- **Env vars set on Vercel:** GOOGLE_GENERATIVE_AI_API_KEY ✓, TAVILY_API_KEY ✓, OPENAI_API_KEY (blank, optional fallback)
 
 ## Performance Metrics
 
