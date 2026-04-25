@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-25T21:39:07.096Z",
+  "phase": "01",
+  "phase_name": "foundation",
+  "phase_dir": ".planning/phases/01-foundation",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "phase_complete",
+  "context_kind": "between_phases",
+  "completed_tasks": [
+    {"id": "01-01", "name": "Scaffold Next.js 16 + TS + Tailwind v4 + brief tokens + 3 fonts", "status": "done", "commits": ["9ec3d3a", "ecc2333", "9b3bb0c"]},
+    {"id": "01-02", "name": "shadcn install + Zod env + /api/health + landing / + dashboard /app + 4 chips", "status": "done", "commits": ["7200118", "0946daf", "deb94e0"]},
+    {"id": "01-03", "name": "GitHub remote + Vercel project + env vars + auto-deploy verification", "status": "done", "commits": ["efb4042"]}
+  ],
+  "remaining_tasks": [
+    {"id": "phase-2", "name": "Phase 2: Literature QC (Tavily + Gemini Flash-Lite)", "status": "not_started"}
+  ],
+  "blockers": [],
+  "human_actions_pending": [
+    {"action": "Replace 4 chip placeholders in src/lib/example-hypotheses.ts with verbatim Fulcrum-brief hypotheses", "context": "CLAUDE.md hard rule #2 — must happen before any Phase 2 LLM submission", "blocking": false, "deadline": "before Phase 2 chat-input wiring"}
+  ],
+  "decisions": [
+    {"decision": "Project name: Sextant", "rationale": "Precision navigation instrument; matches Future House / Lila Sciences / Linear aesthetic", "phase": "01"},
+    {"decision": "Brain model: Gemini multi-tier (3.1 Pro Preview + 3 Flash Preview + 3.1 Flash-Lite Preview, GA 2.5 fallback ladder)", "rationale": "Out of Anthropic credits; Gemini is competitive on structured JSON + tool-use loops; Vercel AI SDK abstracts the swap", "phase": "01"},
+    {"decision": "Routes: landing at /, dashboard at /app", "rationale": "Marketing landing distinct from product; no auth gates; Phase 8 polishes / with Claude Design output", "phase": "01"},
+    {"decision": "auto_advance and ui_safety_gate disabled in config.json", "rationale": "Hackathon = manual phase boundaries; user controls /clear cadence", "phase": "01"}
+  ],
+  "uncommitted_files": [],
+  "next_action": "/gsd-resume-work then /gsd-discuss-phase 2",
+  "context_notes": "Phase 1 closed at 25 minutes wall time. Live URL https://sextant-uekv.vercel.app responds correctly on /, /app, /api/health. Two parallel work-streams now active: (1) main GSD chat (this one after /clear) drives Phase 2-7 sequentially; (2) landing-polish chat drives src/app/page.tsx polish work in parallel — see .planning/handovers/landing-polish-HANDOVER.md. File paths don't overlap. Both push to main, Vercel auto-deploys each push.",
+  "production_url": "https://sextant-uekv.vercel.app",
+  "github_repo": "git@github.com:yauhenifutryn/sextant.git",
+  "vercel_project": "sextant-uekv (Framework Preset: Next.js, env vars set: GOOGLE_GENERATIVE_AI_API_KEY + TAVILY_API_KEY)",
+  "parallel_workstreams": [
+    {"name": "landing-polish", "scope": "src/app/page.tsx + src/components/landing/**", "handover": ".planning/handovers/landing-polish-HANDOVER.md", "owns": "user-driven separate Claude Code chat"}
+  ]
+}
