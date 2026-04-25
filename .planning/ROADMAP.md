@@ -116,15 +116,17 @@ Decimal phases appear between their surrounding integers in numeric order.
 **UI hint**: yes
 
 ### Phase 8: Polish, Demo, Pitch
-**Goal**: The product looks and feels judge-ready, the demo runs cleanly in under 3 minutes, the video is recorded, and the pitch deck is complete
+**Goal**: The product looks and feels judge-ready, the demo runs cleanly in under 3 minutes, the animated landing page from Claude Design is integrated, the demo flow is verified by an automated end-to-end test, the video is recorded, and the pitch deck is complete
 **Depends on**: Phase 7 (or Phase 6 if Phase 7 falls back to manual slide)
 **Requirements**: (no new requirement IDs — this phase delivers the demo artifact)
 **Success Criteria** (what must be TRUE):
-  1. A full run-through of the demo (empty state → hypothesis → QC → plan generation → all tabs → trace rail green) completes in under 3 minutes without errors
-  2. If Phase 7 shipped: the closed-loop demo moment (rule captured → second plan applies rule → diff modal) runs without a manual fallback
-  3. If Phase 7 did not ship: a before/after slide clearly communicates the propagation concept to judges
-  4. The demo video is recorded and ready for submission
-  5. The pitch deck or talking points cover: problem, solution, technical depth, differentiator, and market framing (AI CRO Co-Pilot as B2B SaaS wedge)
+  1. A full run-through of the demo (landing page → empty state → hypothesis → QC → plan generation → all tabs → trace rail green) completes in under 3 minutes without errors
+  2. The animated landing page from Claude Design output is integrated at `/` with timeline-based motion (Framer Motion), Sextant logo, and a working "Open Sextant" CTA → `/app`
+  3. **An automated end-to-end demo dry-run passes**, driving the full demo flow without human intervention. Tool of choice (in priority order): Codex CLI driving Playwright (cheapest, deterministic, runs locally) → OpenAI Operator (computer-use API, more realistic) → Claude Computer Use (best UI understanding, requires Claude tokens). The test verifies: hypothesis chip click populates textarea, submit triggers QC + plan generation, all 4 plan tabs render, ≥5 validation checks tick green, every citation link resolves, lab rule capture works, second hypothesis applies rules, diff modal opens. Failures of the dry-run block the demo recording.
+  4. If Phase 7 shipped: the closed-loop demo moment (rule captured → second plan applies rule → diff modal) runs without a manual fallback
+  5. If Phase 7 did not ship: a before/after slide clearly communicates the propagation concept to judges
+  6. The demo video is recorded and ready for submission
+  7. The pitch deck or talking points cover: problem, solution, technical depth, differentiator, and market framing (Sextant as a B2B SaaS wedge into the $100B contract research market)
 **Plans**: TBD
 **UI hint**: yes
 

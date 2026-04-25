@@ -1,4 +1,4 @@
-# AI CRO Co-Pilot
+# Sextant — AI CRO Co-Pilot
 
 ## What This Is
 
@@ -55,7 +55,13 @@ A scientist enters a hypothesis, watches four agents debate it in parallel, and 
 
 - **Timeline**: 24 hours total. ~18h build, ~4h polish, ~2h demo recording + pitch prep. Hard deadline at hour 24.
 - **Tech stack**: Next.js 15 App Router + TypeScript + Tailwind + shadcn/ui + Vercel AI SDK. Single language, single repo, single deploy. Hosted on Vercel free tier. Storage = JSON files in repo (no database).
-- **Models**: Claude Sonnet 4.6 (plan generation, agent debate), Claude Haiku 4.5 (lit-QC scoring, fast filters). OpenAI fallback only if Tavily/embeddings prove insufficient. Gemini skipped for build (3-provider integration tax not worth 24h).
+- **Models** (revised 2026-04-25): Multi-tier Gemini family via Vercel AI SDK `@ai-sdk/google`. Brain-tier mapping locked in `.planning/phases/01-foundation/01-CONTEXT.md` D-22a..D-22e:
+  - `gemini-3.1-pro-preview` — final plan synthesis (Phase 3 consolidator)
+  - `gemini-3-flash-preview` — 4 parallel agent debaters (Researcher, Skeptic, CRO Operator, Compliance) + lab-rule extraction
+  - `gemini-3.1-flash-lite-preview` — lit-QC novelty scoring + validation grid checks + diff comparison
+  - GA fallback ladder if previews hit rate limits: 2.5 Pro / 2.5 Flash / 2.5 Flash-Lite (same env key)
+  - Provider fallback: OpenAI via `@ai-sdk/openai` (only if Google has provider-level outage, wired on demand)
+  - Why the swap from Claude: out of Anthropic credits at hackathon start; Gemini 2.5/3.x family is competitive on structured-JSON + tool-use loops in early 2026 and has the credit budget. Claude was the original spec; Vercel AI SDK abstracts the swap to a model-ID change, not a rewrite.
 - **Grounding**: Tavily API for literature QC and supplier scraping (free credit token TVLY-HF9ETJRW). Hard rule: no claim in any plan without a clickable, verifiable source URL. No hallucinated catalog numbers or prices.
 - **UI flow**: Path B chosen — design system locked in `CLAUDE_DESIGN_BRIEF.md`, user generates first draft in Claude Design, Claude Code adapts to Next.js. Inspiration: Future House, Lila Sciences, Linear, Anthropic.com. Avoid: Silicon Valley SaaS gradients, glassmorphism, neon.
 - **Budget**: zero monetary. Free tiers only.
@@ -69,7 +75,8 @@ A scientist enters a hypothesis, watches four agents debate it in parallel, and 
 | Pitch as "AI CRO Co-Pilot" not "AI Scientist" | Codex recommendation: $100B contract research market is a sharper B2B SaaS wedge for judges; learning loop reframes as retention feature | — Pending |
 | Next.js + TypeScript single-language stack | Solo speed; KnowledgeDrift won 1st pure-TS; Vercel AI SDK gives multi-step agent loops natively; single deploy | — Pending |
 | Tavily for grounding, no vector DB | Tavily search-as-a-service is sufficient for novelty + supplier scraping; eliminates ETL bottleneck of vector store | — Pending |
-| Claude (Sonnet 4.6 + Haiku 4.5) primary, OpenAI fallback only | Best at structured JSON output and tool-call reliability in agent loops; Anthropic prompt caching cuts cost on agent debate | — Pending |
+| Multi-tier Gemini (3.1 Pro Preview + 3 Flash Preview + 3.1 Flash-Lite Preview), GA 2.5 fallback ladder, OpenAI provider fallback | Out of Anthropic credits at start of hackathon; Gemini family is credit-positive and competitive on structured JSON + tool-use loops in early 2026; Vercel AI SDK abstracts the provider so swap is a model-ID change | — Pending |
+| Project name: Sextant | Precision navigation instrument; matches Future House / Lila Sciences / Linear aesthetic; short, distinctive, no clash with biotech-AI competitors | Locked 2026-04-25 |
 | Skip per-phase research agent | We already locked tech stack from chat; per-phase research adds tokens/time we cannot spend in 24h | — Pending |
 | Skip post-phase verifier agent | Same reason; we will lean on the live test grid + manual UAT instead | — Pending |
 | Path B for UI (Claude Design first, port to Next.js) | User wants aesthetic ownership; brief written and committed at `CLAUDE_DESIGN_BRIEF.md` | — Pending |
