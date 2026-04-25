@@ -77,40 +77,81 @@ What does NOT ship in Phase 1 (deferred to later phases):
 
 ### Layout Shell
 
-- **D-16:** Three-column layout via CSS Grid in `app/page.tsx` (Server Component). Grid template: `[chat 32%] [canvas 50%] [trace 18%]` (using `grid-template-columns: 32fr 50fr 18fr` for responsiveness). Horizontal scroll prevented by `overflow-x-hidden` on root.
-- **D-17:** Header bar: 56px tall, full width. Wordmark left ("AI CRO Co-Pilot" in `font-display` weight 500), placeholder breadcrumb center (truncated mono), placeholder avatar + corrections-counter pill + cog icon (Lucide `Settings`) on right. Functional behavior is stubbed in Phase 1.
-- **D-18:** Empty-state behavior (the only "real" UX of Phase 1):
+- **D-16:** Three-column layout via CSS Grid in `app/app/page.tsx` (the dashboard route, Server Component shell with Client Component children). Grid template: `[chat 32%] [canvas 50%] [trace 18%]` (using `grid-template-columns: 32fr 50fr 18fr` for responsiveness). Horizontal scroll prevented by `overflow-x-hidden` on root. Note: dashboard moved to `/app` route — landing lives at `/`.
+- **D-17:** Header bar: 56px tall, full width. Wordmark left ("Sextant" in `font-display` weight 500 — placeholder until Claude Design logo lands), placeholder breadcrumb center (truncated mono), placeholder avatar + corrections-counter pill + cog icon (Lucide `Settings`) on right. Functional behavior is stubbed in Phase 1. Header bar appears on `/app` only — landing has its own minimal nav.
+- **D-18:** Empty-state behavior on `/app` (the only "real" dashboard UX of Phase 1):
   - Chat panel renders only an empty textarea + 4 example-hypothesis chips above it
   - Plan canvas shows centered hero: heading "Frame a scientific question. Get a fundable plan in 3 minutes." + the same 4 chips repeated as primary CTA
   - Trace rail shows skeleton state ("Awaiting hypothesis…")
-- **D-19:** Example hypothesis chips: take 4 verbatim from the Fulcrum brief and store as a const array in `app/page.tsx`. Clicking a chip in Phase 1 just populates the textarea with that text — no submission yet (Phase 2 wires it to the LLM).
+- **D-18a:** Landing-page `/` Phase 1 placeholder behavior (replaced in Phase 8 with Claude Design output):
+  - Single full-viewport hero on `app/page.tsx`
+  - Centered wordmark "Sextant" (font-display, weight 600, larger size)
+  - Tagline: "From hypothesis to fundable, citation-grounded experiment plan in three minutes."
+  - One primary CTA button "Open Sextant" → links to `/app`
+  - Same warm off-white background, forest-green accent on the CTA — token-correct, animation-free placeholder
+- **D-19:** Example hypothesis chips: take 4 verbatim from the Fulcrum brief and store as a const array in `src/lib/example-hypotheses.ts`. Clicking a chip in Phase 1 just populates the textarea with that text — no submission yet (Phase 2 wires it to the LLM).
 
 ### Env Validation (Decision 4 — option c)
 
-- **D-20:** Create `src/lib/env.ts` exporting a Zod-validated singleton: `export const env = z.object({ ANTHROPIC_API_KEY: z.string().min(1), TAVILY_API_KEY: z.string().min(1) }).parse(process.env);`. Failure throws at module import = fail fast at boot, never at runtime.
+- **D-20:** Create `src/lib/env.ts` exporting a Zod-validated singleton:
+  ```ts
+  import { z } from "zod";
+  export const env = z.object({
+    GOOGLE_GENERATIVE_AI_API_KEY: z.string().min(1),
+    TAVILY_API_KEY: z.string().min(1),
+    OPENAI_API_KEY: z.string().optional(),  // fallback only
+  }).parse(process.env);
+  ```
+  Failure throws at module import = fail fast at boot, never at runtime.
 - **D-21:** All API code reads `env.X`, never `process.env.X`. Lint rule (later phase if time): forbid `process.env` outside `lib/env.ts`.
 - **D-22:** Health-check route at `app/api/health/route.ts`:
   ```ts
+  import { env } from "@/lib/env";
   export async function GET() {
     const tavily = !!env.TAVILY_API_KEY;
-    const anthropic = !!env.ANTHROPIC_API_KEY;
-    return Response.json({ tavily, anthropic, ok: tavily && anthropic });
+    const gemini = !!env.GOOGLE_GENERATIVE_AI_API_KEY;
+    return Response.json({ tavily, gemini, ok: tavily && gemini });
   }
   ```
   Returns 200 always (the boolean is the signal). This is what ROADMAP success-criterion #4 verifies.
 
+### Brain Model Strategy (multi-tier Gemini, locked here for downstream phases)
+
+- **D-22a:** **Provider:** Google Gemini via Vercel AI SDK `@ai-sdk/google` package (added in Phase 2 when first model call ships). Single env key: `GOOGLE_GENERATIVE_AI_API_KEY`.
+- **D-22b:** **Model tier per task** (referenced by later phases):
+  - Plan synthesis (Phase 3 final consolidator): `gemini-3.1-pro-preview` — top reasoning, structured JSON
+  - 4 agent debaters (Phase 3 Researcher/Skeptic/CRO Operator/Compliance): `gemini-3-flash-preview` — frontier+grounding, parallel-safe
+  - Lit-QC novelty scoring (Phase 2): `gemini-3.1-flash-lite-preview` — cheap, high-volume
+  - Lab rule extraction (Phase 7): `gemini-3-flash-preview` — structured JSON, low volume
+  - Validation grid checks (Phase 6): `gemini-3.1-flash-lite-preview` — many parallel boolean evals
+  - Plan-B diff (Phase 7): `gemini-3.1-flash-lite-preview` — comparison logic
+- **D-22c:** **Fallback ladder** if any preview hits rate limits during demo:
+  - `gemini-3.1-pro-preview` → `gemini-2.5-pro`
+  - `gemini-3-flash-preview` → `gemini-2.5-flash`
+  - `gemini-3.1-flash-lite-preview` → `gemini-2.5-flash-lite`
+  All GA, same env key.
+- **D-22d:** **Fallback provider** if Google has provider-level outage: OpenAI (`OPENAI_API_KEY`) via `@ai-sdk/openai`. Wired only on demand, not in Phase 1.
+- **D-22e:** Phase 1 makes ZERO model calls. Brain-model decision is locked here so `lib/env.ts` validates the right key from the start; first actual model invocation is Phase 2.
+
 ### Deploy Pipeline (Decision 3 — option b)
 
-- **D-23:** Create a fresh GitHub repo (`hack_nation_5` under user account) and push the current `main` branch.
-- **D-24:** Connect the GitHub repo to a new Vercel project via the Vercel dashboard (one-time, ~2 minutes). Framework auto-detects as Next.js. Build command and output dir use defaults.
-- **D-25:** Set `ANTHROPIC_API_KEY` and `TAVILY_API_KEY` as encrypted Vercel project environment variables (Production + Preview + Development scopes). Never commit `.env.local`.
+- **D-23:** GitHub remote: `git@github.com:yauhenifutryn/sextant.git` (private repo, already created and pushed-to in this chat). Project name: **Sextant**.
+- **D-24:** Connect the GitHub repo to a new Vercel project via the Vercel dashboard (one-time, ~2 minutes). Framework auto-detects as Next.js once Phase 1 scaffold is pushed. Build command and output dir use defaults.
+- **D-25:** Set `GOOGLE_GENERATIVE_AI_API_KEY` and `TAVILY_API_KEY` (and optionally `OPENAI_API_KEY`) as encrypted Vercel project environment variables (Production + Preview + Development scopes). Never commit `.env.local`.
 - **D-26:** Verify DEPLOY-02 by pushing a no-op commit and confirming reachable URL in <60s. The deploy URL gets pinned to STATE.md once known.
 
-### UI Source-of-Truth Flow (Path B, recap)
+### Routes & Page Topology (NEW — landing + dashboard split)
 
-- **D-27:** User generates the first UI draft in Claude Design from the contents of `CLAUDE_DESIGN_BRIEF.md` (the prompt-ready section between BEGIN/END PASTE markers).
-- **D-28:** User pastes Claude Design output back into the chat (HTML/JSX/screenshots/Figma URL). Claude Code adapts component-by-component into Next.js + shadcn/ui primitives. Phase 1's empty-state shell is the first port target.
-- **D-29:** Visual fidelity review uses `web-design-guidelines` and `web-interface-guidelines` skills as the audit harness — run before signing Phase 1 off as complete.
+- **D-26a:** **`/` (landing page):** marketing-style hero with project name "Sextant", short value prop, single primary CTA "Open Sextant" → `/app`. Phase 1 ships a token-correct placeholder; Phase 8 (Polish) replaces with the Claude Design output (animated, scroll-driven landing). No login, no gates.
+- **D-26b:** **`/app` (product dashboard):** the three-column shell (Chat / Plan canvas / Trace rail) described in `CLAUDE_DESIGN_BRIEF.md`. Empty-state hero with 4 example chips lives here. This is what later phases populate.
+- **D-26c:** **No auth route** in v1 (per PROJECT.md out-of-scope). The `/app` route is publicly reachable without sign-in.
+
+### UI Source-of-Truth Flow (Path B, REVISED — split landing vs dashboard)
+
+- **D-27:** **Landing page (`/`)** is generated in Claude Design with **high-fidelity prototype + Animation timeline-based motion design** enabled. Output is a single polished animated landing page with hero, value prop, "Open Sextant" CTA. User pastes back, Claude Code ports to `app/page.tsx` using Framer Motion for the animation primitives (Phase 8 polish work).
+- **D-28:** **Dashboard (`/app`)** is built directly in Claude Code from `CLAUDE_DESIGN_BRIEF.md` tokens, NOT through Claude Design. The dashboard is data-dense and structural; iterating against `localhost:3000/app` with shadcn/ui + Framer Motion is faster than round-tripping through Claude Design. Per-component micro-animations (shimmer, checkmark transitions, panel slide-ins) are implemented per the brief's §"Motion" notes.
+- **D-28a:** **Logo:** Claude Design generates the Sextant wordmark/logomark concept as part of the landing page render. Logo asset is exported and lives at `public/logo.svg` (referenced from header bar across both routes). Phase 1 ships a text-only wordmark placeholder; Phase 8 replaces with the SVG logo.
+- **D-29:** Visual fidelity review uses `web-design-guidelines` and `web-interface-guidelines` skills as the audit harness — run before signing Phase 1 off as complete (covers `/` placeholder + `/app` shell).
 
 ### Dev Tooling Discipline
 
