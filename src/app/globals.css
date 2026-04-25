@@ -1,26 +1,91 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 
+/* Brief design tokens — D-05, D-06. Light mode only (D-10).
+ * Hex equivalents: see CLAUDE_DESIGN_BRIEF.md §"Design system tokens".
+ * HSL form lets shadcn/ui consumers wrap as `hsl(var(--token))`.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 60 14% 97%;       /* #FAFAF7 warm off-white (paper) */
+  --foreground: 0 0% 10%;         /* #1A1A1A ink */
+  --primary: 158 67% 18%;         /* #0F4C3A forest green */
+  --primary-foreground: 60 14% 97%;
+  --secondary: 18 53% 47%;        /* #B85C38 clay/rust */
+  --secondary-foreground: 0 0% 100%;
+  --muted: 49 14% 87%;            /* #E2E0D8 muted surface */
+  --muted-foreground: 60 5% 35%;  /* #5A5A52 muted text */
+  --accent: 49 14% 87%;
+  --accent-foreground: 0 0% 10%;
+  --surface: 53 14% 93%;          /* #F2F1EC raised surface */
+  --surface-hover: 53 11% 91%;    /* #EDECE6 */
+  --border: 49 14% 87%;           /* #E2E0D8 */
+  --input: 49 14% 87%;
+  --ring: 158 67% 18%;
+  --citation: 222 71% 42%;        /* #1F4FB6 link blue */
+  --success: 142 76% 30%;         /* #15803D pass */
+  --destructive: 0 75% 42%;       /* #B91C1C fail */
+  --destructive-foreground: 0 0% 100%;
+  --warning: 41 88% 38%;          /* #A16207 caution */
+  --radius: 6px;                  /* D-08 cards */
 }
 
+/* Tailwind v4 inline theme — generates utilities like bg-paper, text-forest, font-display.
+ * Mirrors the v3 `tailwind.config.ts` colors/fontFamily/boxShadow/borderRadius maps so
+ * downstream phases (shadcn/ui Plan 02) read the same tokens. D-07, D-08, D-09, D-12.
+ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* shadcn-default semantic colors */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  /* friendly aliases (D-07) */
+  --color-paper: hsl(var(--background));
+  --color-ink: hsl(var(--foreground));
+  --color-forest: hsl(var(--primary));
+  --color-clay: hsl(var(--secondary));
+  --color-surface: hsl(var(--surface));
+  --color-surface-hover: hsl(var(--surface-hover));
+  --color-borderwarm: hsl(var(--border));
+  --color-citation: hsl(var(--citation));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
+
+  /* Typography (D-12) — CSS variables wired in app/layout.tsx via next/font */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-inter-tight), var(--font-inter), sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Border radius (D-08) */
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-full: 9999px;
+
+  /* Shadow (D-09) — single layered doc shadow, no glassmorphism, no neumorphism */
+  --shadow-doc: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
