@@ -24,6 +24,39 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
+  opacity: 0;
+  transition: opacity 600ms cubic-bezier(0.2, 0, 0, 1);
+}
+.l-cine[data-video-ready="true"] .l-cine-video {
+  opacity: 1;
+}
+/* Fallback gradient backdrop — shows when public/hero.mp4 is missing or
+ * the video fails to play. A subtle layered radial + grid pattern so the
+ * hero looks deliberate even with no video at all. */
+.l-cine-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 30% 30%, rgba(15, 76, 58, 0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at 80% 70%, rgba(184, 92, 56, 0.28) 0%, transparent 65%),
+    linear-gradient(135deg, #0e1416 0%, #141b1e 60%, #0b0e10 100%);
+  background-color: #0b0e10;
+}
+.l-cine-fallback::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 75%);
+  mask-image: radial-gradient(circle at center, black 30%, transparent 75%);
+}
+.l-cine[data-video-ready="true"] .l-cine-fallback {
+  opacity: 0.35;
+  transition: opacity 800ms ease;
 }
 .l-cine-scrim {
   position: absolute;
