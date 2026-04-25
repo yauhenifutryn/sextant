@@ -26,13 +26,16 @@
   z-index: 0;
   opacity: 0;
   transition: opacity 600ms cubic-bezier(0.2, 0, 0, 1);
-  /* Stylized "illustrated" look: posterize via the SVG filter served at
-   * /cine-filter.svg + CSS-side contrast/brightness boost. Filter served
-   * as a static public asset to avoid an SSR/CSR hydration mismatch on
-   * Safari (inline JSX <svg width="0" height="0"> sanitizes differently
+  /* Stylized "illustrated" look: cel-shaded posterize via the SVG filter
+   * served at /cine-filter.svg, then CSS-side contrast / saturation boost
+   * so the posterize bands read as a deliberate cartoon look (not subtle
+   * color-grading). Tuned up after earlier feedback that the filter
+   * "doesn't work" — the previous strength was too gentle. SVG filter
+   * served as a static public asset to avoid an SSR/CSR hydration mismatch
+   * on Safari (inline JSX <svg width="0" height="0"> sanitizes differently
    * between server and client). */
-  filter: url("/cine-filter.svg#sx-cine-illustrate") contrast(1.18) brightness(1.05);
-  -webkit-filter: url("/cine-filter.svg#sx-cine-illustrate") contrast(1.18) brightness(1.05);
+  filter: url("/cine-filter.svg#sx-cine-illustrate") contrast(1.42) brightness(1.06) saturate(1.15);
+  -webkit-filter: url("/cine-filter.svg#sx-cine-illustrate") contrast(1.42) brightness(1.06) saturate(1.15);
 }
 .l-cine[data-video-ready="true"] .l-cine-video {
   opacity: 1;

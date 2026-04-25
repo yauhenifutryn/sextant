@@ -1,13 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;overflow:hidden;pointer-events:none" aria-hidden="true">
   <defs>
+    <!-- Cel-shaded "illustrated" filter for the cinematic hero video.
+         Pipeline:
+           1. Smooth out gradients with a strong-ish blur (flattens micro
+              variation so the posterize step has clean color regions).
+           2. Boost saturation so the resulting bands read as paint, not
+              washed photo.
+           3. Discrete-posterize each channel to 4 bands — this is what
+              gives the unmistakable "cartoon" / cel-shaded banding.
+           4. A second tiny blur softens the band edges so they don't look
+              like JPEG compression artifacts.
+         Calibrated against the user's earlier "filter doesn't work"
+         feedback — the previous values (6 bands, 0.55 blur, 1.55 sat)
+         barely registered. These are deliberately stronger. -->
     <filter id="sx-cine-illustrate" color-interpolation-filters="sRGB">
-      <feColorMatrix in="SourceGraphic" type="saturate" values="1.55" result="sat"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.1" result="smooth"/>
+      <feColorMatrix in="smooth" type="saturate" values="1.85" result="sat"/>
       <feComponentTransfer in="sat" result="poster">
-        <feFuncR type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1"/>
-        <feFuncG type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1"/>
-        <feFuncB type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1"/>
+        <feFuncR type="discrete" tableValues="0 0.32 0.62 0.86 1"/>
+        <feFuncG type="discrete" tableValues="0 0.32 0.62 0.86 1"/>
+        <feFuncB type="discrete" tableValues="0 0.32 0.62 0.86 1"/>
       </feComponentTransfer>
-      <feGaussianBlur in="poster" stdDeviation="0.55"/>
+      <feGaussianBlur in="poster" stdDeviation="0.4"/>
     </filter>
   </defs>
 </svg>

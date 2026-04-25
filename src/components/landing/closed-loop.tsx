@@ -17,7 +17,7 @@ export function LandingClosedLoop() {
         </p>
 
         <div className="l-loop-canvas" data-anim="loop">
-          <div className="l-loop-row">
+          <div className="l-loop-row" data-arrows>
             <div className="l-loop-card" data-i="0">
               <div className="step">Step 01 · Correction</div>
               <h4>You edit the protocol.</h4>
@@ -34,6 +34,11 @@ export function LandingClosedLoop() {
               </div>
             </div>
             <div className="l-loop-arrow" aria-hidden="true">
+              {/* pathLength=100 lets us drive stroke-dashoffset from a 0..100
+               * scale in CSS regardless of the SVG's actual length, so the
+               * --loop-progress var (0..1) maps cleanly to dash. data-arrow
+               * indexes the slice of progress this arrow consumes — see
+               * .l-loop-canvas .l-loop-arrow rules in landing.css. */}
               <svg
                 viewBox="0 0 36 12"
                 fill="none"
@@ -42,8 +47,8 @@ export function LandingClosedLoop() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M0 6h32" />
-                <path d="m28 2 4 4-4 4" />
+                <path className="loop-arrow-line" pathLength={100} d="M0 6h32" />
+                <path className="loop-arrow-tip" pathLength={100} d="m28 2 4 4-4 4" />
               </svg>
             </div>
             <div className="l-loop-card" data-i="1">
@@ -67,6 +72,11 @@ export function LandingClosedLoop() {
               </div>
             </div>
             <div className="l-loop-arrow" aria-hidden="true">
+              {/* pathLength=100 lets us drive stroke-dashoffset from a 0..100
+               * scale in CSS regardless of the SVG's actual length, so the
+               * --loop-progress var (0..1) maps cleanly to dash. data-arrow
+               * indexes the slice of progress this arrow consumes — see
+               * .l-loop-canvas .l-loop-arrow rules in landing.css. */}
               <svg
                 viewBox="0 0 36 12"
                 fill="none"
@@ -75,8 +85,8 @@ export function LandingClosedLoop() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
-                <path d="M0 6h32" />
-                <path d="m28 2 4 4-4 4" />
+                <path className="loop-arrow-line" pathLength={100} d="M0 6h32" />
+                <path className="loop-arrow-tip" pathLength={100} d="m28 2 4 4-4 4" />
               </svg>
             </div>
             <div className="l-loop-card" data-i="2">

@@ -675,25 +675,50 @@
     animation: none;
   }
 }
+/* Mouse parallax on the method radial — each agent gets a different
+ * directional offset multiplier so the four nodes drift relative to the
+ * pointer. --pmx and --pmy are written by LandingObservers (-1..+1).
+ * The transform combines two pieces:
+ *   1. The pre-existing reveal translate3d (handled by .visible class)
+ *   2. The parallax offset, which is what we set here.
+ * Reduced-motion / no-pointer users get pmx=pmy=0 so transform is a
+ * no-op (the variables are never written). The transition smooths
+ * pointer jitter without making the motion feel laggy. */
 .l-agent-node[data-i="0"] {
   transition-delay: 100ms;
   top: 50%;
   left: 18%;
+  transform: translate(calc(var(--pmx, 0) * -10px), calc(var(--pmy, 0) * -6px));
+  transition: transform 360ms var(--ease), opacity 700ms var(--ease) 100ms;
 }
 .l-agent-node[data-i="1"] {
   transition-delay: 250ms;
   top: 22%;
   left: 50%;
+  transform: translate(calc(var(--pmx, 0) * 6px), calc(var(--pmy, 0) * -10px));
+  transition: transform 360ms var(--ease), opacity 700ms var(--ease) 250ms;
 }
 .l-agent-node[data-i="2"] {
   transition-delay: 400ms;
   top: 78%;
   left: 50%;
+  transform: translate(calc(var(--pmx, 0) * -6px), calc(var(--pmy, 0) * 10px));
+  transition: transform 360ms var(--ease), opacity 700ms var(--ease) 400ms;
 }
 .l-agent-node[data-i="3"] {
   transition-delay: 550ms;
   top: 50%;
   left: 82%;
+  transform: translate(calc(var(--pmx, 0) * 10px), calc(var(--pmy, 0) * 6px));
+  transition: transform 360ms var(--ease), opacity 700ms var(--ease) 550ms;
+}
+@media (prefers-reduced-motion: reduce), (hover: none) {
+  .l-agent-node[data-i="0"],
+  .l-agent-node[data-i="1"],
+  .l-agent-node[data-i="2"],
+  .l-agent-node[data-i="3"] {
+    transform: none !important;
+  }
 }
 
 .l-agent-node .row {
@@ -904,6 +929,68 @@
   background: var(--surface);
   box-shadow: var(--shadow);
   overflow: hidden;
+  /* Updated by LandingObservers as the canvas traverses the viewport
+   * (0..1). The two arrow paths consume slices of this range so they
+   * fill in sequentially, matching the read order of the three cards. */
+  --loop-progress: 0;
+}
+/* Scroll-progress arrow draw.
+ *
+ * Each arrow's two paths use pathLength=100 + stroke-dashoffset so the
+ * dash math is in a 0..100 space regardless of actual SVG length. We
+ * slice --loop-progress so:
+ *   arrow #1 (between card 0 and card 1) fills 0.05..0.55 of progress
+ *   arrow #2 (between card 1 and card 2) fills 0.55..1.00 of progress
+ * The clamp keeps offset between 0 and 100 so we don't overshoot. The
+ * arrow tip lags the line slightly (sub-slice 0.6..1.0 of each arrow's
+ * own slice) so it feels like the line draws to the head, then the tip
+ * appears, instead of both appearing simultaneously. */
+.l-loop-row > .l-loop-arrow:nth-child(2) .loop-arrow-line {
+  stroke-dasharray: 100;
+  stroke-dashoffset: clamp(
+    0,
+    calc(100 - (var(--loop-progress, 0) - 0.05) * 200),
+    100
+  );
+  transition: stroke-dashoffset 90ms linear;
+}
+.l-loop-row > .l-loop-arrow:nth-child(2) .loop-arrow-tip {
+  stroke-dasharray: 100;
+  stroke-dashoffset: clamp(
+    0,
+    calc(100 - (var(--loop-progress, 0) - 0.4) * 600),
+    100
+  );
+  transition: stroke-dashoffset 90ms linear;
+}
+.l-loop-row > .l-loop-arrow:nth-child(4) .loop-arrow-line {
+  stroke-dasharray: 100;
+  stroke-dashoffset: clamp(
+    0,
+    calc(100 - (var(--loop-progress, 0) - 0.55) * 220),
+    100
+  );
+  transition: stroke-dashoffset 90ms linear;
+}
+.l-loop-row > .l-loop-arrow:nth-child(4) .loop-arrow-tip {
+  stroke-dasharray: 100;
+  stroke-dashoffset: clamp(
+    0,
+    calc(100 - (var(--loop-progress, 0) - 0.85) * 700),
+    100
+  );
+  transition: stroke-dashoffset 90ms linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Reduced-motion users: don't withhold the arrows. Show them filled
+   * the moment the section becomes visible (fall back to .visible
+   * gating). The CSS-var driven offset still works but we set progress
+   * to 1 implicitly here. */
+  .l-loop-canvas.visible .loop-arrow-line,
+  .l-loop-canvas.visible .loop-arrow-tip {
+    stroke-dashoffset: 0 !important;
+    transition: stroke-dashoffset 600ms var(--ease) !important;
+  }
 }
 .l-loop-row {
   display: grid;
@@ -1099,15 +1186,33 @@
   font-family: var(--font-display-l);
   font-weight: 500;
   font-size: 17px;
-  letter-spacing: -0.012em;
+  letter-spacing: -0.018em;
   color: var(--muted-2);
-  transition: color 200ms var(--ease);
+  transition: color 220ms var(--ease), transform 220ms var(--ease);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+}
+.l-tech-row .mark svg {
+  flex-shrink: 0;
+  transition: color 220ms var(--ease);
+}
+.l-tech-row .mark .mark-text {
+  font-feature-settings: "ss01" on, "cv11" on;
 }
 .l-tech-row .mark:hover {
   color: var(--ink);
+  transform: translateY(-1px);
+}
+.l-tech-row .mark:hover svg {
+  color: var(--primary);
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-tech-row .mark,
+  .l-tech-row .mark:hover {
+    transform: none;
+    transition: color 220ms var(--ease);
+  }
 }
 
 /* ==================== FINAL CTA ==================== */
