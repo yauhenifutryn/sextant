@@ -1,21 +1,17 @@
 import Link from "next/link";
 
-import { AgentFeed } from "./agent-feed";
+import { LabNotebook } from "./lab-notebook";
 
 /**
- * Hero — full-bleed three-column agent terminal feed + left-aligned copy.
- * The feed shows Researcher / Skeptic / Operator continuously narrating
- * their work in slow-scrolling monospace lines. Pure-CSS marquee, no JS RAF.
- *
- * Stacking: `.l-hero` is `position: relative`, the feed is absolute at
- * z-index 0 inside it, and the copy is z-index 1. The feed itself is
- * faded via per-line opacity so the copy stays the dominant element.
+ * Hero — two-column composition. Copy on the left, animated lab notebook
+ * on the right. The notebook drafts three hypotheses on a loop (typewriter
+ * reveal → hold → page-flip), so the right column literally previews what
+ * the product does. On mobile it stacks below the copy.
  */
 export function LandingHero() {
   return (
     <header className="l-hero" id="top">
-      <AgentFeed />
-      <div className="wrap">
+      <div className="wrap l-hero-grid">
         <div className="l-hero-copy">
           <div className="l-hero-eyebrow l-reveal">
             <span className="bar" />
@@ -70,6 +66,10 @@ export function LandingHero() {
               <kbd>↵</kbd> stream a plan
             </div>
           </div>
+        </div>
+
+        <div className="l-hero-stage l-reveal delay-2">
+          <LabNotebook />
         </div>
       </div>
     </header>
