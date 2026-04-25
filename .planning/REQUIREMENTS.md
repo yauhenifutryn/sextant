@@ -59,9 +59,9 @@ Requirements for the must-ship hackathon MVP (hours 0-14). Each maps to roadmap 
 
 ### Design System
 
-- [ ] **DESIGN-01**: UI implements the design tokens specified in CLAUDE_DESIGN_BRIEF.md (typography, color palette, spacing, radius, shadow)
+- [x] **DESIGN-01**: UI implements the design tokens specified in CLAUDE_DESIGN_BRIEF.md (typography, color palette, spacing, radius, shadow) — completed Plan 01-01
 - [ ] **DESIGN-02**: Layout follows the three-column scheme: Chat panel (~32%), Plan canvas (~50%), Trace rail (~18%)
-- [ ] **DESIGN-03**: Visual style passes a smoke check against the four reference points (Future House, Lila Sciences, Linear, Anthropic.com) — no SaaS gradients, no glassmorphism, no neon
+- [ ] **DESIGN-03**: Visual style passes a smoke check against the four reference points (Future House, Lila Sciences, Linear, Anthropic.com) — no SaaS gradients, no glassmorphism, no neon (palette and font wiring landed in Plan 01-01; full smoke check at Plan 01-02 sign-off)
 - [ ] **DESIGN-04**: All interactive elements meet WCAG AA contrast and are keyboard reachable
 
 ## v2 Requirements
@@ -133,9 +133,9 @@ The differentiator (hours 14-18). Stretch goal that wins the demo if completed.
 | DEPLOY-01 | Phase 1 | Pending |
 | DEPLOY-02 | Phase 1 | Pending |
 | DEPLOY-03 | Phase 1 | Pending |
-| DESIGN-01 | Phase 1 | Pending |
+| DESIGN-01 | Phase 1 | Done (Plan 01-01) |
 | DESIGN-02 | Phase 1 | Pending |
-| DESIGN-03 | Phase 1 | Pending |
+| DESIGN-03 | Phase 1 | In progress (palette+fonts done in Plan 01-01) |
 | DESIGN-04 | Phase 1 | Pending |
 | LOOP-01 | Phase 7 | Pending |
 | LOOP-02 | Phase 7 | Pending |

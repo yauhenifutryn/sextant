@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-04-25)
 ## Current Position
 
 Phase: 1 of 8 (Foundation)
-Plan: 0 of 3 plans in current phase
-Status: Plans ready — execute when GitHub repo + Vercel project + API keys are set up
-Last activity: 2026-04-25 — Phase 1 plans written (3 plans, 3 waves) and verified by plan-checker (0 blockers, 6 warnings, 2 cheap fixes applied W-01/W-02). Plan 01-01 scaffolds Next.js + Tailwind + tokens + fonts; Plan 01-02 scaffolds shadcn + lib/env.ts (Zod) + /api/health + three-column layout shell + 4 chips; Plan 01-03 ties GitHub repo to Vercel and verifies push-to-deploy <60s. auto_advance and ui_safety_gate disabled in config.json (hackathon = manual phase boundaries).
+Plan: 1 of 3 plans complete in current phase
+Status: Plan 01-01 done — Next.js 16 + React 19 + Tailwind v4 scaffold layered into the repo with brief HSL tokens, three Google fonts, cn helper, and `npm run build`/`npm run lint` both green. Ready to execute Plan 01-02 (shadcn + three-column layout shell + lib/env.ts + /api/health).
+Last activity: 2026-04-25 — Plan 01-01 executed in ~5 min over 2 commits (9ec3d3a scaffold, ecc2333 tokens+fonts+cn). 3 deviations auto-fixed: adapted to Tailwind v4 CSS-first config (kept v3-style tailwind.config.ts as parallel mirror loaded via @config), opened upper bound on engines.node (active runtime is Node 22), replaced create-next-app default home page to remove `dark:` variants per D-10. See .planning/phases/01-foundation/01-01-SUMMARY.md for full deviation log.
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] ~4%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: 0 hours
+- Total plans completed: 1
+- Average duration: ~5 min
+- Total execution time: ~5 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Foundation | 1/3 | ~5 min | ~5 min |
 
 **Recent Trend:**
-- Last 5 plans: —
-- Trend: —
+- Last 5 plans: 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
+- Trend: on-pace for hackathon timeline
 
 *Updated after each plan completion*
 
@@ -45,7 +45,10 @@ Recent decisions affecting current work:
 - Init: Fulcrum Science track chosen; pitch as "AI CRO Co-Pilot" ($100B CRO market wedge)
 - Init: Path B for UI — design brief locked in CLAUDE_DESIGN_BRIEF.md, Claude Design runs in parallel
 - Init: Hard rule — if learning loop (Phase 7) not wired by hour 18, fall back to manual before/after slide
-- Init: Stack locked: Next.js 15 + TS + Tailwind + shadcn/ui + Vercel AI SDK + Tavily + Claude Sonnet 4.6 / Haiku 4.5
+- Init: Stack locked: Next.js 15 + TS + Tailwind + shadcn/ui + Vercel AI SDK + Tavily + Claude Sonnet 4.6 / Haiku 4.5 (later swapped to Gemini multi-tier per PROJECT.md update on 2026-04-25)
+- 01-01: Scaffold landed as Next.js **16** + React **19** + Tailwind **v4** (newer than original "Next 15" target) — CONTEXT.md authorizes Claude discretion on micro-versions; Tailwind v4 CSS-first @theme is the active engine, tailwind.config.ts kept as a v3-style mirror for shadcn-CLI compatibility
+- 01-01: engines.node opened to ">=20.0.0" (no upper bound) so the active Node 22 runtime can install; .nvmrc still pins 20 for new contributors
+- 01-01: Light-mode only enforced everywhere (no `.dark`, no `prefers-color-scheme`); home page placeholder uses bg-paper / text-forest / font-display / font-mono utilities so Phase 2+ inherits the same token vocabulary
 
 ### Pending Todos
 
@@ -65,6 +68,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-25
-Stopped at: Phase 1 CONTEXT.md captured — ready to plan
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Last session: 2026-04-25T20:57Z
+Stopped at: Plan 01-01 complete (Next.js 16 / React 19 / Tailwind v4 scaffold + brief tokens + 3 fonts + cn helper). Ready for Plan 01-02.
+Resume file: .planning/phases/01-foundation/01-02-PLAN.md
