@@ -82,6 +82,18 @@
   * {
     border-color: hsl(var(--border));
   }
+  /* Smooth in-page anchor jumps + 80px offset so anchored sections don't
+   * tuck under the 60px fixed nav. Lives on `html` (the actual scroll
+   * container) — placing it on `.landing-root` is a no-op. */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));

@@ -32,16 +32,9 @@
   background: var(--bg);
   color: var(--ink);
   line-height: 1.55;
-
-  /* Smooth in-page anchor jumps; offset for the 60px fixed nav so anchored
-   * section labels aren't tucked under the bar. */
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .landing-root {
-    scroll-behavior: auto;
-  }
+  /* Smooth-scroll + scroll-padding-top live on `html` in globals.css —
+   * applying them here is a no-op since `.landing-root` is not the scroll
+   * container. */
 }
 .landing-root ::selection {
   background: rgba(15, 76, 58, 0.18);
@@ -145,7 +138,8 @@
   min-height: 100vh;
   padding: 140px 0 96px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
   isolation: isolate;
   overflow: hidden;
