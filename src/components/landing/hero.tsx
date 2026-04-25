@@ -1,21 +1,20 @@
 import Link from "next/link";
 
-import { AsciiBackdrop } from "./ascii-backdrop";
+import { AgentFeed } from "./agent-feed";
 
 /**
- * Hero — full-bleed `<AsciiBackdrop />` paper-flow + left-aligned copy
- * column over it. Single column (no more 2-col with a contained ASCII card);
- * the backdrop carries the visual centerpiece and the copy reads against it.
+ * Hero — full-bleed three-column agent terminal feed + left-aligned copy.
+ * The feed shows Researcher / Skeptic / Operator continuously narrating
+ * their work in slow-scrolling monospace lines. Pure-CSS marquee, no JS RAF.
  *
- * Stacking: `.l-hero` is `position: relative`, the backdrop is absolute at
- * z-index 0 inside it, and the copy is z-index 1. When the user scrolls past
- * the hero, the backdrop fades (handled in ascii-backdrop.tsx via a scroll
- * listener) and the solid-bg sections below take over.
+ * Stacking: `.l-hero` is `position: relative`, the feed is absolute at
+ * z-index 0 inside it, and the copy is z-index 1. The feed itself is
+ * faded via per-line opacity so the copy stays the dominant element.
  */
 export function LandingHero() {
   return (
     <header className="l-hero" id="top">
-      <AsciiBackdrop />
+      <AgentFeed />
       <div className="wrap">
         <div className="l-hero-copy">
           <div className="l-hero-eyebrow l-reveal">
