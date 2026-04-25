@@ -1,12 +1,14 @@
 import Link from "next/link";
 
-import { LabNotebook } from "./lab-notebook";
+import { VideoAscii } from "./video-ascii";
 
 /**
- * Hero — two-column composition. Copy on the left, animated lab notebook
- * on the right. The notebook drafts three hypotheses on a loop (typewriter
- * reveal → hold → page-flip), so the right column literally previews what
- * the product does. On mobile it stacks below the copy.
+ * Hero — two-column composition. Copy on the left, live video-ASCII
+ * rendering on the right. The same hero MP4 that plays on / is sampled
+ * frame-by-frame and rendered as monospace ASCII characters here, so the
+ * right column reads as "the lab footage, but seen through the agent's
+ * eye" — a literal interpretation of the user's "use the lab video as
+ * reference for ASCII" request. On mobile it stacks below the copy.
  */
 export function LandingHero() {
   return (
@@ -69,7 +71,7 @@ export function LandingHero() {
         </div>
 
         <div className="l-hero-stage l-reveal delay-2">
-          <LabNotebook />
+          <VideoAscii />
         </div>
       </div>
     </header>

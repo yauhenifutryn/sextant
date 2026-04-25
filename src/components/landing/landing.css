@@ -312,6 +312,55 @@
   }
 }
 
+/* ==================== VIDEO ASCII (legacy /v1 hero) ==================== */
+.l-vascii {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  isolation: isolate;
+}
+.l-vascii-out {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono-l);
+  font-size: clamp(5px, 0.85vw, 8px);
+  line-height: 0.95;
+  letter-spacing: 0;
+  color: var(--primary);
+  white-space: pre;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.l-vascii-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono-l);
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-vascii-out {
+    color: var(--primary);
+    opacity: 0.85;
+  }
+}
+
 .l-hero-eyebrow {
   display: inline-flex;
   align-items: center;
