@@ -88,6 +88,36 @@ export function CinematicHero() {
 
   return (
     <header className="l-cine" data-video-ready={videoReady ? "true" : "false"}>
+      {/* SVG filter defs for the stylized "illustrated" video look. Lives
+       * inline so the filter is in the same SVG document the <video> tag
+       * references via filter: url(#sx-cine-illustrate). Three primitives:
+       *   1. feColorMatrix — boost saturation +50% so color blocks pop
+       *   2. feComponentTransfer with discrete tableValues — quantize each
+       *      RGB channel to 5 levels (instead of 256), giving the stepped
+       *      cel-shaded posterize look
+       *   3. feGaussianBlur (very small radius) — softens the hard edges
+       *      between posterized regions so the result reads as illustrated
+       *      rather than glitchy
+       * The filter is GPU-composed by the browser; no canvas processing,
+       * no per-frame JS. Plays at native video framerate. */}
+      <svg
+        width="0"
+        height="0"
+        style={{ position: "absolute", overflow: "hidden", pointerEvents: "none" }}
+        aria-hidden="true"
+      >
+        <defs>
+          <filter id="sx-cine-illustrate" colorInterpolationFilters="sRGB">
+            <feColorMatrix in="SourceGraphic" type="saturate" values="1.55" result="sat" />
+            <feComponentTransfer in="sat" result="poster">
+              <feFuncR type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1" />
+              <feFuncG type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1" />
+              <feFuncB type="discrete" tableValues="0 0.22 0.45 0.7 0.92 1" />
+            </feComponentTransfer>
+            <feGaussianBlur in="poster" stdDeviation="0.55" />
+          </filter>
+        </defs>
+      </svg>
       {/* Fallback gradient backdrop — visible if the video file is absent
        * or fails to load. Looks intentional on its own; replaced by the
        * video the moment "playing" fires. */}

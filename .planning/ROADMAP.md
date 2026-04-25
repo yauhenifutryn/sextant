@@ -52,7 +52,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. When the hypothesis is ambiguous, the system asks exactly one clarifying question before running QC — never more
   3. Submitting one of the 4 sample hypotheses returns a novelty verdict ("not found", "similar work exists", or "exact match found") and at least 2 cited references (title, URL, 1-line excerpt) in under 10 seconds
   4. The novelty verdict is rendered prominently above the plan canvas with citation links visible (not collapsed)
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 02-01-PLAN.md — Chip preflight gate (D-30 BLOCKING) + AI SDK v5 install + 6 server-side lib modules: tavily client, Zod schema, prompt, cache, provenance guard, model IDs (LITQC-01/02/03; D-30..D-37, D-40, D-46, D-47, D-50, D-51, D-53)
+- [ ] 02-02-PLAN.md — POST /api/qc streaming route (Tavily → streamObject → toTextStreamResponse) + useQc client hook (LITQC-01/02/03, INPUT-02; D-38, D-39, D-48, D-49, D-52)
+- [ ] 02-03-PLAN.md — VerdictCard / CitationCard / ChatThread components + dashboard wire-in (Enter submit, chip flow, 4 union states) (INPUT-01, INPUT-02, LITQC-04; D-41..D-44, D-46, D-48)
 **UI hint**: no
 
 ### Phase 3: Multi-Agent Pipeline
@@ -141,8 +144,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/3 | In progress | - |
-| 2. Literature QC | 0/TBD | Not started | - |
+| 1. Foundation | 3/3 | Complete | 2026-04-25 |
+| 2. Literature QC | 0/3 | Planned | - |
 | 3. Multi-Agent Pipeline | 0/TBD | Not started | - |
 | 4. Plan Canvas UI | 0/TBD | Not started | - |
 | 5. Grounding & Citations | 0/TBD | Not started | - |

@@ -31,9 +31,10 @@ export function ExampleChips({ onPick, className }: Props) {
             variant="outline"
             size="sm"
             onClick={() => onPick(h.text)}
-            className="rounded-full border-borderwarm bg-surface hover:bg-surface-hover font-sans text-sm text-ink h-auto px-3 py-1 whitespace-normal text-left focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+            title={h.text}
+            className="rounded-full border-borderwarm bg-surface hover:bg-surface-hover hover:border-forest/30 font-sans text-xs text-ink h-auto px-3 py-1.5 focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 transition-colors"
           >
-            {h.text}
+            {h.label}
           </Button>
         </li>
       ))}

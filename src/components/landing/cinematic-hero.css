@@ -26,6 +26,11 @@
   z-index: 0;
   opacity: 0;
   transition: opacity 600ms cubic-bezier(0.2, 0, 0, 1);
+  /* Stylized "illustrated" look: posterize via SVG filter (defined inline
+   * in cinematic-hero.tsx) + a CSS-side contrast/brightness boost on top.
+   * The browser GPU-composites the filter chain so playback stays smooth. */
+  filter: url(#sx-cine-illustrate) contrast(1.18) brightness(1.05);
+  -webkit-filter: url(#sx-cine-illustrate) contrast(1.18) brightness(1.05);
 }
 .l-cine[data-video-ready="true"] .l-cine-video {
   opacity: 1;

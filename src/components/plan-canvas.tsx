@@ -9,24 +9,31 @@ type Props = {
 /**
  * Plan canvas — Phase 1 empty-state hero (D-18).
  *
- * Centered hero in the canvas column with the brief's heading from
- * §"Required key screens" §1 and the same 4 chips repeated as the primary
- * CTA. Chip picks here flow through to the chat-panel textarea via the
- * lifted-state `onChipPick` callback owned by `app/app/page.tsx`.
+ * Centered hero in the canvas column. This is the ONLY surface that
+ * renders the example-hypothesis chips — chat panel was deduplicated to
+ * a clean input-only empty state so chips don't appear twice on the same
+ * screen. Chip clicks populate the chat-panel textarea via lifted state.
  *
- * Subtle horizontal rule above the chips per the brief's "Empty state".
+ * Phase 2+ replaces this with the tabbed plan canvas (Protocol / Materials
+ * / Budget / Timeline / Validation).
  */
 export function PlanCanvas({ onChipPick }: Props) {
   return (
     <section
-      className="flex flex-col items-center justify-center p-12 bg-paper"
+      className="flex flex-col items-center justify-center px-8 py-12 bg-paper"
       aria-label="Plan canvas"
     >
-      <div className="max-w-xl text-center flex flex-col items-center gap-8">
-        <h2 className="font-display text-3xl font-medium tracking-tight text-ink leading-tight">
-          Frame a scientific question. Get a fundable plan in 3 minutes.
+      <div className="max-w-md text-center flex flex-col items-center gap-7">
+        <span className="inline-flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[0.1em] text-muted-foreground">
+          <span className="inline-block w-6 h-px bg-forest" aria-hidden />
+          <span>Empty state</span>
+        </span>
+        <h2 className="font-display text-2xl font-medium tracking-tight text-ink leading-[1.15] text-balance">
+          Frame a scientific question.<br />Get a fundable plan in three minutes.
         </h2>
-        <div className="h-px w-12 bg-borderwarm" aria-hidden />
+        <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
+          Pick an example below or type your own hypothesis in the chat on the left. Four agents will draft a citation-grounded protocol.
+        </p>
         <ExampleChips onPick={onChipPick} className="justify-center" />
       </div>
     </section>

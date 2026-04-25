@@ -69,13 +69,12 @@ export function SextantLoader({ status = "agents working…", size = "md" }: Pro
         .sx-loader__bars {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 12px;
-          min-width: 360px;
+          gap: 10px;
+          width: 100%;
+          min-width: 0;
         }
-        .sx-loader--sm .sx-loader__bars {
-          min-width: 240px;
-          gap: 8px;
-        }
+        .sx-loader--md .sx-loader__bars { min-width: 360px; }
+        .sx-loader--sm .sx-loader__bars { gap: 6px; }
         .sx-loader__bar {
           position: relative;
           height: 3px;
