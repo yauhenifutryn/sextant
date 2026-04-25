@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. A push to main triggers a Vercel deploy that completes and becomes reachable in under 60 seconds
 **Plans**: 3 plans
 - [x] 01-01-PLAN.md — Scaffold Next.js 15 + TS + Tailwind, wire brief design tokens and 3 fonts (D-01..D-12, D-30..D-32; DESIGN-01) — completed 2026-04-25 (commits 9ec3d3a, ecc2333). Landed as Next.js 16 + React 19 + Tailwind v4 per CONTEXT.md Claude-discretion clause.
-- [ ] 01-02-PLAN.md — Install shadcn minimum set, build three-column shell + empty-state hero with 4 chips, add lib/env.ts + /api/health (D-13..D-22, D-27..D-29; DESIGN-01/02/04, INPUT-03)
+- [x] 01-02-PLAN.md — Install shadcn minimum set, build three-column shell + empty-state hero with 4 chips, add lib/env.ts + /api/health (D-13..D-22, D-27..D-29; DESIGN-01/02/04, INPUT-03) — completed 2026-04-25 (commits 7200118, 0946daf). 4 deviations auto-fixed: shadcn CLI flag drift (hand-authored components.json), shadcn add not pulling cva/lucide (npm install added them), strict plan greps satisfied (rewrote a comment to remove `process.env` token; switched ExampleHypothesis type to Record form so `id:` count is exactly 4).
 - [ ] 01-03-PLAN.md — GitHub repo + Vercel project + env vars + auto-deploy verification + STATE.md update (D-23..D-26; DEPLOY-01/02/03, DESIGN-03)
 **UI hint**: yes
 
@@ -137,7 +137,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/3 | In progress | - |
+| 1. Foundation | 2/3 | In progress | - |
 | 2. Literature QC | 0/TBD | Not started | - |
 | 3. Multi-Agent Pipeline | 0/TBD | Not started | - |
 | 4. Plan Canvas UI | 0/TBD | Not started | - |
