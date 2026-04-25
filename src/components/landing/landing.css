@@ -563,7 +563,7 @@
 
 .l-agent-node {
   position: absolute;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.94);
   width: 200px;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -571,10 +571,44 @@
   padding: 14px 16px;
   box-shadow: var(--shadow);
   opacity: 0;
-  transition: opacity 600ms var(--ease);
+  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
 }
 .l-solve-stage.visible .l-agent-node {
   opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+/* One-shot dot pulse synchronized with each agent's arrival — gives the
+ * sense of "agent activated" instead of just "card faded in". */
+.l-solve-stage.visible .l-agent-node .l-agent-dot {
+  animation: l-agent-arrive 700ms var(--ease) both;
+}
+.l-solve-stage.visible .l-agent-node[data-i="0"] .l-agent-dot {
+  animation-delay: 200ms;
+}
+.l-solve-stage.visible .l-agent-node[data-i="1"] .l-agent-dot {
+  animation-delay: 350ms;
+}
+.l-solve-stage.visible .l-agent-node[data-i="2"] .l-agent-dot {
+  animation-delay: 500ms;
+}
+.l-solve-stage.visible .l-agent-node[data-i="3"] .l-agent-dot {
+  animation-delay: 650ms;
+}
+@keyframes l-agent-arrive {
+  0% {
+    transform: scale(0.6);
+  }
+  55% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-solve-stage.visible .l-agent-node .l-agent-dot {
+    animation: none;
+  }
 }
 .l-agent-node[data-i="0"] {
   transition-delay: 100ms;
@@ -853,6 +887,40 @@
 }
 .l-loop-card[data-i="2"] {
   transition-delay: 600ms;
+}
+/* Inner-content reveal — after each card lands, its body slides in slightly
+ * later so the section reads as "correction → rule → applied" being WRITTEN
+ * step by step, not three cards fading in simultaneously. */
+.l-loop-card .doc-line,
+.l-loop-card .rule,
+.l-loop-card .applied {
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity 500ms var(--ease), transform 500ms var(--ease);
+}
+.l-loop-canvas.visible .l-loop-card[data-i="0"] .doc-line {
+  transition-delay: 380ms;
+}
+.l-loop-canvas.visible .l-loop-card[data-i="1"] .rule {
+  transition-delay: 630ms;
+}
+.l-loop-canvas.visible .l-loop-card[data-i="2"] .applied {
+  transition-delay: 880ms;
+}
+.l-loop-canvas.visible .l-loop-card .doc-line,
+.l-loop-canvas.visible .l-loop-card .rule,
+.l-loop-canvas.visible .l-loop-card .applied {
+  opacity: 1;
+  transform: translateX(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-loop-card .doc-line,
+  .l-loop-card .rule,
+  .l-loop-card .applied {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 .l-loop-card .step {
   font-family: var(--font-mono-l);
