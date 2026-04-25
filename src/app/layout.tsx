@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Inter_Tight, Geist_Mono } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 // D-11: self-host Inter / Inter Tight / Geist Mono via next/font with CSS-variable strategy.
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`${inter.variable} ${interTight.variable} ${geistMono.variable} font-sans bg-paper text-ink antialiased min-h-full flex flex-col`}
       >
         {children}
+        <Toaster />
       </body>
     </html>
   );
