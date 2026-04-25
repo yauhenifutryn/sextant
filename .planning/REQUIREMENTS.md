@@ -102,59 +102,57 @@ The differentiator (hours 14-18). Stretch goal that wins the demo if completed.
 
 ## Traceability
 
-Empty until roadmap is generated. The gsd-roadmapper agent will populate this section.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INPUT-01 | TBD | Pending |
-| INPUT-02 | TBD | Pending |
-| INPUT-03 | TBD | Pending |
-| LITQC-01 | TBD | Pending |
-| LITQC-02 | TBD | Pending |
-| LITQC-03 | TBD | Pending |
-| LITQC-04 | TBD | Pending |
-| AGENT-01 | TBD | Pending |
-| AGENT-02 | TBD | Pending |
-| AGENT-03 | TBD | Pending |
-| AGENT-04 | TBD | Pending |
-| PLAN-01 | TBD | Pending |
-| PLAN-02 | TBD | Pending |
-| PLAN-03 | TBD | Pending |
-| PLAN-04 | TBD | Pending |
-| PLAN-05 | TBD | Pending |
-| PLAN-06 | TBD | Pending |
-| GROUND-01 | TBD | Pending |
-| GROUND-02 | TBD | Pending |
-| GROUND-03 | TBD | Pending |
-| GROUND-04 | TBD | Pending |
-| GROUND-05 | TBD | Pending |
-| TRACE-01 | TBD | Pending |
-| TRACE-02 | TBD | Pending |
-| TRACE-03 | TBD | Pending |
-| TRACE-04 | TBD | Pending |
-| DEPLOY-01 | TBD | Pending |
-| DEPLOY-02 | TBD | Pending |
-| DEPLOY-03 | TBD | Pending |
-| DESIGN-01 | TBD | Pending |
-| DESIGN-02 | TBD | Pending |
-| DESIGN-03 | TBD | Pending |
-| DESIGN-04 | TBD | Pending |
-| LOOP-01 | TBD | Pending |
-| LOOP-02 | TBD | Pending |
-| LOOP-03 | TBD | Pending |
-| LOOP-04 | TBD | Pending |
-| LOOP-05 | TBD | Pending |
-| PROP-01 | TBD | Pending |
-| PROP-02 | TBD | Pending |
-| PROP-03 | TBD | Pending |
-| PROP-04 | TBD | Pending |
+| INPUT-01 | Phase 2 | Pending |
+| INPUT-02 | Phase 2 | Pending |
+| INPUT-03 | Phase 1 | Pending |
+| LITQC-01 | Phase 2 | Pending |
+| LITQC-02 | Phase 2 | Pending |
+| LITQC-03 | Phase 2 | Pending |
+| LITQC-04 | Phase 2 | Pending |
+| AGENT-01 | Phase 3 | Pending |
+| AGENT-02 | Phase 3 | Pending |
+| AGENT-03 | Phase 3 | Pending |
+| AGENT-04 | Phase 3 | Pending |
+| PLAN-01 | Phase 4 | Pending |
+| PLAN-02 | Phase 4 | Pending |
+| PLAN-03 | Phase 4 | Pending |
+| PLAN-04 | Phase 4 | Pending |
+| PLAN-05 | Phase 4 | Pending |
+| PLAN-06 | Phase 4 | Pending |
+| GROUND-01 | Phase 5 | Pending |
+| GROUND-02 | Phase 5 | Pending |
+| GROUND-03 | Phase 5 | Pending |
+| GROUND-04 | Phase 5 | Pending |
+| GROUND-05 | Phase 5 | Pending |
+| TRACE-01 | Phase 6 | Pending |
+| TRACE-02 | Phase 6 | Pending |
+| TRACE-03 | Phase 6 | Pending |
+| TRACE-04 | Phase 6 | Pending |
+| DEPLOY-01 | Phase 1 | Pending |
+| DEPLOY-02 | Phase 1 | Pending |
+| DEPLOY-03 | Phase 1 | Pending |
+| DESIGN-01 | Phase 1 | Pending |
+| DESIGN-02 | Phase 1 | Pending |
+| DESIGN-03 | Phase 1 | Pending |
+| DESIGN-04 | Phase 1 | Pending |
+| LOOP-01 | Phase 7 | Pending |
+| LOOP-02 | Phase 7 | Pending |
+| LOOP-03 | Phase 7 | Pending |
+| LOOP-04 | Phase 7 | Pending |
+| LOOP-05 | Phase 7 | Pending |
+| PROP-01 | Phase 7 | Pending |
+| PROP-02 | Phase 7 | Pending |
+| PROP-03 | Phase 7 | Pending |
+| PROP-04 | Phase 7 | Pending |
 
 **Coverage:**
 - v1 requirements: 33 total
 - v2 requirements: 9 total
 - Total: 42
-- Mapped to phases: 0 (pending roadmap)
+- Mapped to phases: 42/42 (100%)
 
 ---
 *Requirements defined: 2026-04-25*
-*Last updated: 2026-04-25 after initial definition*
+*Last updated: 2026-04-25 after roadmap generation — all requirements mapped*

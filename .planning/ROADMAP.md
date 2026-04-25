@@ -1,0 +1,142 @@
+# Roadmap: AI CRO Co-Pilot
+
+## Overview
+
+Eight phases take the project from a bare Next.js scaffold to a live, judge-ready demo. Phases 1-6 cover the 33 v1 must-ship requirements across foundation, literature QC, multi-agent generation, plan rendering, citation grounding, and live trace. Phase 7 is the v2 closed-loop differentiator (hours 14-18, hard fallback rule: cut to manual slide if not wired by hour 18). Phase 8 is polish, demo recording, and pitch prep.
+
+## Phases
+
+**Phase Numbering:**
+- Integer phases (1, 2, 3): Planned milestone work
+- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+
+Decimal phases appear between their surrounding integers in numeric order.
+
+- [ ] **Phase 1: Foundation** - Next.js scaffold, design tokens, env wiring, Vercel deploy live
+- [ ] **Phase 2: Literature QC** - Tavily search, novelty verdict, cited references, hypothesis input
+- [ ] **Phase 3: Multi-Agent Pipeline** - 4-agent parallel debate, structured JSON plan output
+- [ ] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views
+- [ ] **Phase 5: Grounding & Citations** - Supplier scraping, inline citations, tooltip system, URL verify
+- [ ] **Phase 6: Live Trace & Validation Grid** - Agent activity rail, test grid ticking green
+- [ ] **Phase 7: Closed-Loop Corrections + Propagation Demo** - Lab rules, correction popover, diff modal
+- [ ] **Phase 8: Polish, Demo, Pitch** - Visual polish, demo rehearsal, video recording, submission
+
+## Phase Details
+
+### Phase 1: Foundation
+**Goal**: A public Vercel URL is reachable, design tokens from the brief are wired into Tailwind, and all API keys are securely stored as env vars
+**Depends on**: Nothing (first phase)
+**Requirements**: DEPLOY-01, DEPLOY-02, DEPLOY-03, DESIGN-01, DESIGN-02, DESIGN-03, DESIGN-04, INPUT-03
+**Success Criteria** (what must be TRUE):
+  1. Visiting the Vercel URL shows the app shell with the three-column layout and correct color palette (warm off-white background, forest-green accent, no SaaS gradients)
+  2. Tailwind config contains all design tokens from CLAUDE_DESIGN_BRIEF.md (colors, typography, spacing, radius, shadow)
+  3. Four example hypothesis chips are rendered in the empty state and are keyboard reachable
+  4. Tavily and Anthropic API keys resolve from `process.env` in the deployed environment (verified via a health-check route)
+  5. A push to main triggers a Vercel deploy that completes and becomes reachable in under 60 seconds
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 2: Literature QC
+**Goal**: A scientist can submit a hypothesis and receive a novelty verdict backed by at least 2 cited references in under 10 seconds
+**Depends on**: Phase 1
+**Requirements**: INPUT-01, INPUT-02, LITQC-01, LITQC-02, LITQC-03, LITQC-04
+**Success Criteria** (what must be TRUE):
+  1. User can type a hypothesis in the chat input and submit it (enter key or arrow button)
+  2. When the hypothesis is ambiguous, the system asks exactly one clarifying question before running QC — never more
+  3. Submitting one of the 4 sample hypotheses returns a novelty verdict ("not found", "similar work exists", or "exact match found") and at least 2 cited references (title, URL, 1-line excerpt) in under 10 seconds
+  4. The novelty verdict is rendered prominently above the plan canvas with citation links visible (not collapsed)
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 3: Multi-Agent Pipeline
+**Goal**: The system runs 4 cooperating agents in parallel and produces a single typed JSON experiment plan in under 60 seconds
+**Depends on**: Phase 2
+**Requirements**: AGENT-01, AGENT-02, AGENT-03, AGENT-04
+**Success Criteria** (what must be TRUE):
+  1. Plan generation spins up all 4 agents (Researcher, Skeptic, CRO Operator, Compliance) and each agent's role and current task appears in the trace rail as it runs
+  2. The agents produce a single consolidated plan as valid typed JSON with all five sections (Protocol, Materials, Budget, Timeline, Validation) populated
+  3. The full generation cycle completes in under 60 seconds for the rehearsed sample hypothesis
+  4. The structured JSON is available as a server-side artifact that subsequent phases can render
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 4: Plan Canvas UI
+**Goal**: The generated plan is fully readable across all five tabs in the three-column layout with keyboard navigation
+**Depends on**: Phase 3
+**Requirements**: PLAN-01, PLAN-02, PLAN-03, PLAN-04, PLAN-05, PLAN-06
+**Success Criteria** (what must be TRUE):
+  1. Protocol tab shows numbered methodology steps grounded in real published protocols
+  2. Materials tab shows a structured table with Reagent, Catalog #, Supplier, Unit cost, Qty, Subtotal columns — each row is a distinct readable entry
+  3. Budget tab shows a line-itemized total with a category breakdown (horizontal bar chart or equivalent)
+  4. Timeline tab shows a phased breakdown with dependencies legible at a glance
+  5. Validation tab lists success criteria with measurement methods
+  6. All five tabs are navigable by keyboard (Tab / arrow keys) and the active tab is visually distinct
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 5: Grounding & Citations
+**Goal**: Every claim in the plan carries a clickable, verified citation and all material catalog numbers come from real supplier pages
+**Depends on**: Phase 4
+**Requirements**: GROUND-01, GROUND-02, GROUND-03, GROUND-04, GROUND-05
+**Success Criteria** (what must be TRUE):
+  1. Every numbered step in the Protocol and every row in the Materials table carries at least one inline citation superscript
+  2. Clicking any citation opens the source URL in a new tab
+  3. Hovering (or focusing) a citation shows a tooltip with the source title and a 1-line excerpt
+  4. All catalog numbers and prices in the Materials table come from real Sigma-Aldrich / Thermo Fisher pages scraped via Tavily — no invented numbers survive to the rendered plan
+  5. The "verify all sources" check confirms every citation URL resolves before the plan is shown to the user
+**Plans**: TBD
+**UI hint**: no
+
+### Phase 6: Live Trace & Validation Grid
+**Goal**: Users can watch agents work and validation tests tick green as the plan stabilizes, giving judges visible proof of orchestration depth
+**Depends on**: Phase 3
+**Requirements**: TRACE-01, TRACE-02, TRACE-03, TRACE-04
+**Success Criteria** (what must be TRUE):
+  1. The trace rail shows all 4 agents with colored status dots; idle agents are visually distinct from active ones; completed agents show a checkmark
+  2. Active agents animate with a shimmer effect while working
+  3. The validation grid lists at least 5 named tests (e.g., "Every reagent has a catalog URL", "Budget sums correctly", "No orphan protocol step", "Compliance pipeline passes", "Citations resolve")
+  4. Tests visibly transition from pending to running to green (pass) as the plan finalizes — judges can watch the grid light up in real time
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 7: Closed-Loop Corrections + Propagation Demo
+**Goal**: A scientist can correct any line in the plan, capture it as a typed lab rule, and watch a second hypothesis plan automatically apply that rule — the closed loop is live and demo-ready
+**Depends on**: Phase 5, Phase 6
+**Requirements**: LOOP-01, LOOP-02, LOOP-03, LOOP-04, LOOP-05, PROP-01, PROP-02, PROP-03, PROP-04
+**Success Criteria** (what must be TRUE):
+  1. Clicking any line in the plan canvas opens a correction popover with three distinct actions: Challenge, Correct, Annotate
+  2. Selecting "Correct" opens a focused editor with a structured "lab rule" capture field; submitting it creates a typed artifact (with fields: rule, scope, reasoning, source correction) persisted to the JSON store
+  3. The lab profile drawer slides in from the right and lists all stored rules with usage counts and edit/delete controls
+  4. Submitting a second (pre-staged) hypothesis produces a plan that visibly applies stored lab rules without any explicit re-prompting
+  5. The side-by-side diff modal opens and shows changed lines highlighted in clay/rust with the applied lab rule labeled on each changed line
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 8: Polish, Demo, Pitch
+**Goal**: The product looks and feels judge-ready, the demo runs cleanly in under 3 minutes, the video is recorded, and the pitch deck is complete
+**Depends on**: Phase 7 (or Phase 6 if Phase 7 falls back to manual slide)
+**Requirements**: (no new requirement IDs — this phase delivers the demo artifact)
+**Success Criteria** (what must be TRUE):
+  1. A full run-through of the demo (empty state → hypothesis → QC → plan generation → all tabs → trace rail green) completes in under 3 minutes without errors
+  2. If Phase 7 shipped: the closed-loop demo moment (rule captured → second plan applies rule → diff modal) runs without a manual fallback
+  3. If Phase 7 did not ship: a before/after slide clearly communicates the propagation concept to judges
+  4. The demo video is recorded and ready for submission
+  5. The pitch deck or talking points cover: problem, solution, technical depth, differentiator, and market framing (AI CRO Co-Pilot as B2B SaaS wedge)
+**Plans**: TBD
+**UI hint**: yes
+
+## Progress
+
+**Execution Order:**
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
+
+| Phase | Plans Complete | Status | Completed |
+|-------|----------------|--------|-----------|
+| 1. Foundation | 0/TBD | Not started | - |
+| 2. Literature QC | 0/TBD | Not started | - |
+| 3. Multi-Agent Pipeline | 0/TBD | Not started | - |
+| 4. Plan Canvas UI | 0/TBD | Not started | - |
+| 5. Grounding & Citations | 0/TBD | Not started | - |
+| 6. Live Trace & Validation Grid | 0/TBD | Not started | - |
+| 7. Closed-Loop + Propagation Demo | 0/TBD | Not started | - |
+| 8. Polish, Demo, Pitch | 0/TBD | Not started | - |
