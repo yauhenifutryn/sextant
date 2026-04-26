@@ -48,3 +48,6 @@ yarn-error.log*
 
 # TypeScript
 *.tsbuildinfo
+
+# Phase 2 chip-approval gate sentinel (local only — never commit)
+.planning/phases/02-literature-qc/.chip-approval

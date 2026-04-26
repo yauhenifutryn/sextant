@@ -1,16 +1,11 @@
 /**
  * 4 example hypotheses for the empty-state hero (D-19).
  *
- * MUST BE REPLACED WITH THE FULCRUM BRIEF'S VERBATIM 4 BEFORE LIVE DEMO.
- * These are temporary realistic-sounding stand-ins so the dashboard shell
- * doesn't show "[Replace verbatim with Fulcrum sample hypothesis #N]" on
- * the deployed preview. They mirror the three hypotheses the landing-page
- * lab-notebook cycles through (Cas13d / mTOR / AAV9), plus one CRISPR-screen
- * variant. When the Fulcrum brief lands, replace ALL four with the verbatim
- * text — see project CLAUDE.md hard rule #2 (no invented hypotheses for
- * actual demo input).
+ * Verbatim from the Fulcrum hackathon brief, "Sample Inputs" section
+ * (Diagnostics / Gut Health / Cell Biology / Climate). CLAUDE.md hard
+ * rule #2 forbids substituting these — judges will recognize the brief.
  *
- * See PROJECT.md "Domain gap" + CLAUDE.md hard rule #2.
+ * Source: .planning/research/fulcrum-brief.md
  */
 export type ExampleHypothesis = Readonly<{
   id: string;
@@ -23,22 +18,22 @@ export type ExampleHypothesis = Readonly<{
 export const EXAMPLE_HYPOTHESES: readonly ExampleHypothesis[] = [
   {
     id: "h1",
-    label: "Cas13d in CD8+ T-cells",
-    text: "Test whether Cas13d knockdown of IFN-γ in primary CD8+ T-cells reduces exhaustion markers without compromising cytolytic function.",
+    label: "Diagnostics · CRP biosensor",
+    text: "A paper-based electrochemical biosensor functionalized with anti-CRP antibodies will detect C-reactive protein in whole blood at concentrations below 0.5 mg/L within 10 minutes, matching laboratory ELISA sensitivity without requiring sample preprocessing.",
   },
   {
     id: "h2",
-    label: "Rapamycin · liver fibrosis",
-    text: "Determine the minimum effective dose of rapamycin in a mouse liver fibrosis model that suppresses mTORC1 without triggering hyperglycemia.",
+    label: "Gut Health · L. rhamnosus GG",
+    text: "Supplementing C57BL/6 mice with Lactobacillus rhamnosus GG for 4 weeks will reduce intestinal permeability by at least 30% compared to controls, measured by FITC-dextran assay, due to upregulation of tight junction proteins claudin-1 and occludin.",
   },
   {
     id: "h3",
-    label: "AAV9 retro-orbital dosing",
-    text: "Assess whether retro-orbital AAV9-CMV-GFP delivery in C57BL/6 mice achieves comparable hippocampal transduction to intracerebroventricular injection at 1/10th the dose.",
+    label: "Cell Biology · trehalose cryo",
+    text: "Replacing sucrose with trehalose as a cryoprotectant in the freezing medium will increase post-thaw viability of HeLa cells by at least 15 percentage points compared to the standard DMSO protocol, due to trehalose's superior membrane stabilization at low temperatures.",
   },
   {
     id: "h4",
-    label: "CRISPR screen · c-MYC",
-    text: "Run a genome-wide CRISPR screen in K562 cells to identify regulators of c-MYC stability under glucose-limited conditions.",
+    label: "Climate · Sporomusa CO₂ fix",
+    text: "Introducing Sporomusa ovata into a bioelectrochemical system at a cathode potential of −400mV vs SHE will fix CO₂ into acetate at a rate of at least 150 mmol/L/day, outperforming current biocatalytic carbon capture benchmarks by at least 20%.",
   },
 ] as const;
