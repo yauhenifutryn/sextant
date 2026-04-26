@@ -105,7 +105,10 @@ export function SextantLoader({ status = "agents working…", size = "md" }: Pro
           color: hsl(var(--muted-foreground));
           white-space: nowrap;
         }
-        .sx-loader--sm .sx-loader__bar-label { font-size: 9px; top: 6px; }
+        /* Hide labels in narrow contexts (e.g. trace-rail empty state) — the
+         * 4-column grid collapses below ~200px and labels overlap each other.
+         * Bars alone read as a "thinking" indicator without label crash. */
+        .sx-loader--sm .sx-loader__bar-label { display: none; }
         @keyframes sx-loader-flow {
           0%   { left: -30%; width: 30%; opacity: 0.4; }
           50%  { width: 45%; opacity: 1; }

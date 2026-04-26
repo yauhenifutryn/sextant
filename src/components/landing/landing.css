@@ -603,15 +603,15 @@
   font-weight: 500;
   font-size: 13px;
   color: var(--bg);
-  background: var(--primary);
-  border: 1px solid var(--primary);
+  background: var(--ink);
+  border: 1px solid var(--ink);
   padding: 9px 18px;
   border-radius: 999px;
   transition: background 200ms ease, transform 200ms ease;
   min-height: 38px;
 }
 .l-ascii-cta:hover {
-  background: #0d3f30;
+  background: #000;
   transform: scale(1.03);
 }
 @media (max-width: 720px) {
@@ -853,14 +853,15 @@
   font-weight: 500;
   font-size: 14.5px;
   color: #fff;
-  background: var(--primary);
+  background: var(--ink);
   padding: 13px 18px;
-  border-radius: 4px;
+  border-radius: 999px;
   min-height: 44px;
-  transition: background 200ms var(--ease);
+  transition: background 200ms var(--ease), transform 200ms var(--ease);
 }
 .l-btn-primary:hover {
-  background: var(--primary-soft);
+  background: #000;
+  transform: scale(1.03);
 }
 .l-btn-primary svg {
   transition: transform 200ms var(--ease);
