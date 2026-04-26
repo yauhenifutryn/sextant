@@ -9,7 +9,7 @@
  * 35s per-agent timeout (D-66).
  * Honors SEXTANT_DEMO_PACE_MS for demo recording.
  */
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import type { UIMessageStreamWriter } from "ai";
@@ -87,7 +87,7 @@ export async function runCompliance(args: {
       },
       transient: true,
     });
-    const result = streamObject({
+    const result = await generateObject({
       model: google(modelId),
       schema: complianceSliceSchema,
       system: COMPLIANCE_SYSTEM,
@@ -102,7 +102,7 @@ export async function runCompliance(args: {
       },
       abortSignal: AbortSignal.timeout(35_000),
     });
-    const slice = await result.object;
+    const slice = result.object;
     const elapsed = Date.now() - t0;
     writer.write({
       type: "data-trace",

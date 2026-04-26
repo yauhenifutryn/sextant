@@ -11,7 +11,7 @@
  * - Honors SEXTANT_DEMO_PACE_MS (server-only env) so Phase 8 demo recording can
  *   slow the trace rail to a visible pace without code changes.
  */
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import type { UIMessageStreamWriter } from "ai";
@@ -113,7 +113,7 @@ export async function runResearcher(args: {
       },
       transient: true,
     });
-    const result = streamObject({
+    const result = await generateObject({
       model: google(modelId),
       schema: researcherSliceSchema,
       system: RESEARCHER_SYSTEM,
@@ -128,7 +128,7 @@ export async function runResearcher(args: {
       },
       abortSignal: AbortSignal.timeout(35_000),
     });
-    const slice = await result.object;
+    const slice = result.object;
     const elapsed = Date.now() - t0;
     writer.write({
       type: "data-trace",

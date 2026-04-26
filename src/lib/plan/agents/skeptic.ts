@@ -14,7 +14,7 @@
  * append minimal stubs after parse. This is RECONSTRUCTION (filling required
  * names), not invention — the measurement_method content stays generic.
  */
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import type { UIMessageStreamWriter } from "ai";
@@ -103,7 +103,7 @@ export async function runSkeptic(args: {
       },
       transient: true,
     });
-    const result = streamObject({
+    const result = await generateObject({
       model: google(modelId),
       schema: skepticSliceSchema,
       system: SKEPTIC_SYSTEM,
@@ -118,7 +118,7 @@ export async function runSkeptic(args: {
       },
       abortSignal: AbortSignal.timeout(35_000),
     });
-    let slice = await result.object;
+    let slice = result.object;
 
     // Server-side guarantee: ensure all 6 REQUIRED_VALIDATION_NAMES appear.
     // The model SHOULD emit them per the prompt; if it drops one, append a

@@ -12,7 +12,7 @@
  *
  * Honors SEXTANT_DEMO_PACE_MS for demo recording.
  */
-import { streamObject } from "ai";
+import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import type { UIMessageStreamWriter } from "ai";
 import { planSchema, type Plan, type AgentArtifact } from "@/lib/plan/schema";
@@ -101,7 +101,7 @@ export async function runConsolidator(args: {
   });
   if (DEMO_PACE_MS > 0) await new Promise((r) => setTimeout(r, DEMO_PACE_MS));
 
-  const result = streamObject({
+  const result = await generateObject({
     model: google(args.modelId),
     schema: planSchema,
     system: CONSOLIDATOR_SYSTEM,
@@ -116,7 +116,7 @@ export async function runConsolidator(args: {
     },
     abortSignal: AbortSignal.timeout(15_000), // D-66
   });
-  const draft = await result.object;
+  const draft = result.object;
 
   // Server-side post-fill: overwrite metadata + artifacts so the LLM cannot
   // inject false provenance. CLAUDE.md hard rule #1 spirit: only the server
