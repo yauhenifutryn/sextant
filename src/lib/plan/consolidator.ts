@@ -1,71 +1,125 @@
 /**
- * Consolidator (D-54 — 5th LLM call merging 4 agent slices into a Plan).
+ * Consolidator (D-54 — was a 5th LLM call, now a deterministic merge).
  *
- * Differences from the 4 debater agents:
- *   - thinkingBudget: 4000 (D-55) — synthesis quality matters across 4 inputs.
- *   - timeout: 15_000 (D-66) — synthesis is bounded; faster ceiling.
- *   - schema: planSchema (top-level), not a slice.
- *   - No Tavily — pure synthesis from in-memory inputs.
- *   - Server-side post-fill: run_id, model_id, latency_ms, generated_at,
- *     grounded:false, agent_artifacts are reconstructed by THIS function
- *     (not the LLM) so the model cannot inject false metadata.
+ * The previous design had Gemini synthesize a Plan envelope around the 4
+ * agent slices, but in practice (verified live 2026-04-26) the strict
+ * planSchema validation failed AI_NoObjectGeneratedError ~100% of the
+ * time. The LLM call was redundant anyway — the route always overwrote
+ * metadata server-side via post-fill, so the LLM only contributed an
+ * envelope shape we could build deterministically.
  *
- * Honors SEXTANT_DEMO_PACE_MS for demo recording.
+ * This deterministic merge:
+ *   - never fails (placeholder slices for any null agent output)
+ *   - is faster (~1ms vs ~10s LLM call)
+ *   - removes the AI_NoObjectGeneratedError class of failures
+ *   - still emits started/done trace events so the rail UI shows the row
+ *   - still honors SEXTANT_DEMO_PACE_MS for demo recording
  */
-import { generateObject } from "ai";
-import { google } from "@ai-sdk/google";
 import type { UIMessageStreamWriter } from "ai";
-import { planSchema, type Plan, type AgentArtifact } from "@/lib/plan/schema";
-
-const CONSOLIDATOR_SYSTEM = `You are the Consolidator agent. You receive 4 JSON drafts from Researcher / Skeptic / Operator / Compliance agents and merge them into a single Plan JSON matching the supplied schema.
-
-Rules:
-- Do NOT invent content. Use only what the 4 drafts provide.
-- Where drafts conflict, prefer the agent that owns that section: Researcher owns protocol; Operator owns materials/budget/timeline; Skeptic owns validation; Compliance owns compliance_notes/compliance_summary.
-- For any agent slice that is null (errored), emit a placeholder section with description "(agent failed — see agent_artifacts.<role>.error)" and a single placeholder entry so downstream renders do not crash.
-- Set "grounded": false (Phase 5 will flip this).
-- Set "citations": [] for every row (Phase 5 fills these).
-- Do NOT touch agent_artifacts — it's reconstructed server-side; emit it as { researcher: {raw_draft:{},model_id:"",elapsed_ms:0}, skeptic: ..., operator: ..., compliance: ... } and the server overwrites.
-- Echo run_id, hypothesis, qc_run_id, model_id, latency_ms, generated_at as supplied; the server overwrites those too.
-
-Emit ONLY the JSON object. No prose, no markdown fencing.`;
-
-function buildConsolidatorPrompt(args: {
-  hypothesis: string;
-  qc_run_id: string | null;
-  run_id: string;
-  modelId: string;
-  slices: {
-    researcher: unknown;
-    skeptic: unknown;
-    operator: unknown;
-    compliance: unknown;
-  };
-}): string {
-  return `RUN METADATA:
-run_id: ${args.run_id}
-qc_run_id: ${args.qc_run_id ?? "null"}
-model_id: ${args.modelId}
-hypothesis: ${args.hypothesis}
-
-AGENT DRAFTS (JSON):
-
-[RESEARCHER] (owns protocol):
-${JSON.stringify(args.slices.researcher, null, 2)}
-
-[SKEPTIC] (owns validation):
-${JSON.stringify(args.slices.skeptic, null, 2)}
-
-[OPERATOR] (owns materials + budget + timeline):
-${JSON.stringify(args.slices.operator, null, 2)}
-
-[COMPLIANCE] (owns compliance_notes + compliance_summary):
-${JSON.stringify(args.slices.compliance, null, 2)}
-
-Merge into a single Plan JSON matching the schema. Apply the section-ownership rule above when filling each field.`;
-}
+import type {
+  Plan,
+  AgentArtifact,
+  ProtocolStep,
+  MaterialRow,
+  BudgetLine,
+  TimelinePhase,
+  ValidationCheck,
+  ComplianceNote,
+} from "@/lib/plan/schema";
 
 const DEMO_PACE_MS = Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0);
+
+// 6 baseline validation checks used as floor + fallback (matches
+// VALIDATION_SKELETON in src/components/trace-rail.tsx so Phase 6 grid
+// always has the named anchors to tick green deterministically).
+const VALIDATION_FALLBACK: ValidationCheck[] = [
+  {
+    name: "Every reagent has a catalog URL",
+    description: "Each materials row carries at least one citation pointing to the supplier listing.",
+    measurement_method: "Count of materials[].citations.length > 0",
+    pass_criteria: "100% of rows have ≥1 citation",
+  },
+  {
+    name: "Budget sums correctly",
+    description: "Sum of budget line amounts equals the declared total.",
+    measurement_method: "Numerical sum of budget[].amount_usd",
+    pass_criteria: "Sum within ±$1 of expected total",
+  },
+  {
+    name: "No orphan protocol step",
+    description: "Every protocol step is referenced by at least one validation check or material.",
+    measurement_method: "Cross-ref protocol[].step_number against validation/materials text",
+    pass_criteria: "0 orphan steps",
+  },
+  {
+    name: "Citations resolve to real sources",
+    description: "Every cited URL returns HTTP 200.",
+    measurement_method: "HEAD request per citation URL",
+    pass_criteria: "100% URLs return 200",
+  },
+  {
+    name: "Timeline dependencies valid",
+    description: "Every depends_on phase id refers to an existing phase.",
+    measurement_method: "Set membership check on timeline[].depends_on",
+    pass_criteria: "0 dangling references",
+  },
+  {
+    name: "Compliance pipeline passes",
+    description: "Compliance summary is non-empty and notes are populated.",
+    measurement_method: "Length checks on compliance_summary + compliance_notes[]",
+    pass_criteria: "summary length > 0 AND notes length > 0",
+  },
+];
+
+const PROTOCOL_FALLBACK: ProtocolStep[] = [
+  {
+    step_number: 1,
+    description: "(Researcher agent failed — see agent_artifacts.researcher.error)",
+    duration_estimate: "n/a",
+    citations: [],
+  },
+];
+
+const MATERIALS_FALLBACK: MaterialRow[] = [
+  {
+    name: "(Operator agent failed — materials placeholder)",
+    quantity: "n/a",
+    supplier: null,
+    catalog_number: null,
+    unit_price_usd: null,
+    citations: [],
+  },
+];
+
+const BUDGET_FALLBACK: BudgetLine[] = [
+  {
+    category: "(Operator agent failed — budget placeholder)",
+    amount_usd: 0,
+    notes: "Re-run plan generation to populate.",
+    citations: [],
+  },
+];
+
+const TIMELINE_FALLBACK: TimelinePhase[] = [
+  {
+    phase: "(Operator agent failed — timeline placeholder)",
+    duration_days: 1,
+    depends_on: [],
+    citations: [],
+  },
+];
+
+type ResearcherSlice = { protocol: ProtocolStep[] } | null;
+type SkepticSlice = { validation: ValidationCheck[] } | null;
+type OperatorSlice = {
+  materials: MaterialRow[];
+  budget: BudgetLine[];
+  timeline: TimelinePhase[];
+} | null;
+type ComplianceSlice = {
+  compliance_notes: ComplianceNote[];
+  compliance_summary: string;
+} | null;
 
 export async function runConsolidator(args: {
   hypothesis: string;
@@ -101,36 +155,44 @@ export async function runConsolidator(args: {
   });
   if (DEMO_PACE_MS > 0) await new Promise((r) => setTimeout(r, DEMO_PACE_MS));
 
-  const result = await generateObject({
-    model: google(args.modelId),
-    schema: planSchema,
-    system: CONSOLIDATOR_SYSTEM,
-    prompt: buildConsolidatorPrompt(args),
-    temperature: 0.1,
-    maxOutputTokens: 4000,
-    providerOptions: {
-      google: {
-        structuredOutputs: false,
-        thinkingConfig: { thinkingBudget: 4000 }, // D-55
-      },
-    },
-    abortSignal: AbortSignal.timeout(15_000), // D-66
-  });
-  const draft = result.object;
+  // Deterministic merge from agent slices. Each slice already validated
+  // against its own Zod schema in the agent runner, so unwrapping is safe.
+  const r = args.slices.researcher as ResearcherSlice;
+  const s = args.slices.skeptic as SkepticSlice;
+  const o = args.slices.operator as OperatorSlice;
+  const c = args.slices.compliance as ComplianceSlice;
 
-  // Server-side post-fill: overwrite metadata + artifacts so the LLM cannot
-  // inject false provenance. CLAUDE.md hard rule #1 spirit: only the server
-  // chooses the run_id, model_id, timestamps, and the artifact summaries.
+  const validation = (s?.validation ?? []).slice();
+  if (validation.length < 5) {
+    // Top up to schema floor of 5 with VALIDATION_FALLBACK entries that
+    // aren't already named.
+    const existing = new Set(validation.map((v) => v.name));
+    for (const v of VALIDATION_FALLBACK) {
+      if (validation.length >= 5) break;
+      if (!existing.has(v.name)) validation.push(v);
+    }
+  }
+
   const plan: Plan = {
-    ...draft,
     run_id: args.run_id,
     hypothesis: args.hypothesis,
     qc_run_id: args.qc_run_id,
-    grounded: false, // D-59
+    grounded: false, // D-59 — Phase 5 flips
+    plan: {
+      protocol: r?.protocol ?? PROTOCOL_FALLBACK,
+      materials: o?.materials ?? MATERIALS_FALLBACK,
+      budget: o?.budget ?? BUDGET_FALLBACK,
+      timeline: o?.timeline ?? TIMELINE_FALLBACK,
+      validation,
+    },
+    agent_artifacts: args.artifacts,
+    compliance_notes: c?.compliance_notes ?? [],
+    compliance_summary:
+      c?.compliance_summary ??
+      "(Compliance agent failed — see agent_artifacts.compliance.error)",
     model_id: args.modelId,
     latency_ms: Date.now() - t0,
     generated_at: new Date().toISOString(),
-    agent_artifacts: args.artifacts,
   };
 
   args.writer.write({
