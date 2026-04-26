@@ -9,6 +9,8 @@ type Props = {
   phases: TimelinePhase[];
   planContext?: { hypothesis: string; sliceJson: string };
   onRuleCaptured?: () => void | Promise<void>;
+  /** D7-15: phases whose phase+duration_days differ at the same index are highlighted. */
+  compareWith?: TimelinePhase[];
 };
 
 /**
@@ -21,21 +23,32 @@ type Props = {
  * D7-13 (Phase 7): each phase wraps in <CorrectionPopover> when planContext
  * is supplied; without it, behaves exactly as Phase 4.
  */
-export function TimelineTab({ phases, planContext, onRuleCaptured }: Props) {
+export function TimelineTab({
+  phases,
+  planContext,
+  onRuleCaptured,
+  compareWith,
+}: Props) {
   return (
     <ol className="flex flex-col gap-3" aria-label="Timeline phases">
       {phases.map((phase, idx) => {
+        const isChanged =
+          !!compareWith &&
+          (compareWith[idx]?.phase !== phase.phase ||
+            compareWith[idx]?.duration_days !== phase.duration_days);
         const li = (
           <li
             className={`rounded-md border border-borderwarm bg-paper shadow-doc p-4${
-              planContext
+              planContext && !compareWith
                 ? " cursor-pointer hover:border-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 transition-colors"
                 : ""
-            }`}
-            tabIndex={planContext ? 0 : -1}
-            role={planContext ? "button" : undefined}
+            }${isChanged ? " bg-clay/10 border-l-2 border-rust" : ""}`}
+            tabIndex={planContext && !compareWith ? 0 : -1}
+            role={planContext && !compareWith ? "button" : undefined}
             aria-label={
-              planContext ? `Correct timeline phase ${phase.phase}` : undefined
+              planContext && !compareWith
+                ? `Correct timeline phase ${phase.phase}`
+                : undefined
             }
           >
             <div className="flex items-baseline justify-between gap-3 mb-2">
@@ -69,7 +82,7 @@ export function TimelineTab({ phases, planContext, onRuleCaptured }: Props) {
           </li>
         );
         const k = `${phase.phase}-${idx}`;
-        if (!planContext) {
+        if (!planContext || compareWith) {
           return cloneElement(li, { key: k });
         }
         return (

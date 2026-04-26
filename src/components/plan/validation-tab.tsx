@@ -8,6 +8,8 @@ type Props = {
   checks: ValidationCheck[];
   planContext?: { hypothesis: string; sliceJson: string };
   onRuleCaptured?: () => void | Promise<void>;
+  /** D7-15: checks whose name+description differ at the same index are highlighted. */
+  compareWith?: ValidationCheck[];
 };
 
 /**
@@ -23,21 +25,32 @@ type Props = {
  * is supplied. This is the demo's primary correction surface — the pre-staged
  * rule lands here ("positive AND negative controls in validation").
  */
-export function ValidationTab({ checks, planContext, onRuleCaptured }: Props) {
+export function ValidationTab({
+  checks,
+  planContext,
+  onRuleCaptured,
+  compareWith,
+}: Props) {
   return (
     <ul className="flex flex-col gap-3" aria-label="Validation checks">
       {checks.map((check, idx) => {
+        const isChanged =
+          !!compareWith &&
+          (compareWith[idx]?.name !== check.name ||
+            compareWith[idx]?.description !== check.description);
         const li = (
           <li
             className={`rounded-md border border-borderwarm bg-paper shadow-doc p-4${
-              planContext
+              planContext && !compareWith
                 ? " cursor-pointer hover:border-clay focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 transition-colors"
                 : ""
-            }`}
-            tabIndex={planContext ? 0 : -1}
-            role={planContext ? "button" : undefined}
+            }${isChanged ? " bg-clay/10 border-l-2 border-rust" : ""}`}
+            tabIndex={planContext && !compareWith ? 0 : -1}
+            role={planContext && !compareWith ? "button" : undefined}
             aria-label={
-              planContext ? `Correct validation check ${check.name}` : undefined
+              planContext && !compareWith
+                ? `Correct validation check ${check.name}`
+                : undefined
             }
           >
             <div className="font-display text-sm font-semibold text-ink mb-1">
@@ -63,7 +76,7 @@ export function ValidationTab({ checks, planContext, onRuleCaptured }: Props) {
           </li>
         );
         const k = `${check.name}-${idx}`;
-        if (!planContext) {
+        if (!planContext || compareWith) {
           return cloneElement(li, { key: k });
         }
         return (

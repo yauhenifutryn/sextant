@@ -11,38 +11,35 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   plan: Plan;
+  /** D7-15: when set, leaves apply clay/rust accent on rows that differ from this plan. */
+  compareWith?: Plan;
+  /** Hypothesis text for the correction popover (threaded into each leaf). */
+  hypothesis?: string;
+  /** Called after a successful rule capture (D7-14 — drives header pill refresh). */
+  onRuleCaptured?: () => void | Promise<void>;
 };
 
 /**
- * PlanTabs — the 5-tab shell composing Wave-1 leaves.
+ * PlanTabs — composes 5 leaves. Phase 7 adds:
+ *   - compareWith?: Plan       (D7-15: enables diff highlighting in leaves)
+ *   - hypothesis + onRuleCaptured (D7-14: threads CorrectionPopover wiring)
  *
- * Tab order (D4-03): Protocol → Materials → Budget → Timeline → Validation.
- *   Cognitive flow: what do I do → with what → for how much → in what
- *   timeframe → checked how. Default value is "protocol".
+ * Phase 4 invariants preserved:
+ *   - Tab order: Protocol → Materials → Budget → Timeline → Validation
+ *   - Compliance notes routing by target_kind (D4-09)
+ *   - No internal scroll container (D4-13)
+ *   - Pure render — no useState/useEffect (D4-16)
  *
- * Keyboard nav (PLAN-06): inherited from @radix-ui/react-tabs:
- *   - Tab focuses the active trigger
- *   - Arrow Left/Right cycles tabs (auto activation)
- *   - Home / End jumps to first / last
- *   - role="tablist" / role="tab" / role="tabpanel" wired automatically
- *
- * Compliance notes (D4-09): grouped by target_kind:
- *   - global         → strip ABOVE the tablist (visible on every tab)
- *   - protocol_step  → strip at top of Protocol TabsContent
- *   - material_row   → strip at top of Materials TabsContent
- *
- * Severity → border color (D4-09):
- *   - info     → border-borderwarm
- *   - caution  → border-clay
- *   - blocking → border-destructive
- *
- * compliance_summary (D4-09): small italic muted line under the tablist,
- * always visible across all tabs.
- *
- * D4-13: no internal scroll container — parent <PlanCanvas /> owns overflow.
- * D4-16: trust the type — no defensive guards beyond the prop contract.
+ * Diff view is read-only: when no `hypothesis` is supplied (i.e. inside
+ * PlanDiffModal), `planContext` resolves to undefined and each leaf
+ * naturally falls back to the no-popover branch from Wave 3.
  */
-export function PlanTabs({ plan }: Props) {
+export function PlanTabs({
+  plan,
+  compareWith,
+  hypothesis,
+  onRuleCaptured,
+}: Props) {
   const { protocol, materials, budget, timeline, validation } = plan.plan;
   const notes = plan.compliance_notes ?? [];
   const summary = plan.compliance_summary ?? "";
@@ -50,6 +47,16 @@ export function PlanTabs({ plan }: Props) {
   const globalNotes = notes.filter((n) => n.target_kind === "global");
   const protocolNotes = notes.filter((n) => n.target_kind === "protocol_step");
   const materialNotes = notes.filter((n) => n.target_kind === "material_row");
+
+  // D7-13/D7-14: only enable the correction popover when hypothesis is supplied
+  // (i.e. inside the live PlanCanvas, not the diff modal). The diff modal
+  // intentionally suppresses the popover to keep the compare view read-only.
+  const planContext = hypothesis
+    ? {
+        hypothesis,
+        sliceJson: JSON.stringify(plan.plan),
+      }
+    : undefined;
 
   return (
     <div className="flex flex-col gap-3" aria-label="Plan canvas tabs">
@@ -78,7 +85,12 @@ export function PlanTabs({ plan }: Props) {
               <ComplianceStrip notes={protocolNotes} location="tab" />
             </div>
           )}
-          <ProtocolTab steps={protocol} />
+          <ProtocolTab
+            steps={protocol}
+            planContext={planContext}
+            onRuleCaptured={onRuleCaptured}
+            compareWith={compareWith?.plan.protocol}
+          />
         </TabsContent>
 
         <TabsContent value="materials">
@@ -87,19 +99,39 @@ export function PlanTabs({ plan }: Props) {
               <ComplianceStrip notes={materialNotes} location="tab" />
             </div>
           )}
-          <MaterialsTab materials={materials} />
+          <MaterialsTab
+            materials={materials}
+            planContext={planContext}
+            onRuleCaptured={onRuleCaptured}
+            compareWith={compareWith?.plan.materials}
+          />
         </TabsContent>
 
         <TabsContent value="budget">
-          <BudgetTab lines={budget} />
+          <BudgetTab
+            lines={budget}
+            planContext={planContext}
+            onRuleCaptured={onRuleCaptured}
+            compareWith={compareWith?.plan.budget}
+          />
         </TabsContent>
 
         <TabsContent value="timeline">
-          <TimelineTab phases={timeline} />
+          <TimelineTab
+            phases={timeline}
+            planContext={planContext}
+            onRuleCaptured={onRuleCaptured}
+            compareWith={compareWith?.plan.timeline}
+          />
         </TabsContent>
 
         <TabsContent value="validation">
-          <ValidationTab checks={validation} />
+          <ValidationTab
+            checks={validation}
+            planContext={planContext}
+            onRuleCaptured={onRuleCaptured}
+            compareWith={compareWith?.plan.validation}
+          />
         </TabsContent>
       </Tabs>
     </div>

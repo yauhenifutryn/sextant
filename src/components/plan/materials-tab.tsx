@@ -10,6 +10,8 @@ type Props = {
   materials: MaterialRow[];
   planContext?: { hypothesis: string; sliceJson: string };
   onRuleCaptured?: () => void | Promise<void>;
+  /** D7-15: rows whose name+quantity differ at the same index are highlighted. */
+  compareWith?: MaterialRow[];
 };
 
 /**
@@ -26,7 +28,12 @@ type Props = {
  * is supplied. Radix PopoverTrigger asChild attaches handlers + ref to the
  * existing <tr> — table semantics preserved.
  */
-export function MaterialsTab({ materials, planContext, onRuleCaptured }: Props) {
+export function MaterialsTab({
+  materials,
+  planContext,
+  onRuleCaptured,
+  compareWith,
+}: Props) {
   return (
     <div className="overflow-x-auto rounded-md border border-borderwarm bg-paper shadow-doc">
       <table className="w-full text-sm" aria-label="Materials table">
@@ -43,17 +50,23 @@ export function MaterialsTab({ materials, planContext, onRuleCaptured }: Props) 
         <tbody>
           {materials.map((row, idx) => {
             const subtotal = computeSubtotal(row.unit_price_usd, row.quantity);
+            const isChanged =
+              !!compareWith &&
+              (compareWith[idx]?.name !== row.name ||
+                compareWith[idx]?.quantity !== row.quantity);
             const tr = (
               <tr
                 className={`border-b border-borderwarm last:border-b-0 hover:bg-surface/40 transition-colors${
-                  planContext
+                  planContext && !compareWith
                     ? " cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-inset"
                     : ""
-                }`}
-                tabIndex={planContext ? 0 : -1}
-                role={planContext ? "button" : undefined}
+                }${isChanged ? " bg-clay/10 border-l-2 border-rust" : ""}`}
+                tabIndex={planContext && !compareWith ? 0 : -1}
+                role={planContext && !compareWith ? "button" : undefined}
                 aria-label={
-                  planContext ? `Correct material ${row.name}` : undefined
+                  planContext && !compareWith
+                    ? `Correct material ${row.name}`
+                    : undefined
                 }
               >
                 <td className="px-3 py-2 font-sans text-ink align-top">
@@ -78,7 +91,7 @@ export function MaterialsTab({ materials, planContext, onRuleCaptured }: Props) 
               </tr>
             );
             const k = `${row.name}-${idx}`;
-            if (!planContext) {
+            if (!planContext || compareWith) {
               return cloneElement(tr, { key: k });
             }
             return (

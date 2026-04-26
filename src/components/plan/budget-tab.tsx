@@ -10,6 +10,8 @@ type Props = {
   lines: BudgetLine[];
   planContext?: { hypothesis: string; sliceJson: string };
   onRuleCaptured?: () => void | Promise<void>;
+  /** D7-15: rows whose category+amount differ at the same index are highlighted. */
+  compareWith?: BudgetLine[];
 };
 
 /**
@@ -24,7 +26,12 @@ type Props = {
  * is supplied. Visual: hover bg + focus ring; without planContext the row
  * renders unchanged.
  */
-export function BudgetTab({ lines, planContext, onRuleCaptured }: Props) {
+export function BudgetTab({
+  lines,
+  planContext,
+  onRuleCaptured,
+  compareWith,
+}: Props) {
   const max = lines.reduce((acc, l) => (l.amount_usd > acc ? l.amount_usd : acc), 0);
   const total = lines.reduce((acc, l) => acc + l.amount_usd, 0);
 
@@ -33,17 +40,23 @@ export function BudgetTab({ lines, planContext, onRuleCaptured }: Props) {
       <ul className="flex flex-col gap-3" aria-label="Budget breakdown">
         {lines.map((line, idx) => {
           const pct = max > 0 ? (line.amount_usd / max) * 100 : 0;
+          const isChanged =
+            !!compareWith &&
+            (compareWith[idx]?.category !== line.category ||
+              compareWith[idx]?.amount_usd !== line.amount_usd);
           const li = (
             <li
               className={`flex flex-col gap-1${
-                planContext
+                planContext && !compareWith
                   ? " rounded p-1 -m-1 cursor-pointer hover:bg-surface/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 transition-colors"
                   : ""
-              }`}
-              tabIndex={planContext ? 0 : -1}
-              role={planContext ? "button" : undefined}
+              }${isChanged ? " bg-clay/10 border-l-2 border-rust rounded p-1 -m-1" : ""}`}
+              tabIndex={planContext && !compareWith ? 0 : -1}
+              role={planContext && !compareWith ? "button" : undefined}
               aria-label={
-                planContext ? `Correct budget line ${line.category}` : undefined
+                planContext && !compareWith
+                  ? `Correct budget line ${line.category}`
+                  : undefined
               }
             >
               <div className="flex items-baseline justify-between gap-3">
@@ -74,7 +87,7 @@ export function BudgetTab({ lines, planContext, onRuleCaptured }: Props) {
             </li>
           );
           const k = `${line.category}-${idx}`;
-          if (!planContext) {
+          if (!planContext || compareWith) {
             return cloneElement(li, { key: k });
           }
           return (
