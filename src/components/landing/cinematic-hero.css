@@ -304,6 +304,304 @@
   }
 }
 
+/* ==================== SVG CARTOON HERO (/v2 variant) ====================
+ *
+ * The /v2 variant drops the real video and replaces it with a hand-drawn
+ * SVG lab scene + a Lottie accent. Re-uses the cinematic page chrome
+ * (.l-cine-nav, .l-cine-stage typography) but swaps the video / scrim
+ * layers for a tinted forest-clay ambient backdrop and an illustrated
+ * scene on the right column.
+ *
+ * Layout: the hero content (eyebrow, headline, CTA) sits in the left
+ * column, the SVG scene + Lottie accent occupy the right column. On
+ * mobile the columns collapse and the scene drops below the headline.
+ * Animations are CSS-keyframe driven, gated by prefers-reduced-motion. */
+
+.l-cartoon {
+  /* Override the cinematic dark base — /v2 cartoon is a warmer, lighter
+   * background that lets the illustrated scene read. */
+  background:
+    radial-gradient(ellipse 80% 70% at 18% 28%, rgba(15, 76, 58, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 82% 78%, rgba(184, 92, 56, 0.14) 0%, transparent 65%),
+    linear-gradient(160deg, #11181b 0%, #161e22 60%, #0d1314 100%);
+}
+.l-cartoon-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+.l-cartoon-bg-glow {
+  position: absolute;
+  top: -10%;
+  left: -10%;
+  width: 60%;
+  height: 80%;
+  background: radial-gradient(circle at 30% 40%, rgba(15, 76, 58, 0.32) 0%, transparent 65%);
+  filter: blur(40px);
+  animation: l-cartoon-glow 18s ease-in-out infinite;
+}
+.l-cartoon-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(circle at 50% 60%, black 30%, transparent 80%);
+  mask-image: radial-gradient(circle at 50% 60%, black 30%, transparent 80%);
+}
+@keyframes l-cartoon-glow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(8%, 6%); }
+}
+
+.l-cartoon-grid {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1280px;
+  padding: 96px 32px 80px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 56px;
+  align-items: center;
+}
+.l-cartoon-stage {
+  /* Override the centered cinematic stage so headline + CTA stack to the
+   * left of the illustration. */
+  text-align: left;
+  padding: 0;
+  max-width: none;
+}
+.l-cartoon-stage .l-cine-eyebrow,
+.l-cartoon-stage .l-cine-actions {
+  justify-content: flex-start;
+}
+.l-cartoon-stage .l-cine-sub {
+  margin-left: 0;
+  margin-right: 0;
+}
+@media (max-width: 920px) {
+  .l-cartoon-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 88px 24px 56px;
+  }
+  .l-cartoon-stage {
+    text-align: center;
+  }
+  .l-cartoon-stage .l-cine-eyebrow,
+  .l-cartoon-stage .l-cine-actions {
+    justify-content: center;
+  }
+  .l-cartoon-stage .l-cine-sub {
+    margin: 0 auto 36px;
+  }
+}
+
+.l-cartoon-scene-col {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.l-cartoon-scene {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 70%),
+    rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 60px -28px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+.l-cartoon-scene > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Scene element styling — single forest-green / paper-warm palette so the
+ * illustration reads as a coherent line drawing, not stock-clip-art. */
+.cs-wall { fill: rgba(255, 255, 255, 0.02); }
+.cs-floor { fill: rgba(15, 76, 58, 0.08); }
+.cs-window {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.32);
+  stroke-width: 1.4;
+}
+.cs-window rect {
+  fill: rgba(255, 244, 214, 0.07);
+}
+.cs-sun {
+  fill: rgba(255, 220, 150, 0.55);
+  stroke: none;
+  animation: cs-sun-pulse 6s ease-in-out infinite;
+}
+.cs-shelf {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 1.2;
+}
+.cs-shelf rect:first-of-type { fill: rgba(255, 255, 255, 0.025); }
+.cs-book {
+  fill: rgba(15, 76, 58, 0.62);
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 0.8;
+}
+.cs-book.b2 { fill: rgba(184, 92, 56, 0.6); }
+.cs-book.b4 { fill: rgba(74, 111, 165, 0.55); }
+.cs-book.b6 { fill: rgba(184, 92, 56, 0.55); }
+.cs-beaker {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: rgba(255, 255, 255, 0.42);
+  stroke-width: 1.2;
+}
+.cs-beaker-liquid {
+  fill: rgba(15, 76, 58, 0.65);
+  stroke: none;
+  animation: cs-beaker-bubble 3.6s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+.cs-microscope {
+  fill: rgba(255, 255, 255, 0.08);
+  stroke: rgba(255, 255, 255, 0.46);
+  stroke-width: 1.2;
+}
+.cs-microscope circle { fill: rgba(184, 92, 56, 0.55); }
+.cs-desk {
+  fill: rgba(255, 255, 255, 0.16);
+  stroke: rgba(255, 255, 255, 0.22);
+  stroke-width: 0.8;
+}
+
+.cs-notebook { stroke: rgba(255, 255, 255, 0.5); stroke-width: 1; fill: none; }
+.cs-nb-base {
+  fill: rgba(255, 255, 255, 0.18);
+  stroke: rgba(255, 255, 255, 0.42);
+}
+.cs-nb-line { stroke: rgba(15, 76, 58, 0.6); stroke-width: 0.8; }
+.cs-nb-page {
+  transform-origin: left center;
+  animation: cs-page-flip 4.2s ease-in-out infinite;
+}
+.cs-nb-page rect {
+  fill: rgba(250, 250, 247, 0.92);
+  stroke: rgba(15, 76, 58, 0.4);
+}
+.cs-nb-page line { stroke: rgba(15, 76, 58, 0.5); stroke-width: 0.8; }
+
+.cs-figure { fill: rgba(15, 76, 58, 0.85); stroke: none; }
+.cs-head {
+  animation: cs-head-bob 4.2s ease-in-out infinite;
+  transform-origin: 240px 156px;
+}
+.cs-arm {
+  fill: none;
+  stroke: rgba(15, 76, 58, 0.85);
+  stroke-width: 8;
+  stroke-linecap: round;
+  transform-origin: 252px 200px;
+  animation: cs-arm-write 4.2s ease-in-out infinite;
+}
+
+.cs-lamp { stroke: rgba(255, 255, 255, 0.6); fill: none; stroke-width: 1.4; stroke-linecap: round; }
+.cs-lamp-shade { fill: rgba(255, 255, 255, 0.18); }
+.cs-lamp-base { fill: rgba(255, 255, 255, 0.5); stroke: none; }
+.cs-lamp-glow {
+  fill: rgba(255, 220, 150, 0.18);
+  stroke: none;
+  animation: cs-lamp-flicker 3.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.cs-idea { fill: rgba(184, 92, 56, 0.85); stroke: none; }
+.cs-i1 { animation: cs-idea-rise 5s ease-in-out infinite; }
+.cs-i2 { animation: cs-idea-rise 5s ease-in-out infinite 0.7s; }
+.cs-i3 { animation: cs-idea-rise 5s ease-in-out infinite 1.4s; }
+
+@keyframes cs-sun-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.85; }
+}
+@keyframes cs-beaker-bubble {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.08); }
+}
+@keyframes cs-page-flip {
+  0% { transform: rotateY(0deg); }
+  60% { transform: rotateY(-160deg); }
+  100% { transform: rotateY(0deg); }
+}
+@keyframes cs-head-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+@keyframes cs-arm-write {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  50% { transform: rotate(-6deg) translateX(-3px); }
+}
+@keyframes cs-lamp-flicker {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.06); opacity: 1; }
+}
+@keyframes cs-idea-rise {
+  0% { transform: translateY(8px); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(-22px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-beaker-liquid,
+  .cs-nb-page,
+  .cs-head,
+  .cs-arm,
+  .cs-lamp-glow,
+  .cs-idea,
+  .cs-sun,
+  .l-cartoon-bg-glow {
+    animation: none !important;
+  }
+}
+
+.l-cartoon-lottie {
+  position: absolute;
+  bottom: -16px;
+  right: -8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(11, 14, 16, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.7);
+}
+.l-cartoon-lottie-cap {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+.l-cartoon-lottie-fallback {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ==================== CUSTOM CURSOR ==================== */
 .l-cursor-dot,
 .l-cursor-ring {

@@ -1,7 +1,6 @@
 import "@/components/landing/landing.css";
 import "@/components/landing/cinematic-hero.css";
 
-import { CinematicHero } from "@/components/landing/cinematic-hero";
 import { LandingClosedLoop } from "@/components/landing/closed-loop";
 import { LandingFinalCta } from "@/components/landing/final-cta";
 import { LandingFooter } from "@/components/landing/site-footer";
@@ -9,25 +8,27 @@ import { LandingMethod } from "@/components/landing/method";
 import { LandingObservers } from "@/components/landing/landing-observers";
 import { LandingProblem } from "@/components/landing/problem";
 import { LandingTechStrip } from "@/components/landing/tech-strip";
+import { SvgCartoonHero } from "@/components/landing/svg-cartoon-hero";
 
 /**
- * Landing — Option B (cinematic video hero).
+ * /v2 — illustrated cartoon variant.
  *
- * Same below-fold sections as `/`, but the hero is replaced with a
- * Velorah-style fullscreen looping video + glassmorphic nav. Use this
- * route to A/B against the default landing hero (lab notebook on right).
+ * Drops the real video. Replaces it with a hand-drawn SVG lab scene
+ * (researcher silhouette at desk, page-flipping notebook, beaker on a
+ * shelf, lamp with a flickering glow, floating idea bubbles) plus a
+ * Lottie accent showing a research-lens scanning loop. Same below-fold
+ * sections as /, so this is a pure hero-variant A/B against the
+ * cinematic-video hero on /.
  *
- * The cinematic hero owns its own nav (dark/glassmorphic), so we drop the
- * default <LandingNav /> for this route.
- *
- * To pick the winning hero, copy whichever component into `src/app/page.tsx`.
- * The other one stays parked here as a switchable variant.
+ * Per user direction: /v2 is "lottie + svg-style cartoon of the video,
+ * not the real video". The cinematic-video variant lives at /. The
+ * live video-ASCII variant lives at /v1.
  */
 export default function LandingV2() {
   return (
     <div className="landing-root">
       <main>
-        <CinematicHero />
+        <SvgCartoonHero />
         <LandingProblem />
         <LandingMethod />
         <LandingClosedLoop />
