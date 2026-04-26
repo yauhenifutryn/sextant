@@ -357,14 +357,16 @@
   color: var(--ink);
 }
 /* Top-left feature: protocol stream + (below) the typewriter (which is
- * rendered inside PapersRain at bottom-left of the hero). The stream
- * sits above the typewriter visually, top-aligned, narrow column. */
+ * rendered inside PapersRain at bottom-left of the hero). Aligned with
+ * the nav's wrap-container left edge so the stream's left margin tracks
+ * the Sextant logo on the nav above it. */
 .l-ascii-hero-bg {
   position: absolute;
   top: 96px;
-  left: clamp(20px, 4vw, 64px);
+  /* Match .wrap's left padding-edge: max(32px, (100vw - 1180px)/2 + 32px). */
+  left: max(32px, calc((100vw - 1180px) / 2 + 32px));
   z-index: 2;
-  width: clamp(280px, 32vw, 440px);
+  width: clamp(320px, 38vw, 520px);
   max-height: 38vh;
   overflow: hidden;
   pointer-events: none;
@@ -621,14 +623,16 @@
 .l-ascii-stage {
   position: relative;
   z-index: 3;
-  /* Pin to upper-right area of the hero, vertically centered. The
-   * left margin pushes the stage past the typewriter / stream column
-   * so the layout reads "feature on left, text block from middle to
-   * right" without depending on a parent grid. */
+  /* Pin to upper-right area of the hero, vertically centered. Right
+   * edge aligns with the nav's wrap-container right padding-edge so
+   * the headline's right margin tracks the "Open Sextant" button on
+   * the nav above. Width is bumped up so the headline shifts left
+   * into the empty middle column, reducing dead whitespace between
+   * the stream and the type. */
   margin-left: auto;
-  margin-right: clamp(20px, 5vw, 96px);
+  margin-right: max(32px, calc((100vw - 1180px) / 2 + 32px));
   margin-top: 0;
-  max-width: min(640px, 56vw);
+  max-width: min(720px, 60vw);
   padding: 96px 0 80px;
   min-height: 100vh;
   display: flex;
