@@ -1,0 +1,85 @@
+{
+  "version": "1.0",
+  "timestamp": "2026-04-26T09:50:00.000Z",
+  "phase": "03",
+  "phase_name": "multi-agent-pipeline",
+  "phase_dir": ".planning/phases/03-multi-agent-pipeline",
+  "plan": null,
+  "task": null,
+  "total_tasks": null,
+  "status": "phase_complete_code_only",
+  "context_kind": "between_phases",
+  "completed_tasks": [
+    {"id": "03-01", "name": "Foundations: trace + schema + cache + data/runs marker", "status": "done", "commits": ["395a861", "c875bcf", "3a01168", "70a6432"]},
+    {"id": "03-02", "name": "Agent runners: Researcher + Skeptic + Operator + Compliance + Consolidator (5 LLM modules)", "status": "done", "commits": ["61299fb", "f85b245", "42b1ba6", "b270d08"]},
+    {"id": "03-03", "name": "Route + Hook + Wire-in + UAT (UAT blocked on prod env, code done)", "status": "code_done_uat_blocked", "commits": ["ac67dc2", "5a37a33", "c1048df", "d51c8aa"]},
+    {"id": "06-01", "name": "AgentRow + ValidationGrid leaf components (parallel chat)", "status": "done", "commits": ["adfa70d", "259b425", "ddf806b"]},
+    {"id": "06-02", "name": "Live trace-rail render + useDemoPacedEvents hook (parallel chat)", "status": "done", "commits": ["e06dff5", "ee36cc2", "8b4e0a3", "4d7f037"]}
+  ],
+  "remaining_tasks": [
+    {"id": "VERCEL-FIX", "name": "Fix Vercel TAVILY_API_KEY (or quota) — 1-min config fix in dashboard", "status": "user_action_required", "blocking": "everything downstream"},
+    {"id": "phase-4", "name": "Phase 4: Plan Canvas UI (5-tab render from Plan JSON)", "status": "not_started"},
+    {"id": "phase-5-lite", "name": "Phase 5 LITE: Grounding (1 Tavily/Materials, no per-row, no URL verify)", "status": "not_started"},
+    {"id": "phase-7", "name": "Phase 7: Closed-Loop Corrections + Propagation (the moat moment — hard scope cut: Correct only)", "status": "not_started"},
+    {"id": "phase-8", "name": "Phase 8: Cache-warm + record demo + tech videos + submit", "status": "not_started"}
+  ],
+  "blockers": [
+    {
+      "id": "TAVILY-PROD",
+      "summary": "Production /api/qc returns {ok:\"error\", message:\"Literature search service is unavailable\", retryable:false} in ~1.3s. Direct Tavily probe with .env.local TAVILY_API_KEY (tvly-dev- prefix, 58 chars) returns HTTP 200 in ~500ms. Conclusion: Vercel's TAVILY_API_KEY env var is either stale, revoked, or different from .env.local. Possibly Tavily account quota exhausted.",
+      "fix": "Open Vercel dashboard → sextant project → Settings → Environment Variables → compare TAVILY_API_KEY to .env.local value → update if mismatched → redeploy.",
+      "blocking": "Phase 7 (closed loop), Phase 8 (cache warming + demo recording). Phase 4 + Phase 5 can proceed in parallel since they don't strictly need /api/plan working live (can test against fixture JSONs)."
+    },
+    {
+      "id": "PLAN-60S-TIMEOUT",
+      "summary": "/api/plan stops at exactly 60s without consolidator events or final data-plan part. 4 agents emit started+working but no done. Probably cascading from Tavily failure (Researcher hangs, others blocked behind 60s function ceiling). Should self-resolve once Tavily fix is in.",
+      "fix": "Re-test /api/plan after Tavily fix lands. If still hits 60s with Tavily working, debug agent timeouts (D-66 says 35s/agent, 15s consolidator — fits 60s).",
+      "blocking": "Same as TAVILY-PROD"
+    }
+  ],
+  "human_actions_pending": [
+    {
+      "action": "Fix Vercel TAVILY_API_KEY in dashboard, then redeploy",
+      "context": "See blocker TAVILY-PROD above. 1 minute task. Will unblock Phase 7 + Phase 8.",
+      "blocking": true,
+      "deadline": "before Phase 8 cache-warming (last 60 min before submission)"
+    },
+    {
+      "action": "Move/delete demo/Screenshot 2026-04-26 at 10.54.06.png",
+      "context": "Stray screenshot in working tree. Either move to demo/raw/ (gitignored) or delete.",
+      "blocking": false,
+      "deadline": "any time"
+    }
+  ],
+  "decisions": [
+    {"decision": "Phase 7 hard cut: 'Correct' action only (no Challenge/Annotate), hard-coded rule-trigger fallback if extraction fails", "rationale": "Time pressure (was 5h, now ~3h to deadline). Approved by user.", "phase": "03"},
+    {"decision": "Phase 5 LITE scope: 1 Tavily call per Materials section (not per-row), no GROUND-05 URL verify", "rationale": "Time pressure. Approved by user. Honor CLAUDE.md hard rule #1 by marking ungrounded rows visibly, not faking citations.", "phase": "03"},
+    {"decision": "Phase 6 work shipped in parallel chat, not main chat", "rationale": "User approved parallel chat with handover doc. Phase 6 unblocked when trace.ts shipped in Wave 1 (commit 395a861).", "phase": "03"},
+    {"decision": "SEXTANT_DEMO_PACE_MS env var for demo recording slow-pacing", "rationale": "Cache-hit demo runs flash all agents done in <100ms. Server-side pacing in agent runners. Phase 6 also added client-side ?demoPace=slow URL param fallback.", "phase": "03"}
+  ],
+  "uncommitted_files": [
+    ".planning/SUBMISSION.md (parallel chat polish)",
+    "demo/Screenshot 2026-04-26 at 10.54.06.png (untracked stray)"
+  ],
+  "next_action": "/gsd-resume-work then either: (a) /gsd-plan-phase 4 --auto if Vercel fix is done, OR (b) ask user to fix Vercel TAVILY_API_KEY first (1 min in dashboard)",
+  "context_notes": "Phase 3 + Phase 6 both code-complete. 78 commits pushed to origin/main this session (resolved a 24h backlog where main was 75 commits ahead of origin and Vercel was serving Phase 1 scaffold). Production now serves the new code BUT /api/qc returns retryable:false error in ~1.3s indicating Vercel TAVILY_API_KEY mismatch with .env.local (which works fine via direct probe). Tavily 4s→8s timeout fix shipped (commit d51c8aa) but is moot — actual issue is env var. Phases 4, 5 can plan/execute against fixture data without needing /api/plan live. Phase 7 + Phase 8 require working /api/plan.",
+  "production_url": "https://sextant-uekv.vercel.app",
+  "production_state": "DEPLOYED but TAVILY env var broken — /api/health 200, /api/qc returns error (Tavily auth issue), /api/plan accepts POST + streams agent events but never completes (cascading from Tavily failure)",
+  "github_repo": "git@github.com:yauhenifutryn/sextant.git (PUBLIC, verified 2026-04-26)",
+  "vercel_project": "sextant-uekv",
+  "submission_state": {
+    "ready_assets": [
+      ".planning/SUBMISSION.md (all 6 structured fields drafted)",
+      ".planning/demo-recipe.md (60s shot list + cache-warming protocol)",
+      ".planning/tech-video.md (Mermaid source + 145-word plain-English narration)",
+      "demo/architecture.png (1904x467 rendered)",
+      "demo/architecture.mmd (Mermaid source)"
+    ],
+    "deadline": "2026-04-26 09:00 ET (~3h from this handoff)",
+    "team_id": "HN-6672"
+  },
+  "parallel_workstreams": [
+    {"name": "phase-6-trace-rail", "scope": "src/components/trace-rail.tsx + src/components/trace/**", "handover": ".planning/handovers/phase-6-trace-rail-HANDOVER.md", "status": "COMPLETE — code shipped in commits adfa70d through 4d7f037; useDemoPacedEvents hook + live trace render are on main"}
+  ],
+  "session_summary": "Big session: planned Phase 3 (3 plans/9 tasks/D-54..D-68), executed Wave 1+2+3 (Wave 3 hit auto-mode safety wall on UAT, finished inline), shipped Phase 6 in parallel chat, drafted full submission package (form fields + 2 video scripts + Mermaid diagram rendered), and resolved a critical 75-commit-backlog push to origin that was masking everything as 404. Final blocker is Vercel TAVILY_API_KEY config — 1 min user fix."
+}
