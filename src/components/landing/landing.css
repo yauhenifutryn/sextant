@@ -351,26 +351,27 @@
   position: relative;
   min-height: 100vh;
   width: 100%;
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  align-items: center;
   isolation: isolate;
   overflow: hidden;
   background: var(--bg);
   color: var(--ink);
 }
+/* Top-left feature: protocol stream + (below) the typewriter (which is
+ * rendered inside PapersRain at bottom-left of the hero). The stream
+ * sits above the typewriter visually, top-aligned, narrow column. */
 .l-ascii-hero-bg {
-  position: relative;
+  position: absolute;
+  top: 96px;
+  left: clamp(20px, 4vw, 64px);
   z-index: 2;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  padding: 96px 24px 80px 64px;
+  width: clamp(280px, 32vw, 440px);
+  max-height: 38vh;
   overflow: hidden;
-  /* Soft right-edge fade so the stream dissolves into paper before the
-   * headline starts — no hard column boundary. */
-  -webkit-mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
-  mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
+  pointer-events: none;
+  /* Soft bottom fade so the stream dissolves into the typewriter below
+   * instead of cutting off mid-line. */
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 75%, transparent 100%);
 }
 
 /* PapersRain — full-bleed procedural ASCII paper-rain layer. Sits
@@ -422,41 +423,45 @@
   filter: drop-shadow(0 1px 0 rgba(15, 76, 58, 0.18));
 }
 .l-papers-out {
-  opacity: 0.22;
+  opacity: 0.20;
   z-index: 0;
   overflow: hidden;
-  /* The scrim element (.l-ascii-hero-scrim) already handles headline
-   * readability with a warm-paper gradient, so the mask here can be
-   * tighter — just a small fade right where the headline center sits,
-   * so a paper drifting through doesn't visually collide with the
-   * type. The rest of the canvas shows pages freely. */
-  -webkit-mask-image: radial-gradient(
-    ellipse 30% 50% at 75% 42%,
-    transparent 25%,
-    rgba(0, 0, 0, 0.55) 65%,
-    black 100%
+  /* Tiny gentle fade at the top + bottom edges so papers don't pop in
+   * abruptly. The headline gets its own card-backdrop for contrast,
+   * not a hole in the rain — the rain reads as a continuous backdrop
+   * falling behind the foreground content. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.85) 6%,
+    rgba(0, 0, 0, 0.95) 90%,
+    transparent 100%
   );
-  mask-image: radial-gradient(
-    ellipse 30% 50% at 75% 42%,
-    transparent 25%,
-    rgba(0, 0, 0, 0.55) 65%,
-    black 100%
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0, 0, 0, 0.85) 6%,
+    rgba(0, 0, 0, 0.95) 90%,
+    transparent 100%
   );
 }
 
-/* Soft warm-paper scrim BEHIND the headline column — keeps the type
- * crisp against any drifting papers. Tuned tight (only the right
- * column area) so the rain stays visible where it actually belongs. */
+/* Localized warm-paper backdrop behind the headline only. A soft
+ * radial bloom centered on the stage keeps the type crisp against
+ * the falling rain without painting the whole right column. */
 .l-ascii-hero-scrim {
   position: absolute;
-  inset: 0 0 0 45%;
+  top: 0;
+  right: 0;
+  width: 70%;
+  height: 100%;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    to right,
-    rgba(250, 250, 247, 0) 0%,
-    rgba(250, 250, 247, 0.55) 30%,
-    rgba(250, 250, 247, 0.78) 100%
+  background: radial-gradient(
+    ellipse 55% 50% at 62% 50%,
+    rgba(250, 250, 247, 0.88) 0%,
+    rgba(250, 250, 247, 0.55) 45%,
+    rgba(250, 250, 247, 0) 80%
   );
 }
 
@@ -496,15 +501,12 @@
 }
 
 @media (max-width: 900px) {
-  .l-ascii-hero {
-    grid-template-columns: 1fr;
-    align-content: center;
-  }
   .l-ascii-hero-bg {
     display: none;
   }
   .l-ascii-hero-scrim {
     inset: 0;
+    width: 100%;
     background: linear-gradient(
       180deg,
       rgba(250, 250, 247, 0.55) 0%,
@@ -619,8 +621,19 @@
 .l-ascii-stage {
   position: relative;
   z-index: 3;
-  max-width: 720px;
-  padding: 96px 80px 80px 32px;
+  /* Pin to upper-right area of the hero, vertically centered. The
+   * left margin pushes the stage past the typewriter / stream column
+   * so the layout reads "feature on left, text block from middle to
+   * right" without depending on a parent grid. */
+  margin-left: auto;
+  margin-right: clamp(20px, 5vw, 96px);
+  margin-top: 0;
+  max-width: min(640px, 56vw);
+  padding: 96px 0 80px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: left;
   animation: l-ascii-rise 800ms var(--ease) 100ms both;
   opacity: calc(1 - var(--hero-progress, 0) * 1.4);
@@ -682,6 +695,8 @@
     padding: 132px 24px 80px;
     text-align: center;
     margin: 0 auto;
+    min-height: auto;
+    display: block;
   }
   .l-ascii-sub { margin-left: auto; margin-right: auto; }
   .l-ascii-actions { justify-content: center; }

@@ -122,7 +122,14 @@ const COLS = 80;
 const ROWS = 52;
 const PAPER_W = 5;
 const PAPER_H = 4;
-const N_PAPERS = 28;
+// Lifecycle pool — papers that cycle through the typewriter (queued
+// → typing → ejecting → fly-drift right → recycle to queued). Small
+// pool so the typewriter cycle stays tight visually.
+const N_LIFECYCLE = 6;
+// Rain pool — papers that just fall top→bottom across the full
+// canvas. These never touch the typewriter; off-screen → respawn at
+// top. They're the dominant ambient texture.
+const N_RAIN = 22;
 const FRAME_GATE_MS = 38; // ~26 fps
 
 // Typewriter is anchored bottom-left in the canvas grid.
@@ -148,11 +155,11 @@ const EJECT_VY = -1.0;         // strong upward initial velocity
 const EJECT_GRAVITY = 0.058;   // decelerates so most of the fold
                                // completes near the apex of the rise
 
-// Phase-3 (leaf drift) physics. The dominant force is rightward wind
-// (slow, oscillating, with per-paper wobble + occasional gusts). Both
-// drags are heavy so velocities stay bounded — without that, the
-// constant +base-wind acceleration each frame would compound into a
-// sheet flying across the canvas in under a second.
+// Phase-3 (post-eject leaf drift) physics. Used by the lifecycle pool
+// once a paper finishes ejecting from the typewriter. Strong rightward
+// wind, gentle gravity — paper traverses left→right while slowly
+// settling, then exits and recycles back to "queued" for the next
+// type cycle.
 const LEAF_GRAVITY = 0.011;
 const LEAF_VX_DRAG = 0.992;
 const LEAF_VY_DRAG = 0.945;
@@ -164,7 +171,21 @@ const LEAF_WOBBLE_AMP = 0.18;
 const LEAF_GUST_PROB = 0.013;
 const LEAF_GUST_KICK = 0.18;
 
+// Rain physics — top→bottom fall with lateral wobble. No base wind
+// (papers fall straight, with sin-wobble for the leaf-feel). Stronger
+// gravity than leaf-drift so the rain reads as falling, not floating.
+const RAIN_GRAVITY = 0.022;
+const RAIN_VX_DRAG = 0.965;
+const RAIN_VY_DRAG = 0.985;
+const RAIN_WOBBLE_FREQ = 0.0019;
+const RAIN_WOBBLE_AMP = 0.22;
+const RAIN_WIND_FREQ = 0.00045;
+const RAIN_WIND_AMP = 0.10;
+const RAIN_GUST_PROB = 0.008;
+const RAIN_GUST_KICK = 0.12;
+
 type Phase = "queued" | "typing" | "ejecting" | "drifting";
+type Mode = "fly" | "rain";
 
 // "Folded card" frame — the intermediate render between the big
 // typed page and the small flying sheet. Texture suggests a creased
@@ -192,6 +213,7 @@ type Paper = {
   emerge: number; // 0..1 — typing progress (drives row reveal AND y rise)
   textIdx: number; // which TYPED_LINES message
   wobblePhase: number; // per-paper wobble offset
+  mode: Mode; // fly = lifecycle/typewriter; rain = ambient top→bottom
 };
 
 // Where the small flying-paper appears just after ejection — at the
@@ -212,6 +234,26 @@ function spawnQueued(p: Paper) {
   p.emerge = 0;
   p.textIdx = 0;
   p.wobblePhase = Math.random() * Math.PI * 2;
+  p.mode = "fly";
+}
+
+// Re-seed a rain paper at the top of the canvas. Random x across the
+// full width (with some bleed past the edges so papers slide in
+// naturally rather than popping at the visible margin), random
+// downward initial velocity, fresh shape + wobble.
+function spawnRainTop(p: Paper) {
+  p.x = -PAPER_W + Math.random() * (COLS + PAPER_W * 2);
+  p.y = -3 - Math.random() * 8;
+  p.vx = (Math.random() - 0.5) * 0.18;
+  p.vy = 0.10 + Math.random() * 0.22;
+  p.shape = Math.floor(Math.random() * PAPERS_SHAPES.length);
+  p.flutter = Math.random() * 1000;
+  p.phase = "drifting";
+  p.phaseStart = performance.now();
+  p.emerge = 0;
+  p.textIdx = 0;
+  p.wobblePhase = Math.random() * Math.PI * 2;
+  p.mode = "rain";
 }
 
 function startTyping(p: Paper, now: number, textIdx: number) {
@@ -313,35 +355,55 @@ export function PapersRain({ className }: Props) {
       return padTop + rows.join("\n");
     };
 
-    const papers: Paper[] = Array.from({ length: N_PAPERS }, () => {
-      const p = {} as Paper;
-      spawnQueued(p);
-      return p;
-    });
+    // Two pools, kept in one array for unified rendering.
+    //   indices 0..N_LIFECYCLE-1   → typewriter lifecycle (mode='fly')
+    //   indices N_LIFECYCLE..end   → ambient rain (mode='rain')
+    const papers: Paper[] = Array.from(
+      { length: N_LIFECYCLE + N_RAIN },
+      () => {
+        const p = {} as Paper;
+        spawnQueued(p);
+        return p;
+      },
+    );
 
     // Typewriter slot state.
     let typingPaper: Paper | null = null;
     let typingTextIdx = 0;
     let lastTypingFinishedAt = 0;
 
-    // Pre-flight: pre-populate the canvas with several papers already
-    // mid-flight so the hero doesn't open empty. Roughly 60% of papers
-    // are seeded into the drifting phase across the canvas.
+    // Pre-flight: lifecycle pool seeds a couple of mid-air fly papers
+    // so the typewriter side doesn't open empty. Rain pool fills the
+    // canvas with falling papers distributed top-to-bottom.
     const now0 = performance.now();
-    const seeded = Math.floor(N_PAPERS * 0.7);
-    for (let i = 0; i < seeded; i++) {
+    const lifecycleSeed = Math.min(3, N_LIFECYCLE - 1);
+    for (let i = 0; i < lifecycleSeed; i++) {
       const p = papers[i];
       p.phase = "drifting";
+      p.mode = "fly";
       p.phaseStart = now0;
-      // Bias positions toward the LEFT third of the canvas — papers
-      // drift rightward, so seeding from the left gives them maximum
-      // flight time before they exit the right edge.
-      p.x = 4 + Math.random() * (COLS * 0.5);
-      p.y = -2 + Math.random() * (TYPE_Y - 4);
-      // Equilibrium drift velocity is ~0.35 cells/frame; seed near
-      // that so papers don't all decelerate visibly on first paint.
+      // Bias positions toward the LEFT third — papers drift rightward,
+      // so seeding from the left gives them maximum flight time before
+      // they exit the right edge.
+      p.x = 4 + Math.random() * (COLS * 0.4);
+      p.y = -2 + Math.random() * (TYPE_Y - 6);
       p.vx = 0.18 + Math.random() * 0.28;
       p.vy = -0.04 + Math.random() * 0.22;
+      p.shape = Math.floor(Math.random() * PAPERS_SHAPES.length);
+      p.flutter = Math.random() * 1000;
+      p.wobblePhase = Math.random() * Math.PI * 2;
+    }
+    // Rain pool: distribute across full canvas height + width so the
+    // hero opens with rain in motion already, not blank-then-fill.
+    for (let i = 0; i < N_RAIN; i++) {
+      const p = papers[N_LIFECYCLE + i];
+      p.phase = "drifting";
+      p.mode = "rain";
+      p.phaseStart = now0;
+      p.x = -PAPER_W + Math.random() * (COLS + PAPER_W * 2);
+      p.y = -4 + Math.random() * (ROWS + 4);
+      p.vx = (Math.random() - 0.5) * 0.18;
+      p.vy = 0.10 + Math.random() * 0.22;
       p.shape = Math.floor(Math.random() * PAPERS_SHAPES.length);
       p.flutter = Math.random() * 1000;
       p.wobblePhase = Math.random() * Math.PI * 2;
@@ -453,7 +515,15 @@ export function PapersRain({ className }: Props) {
     let stopped = false;
     let last = 0;
 
-    const findQueuedPaper = () => papers.find((p) => p.phase === "queued");
+    // Only the lifecycle pool feeds the typewriter — rain papers are
+    // never queued. This keeps the typewriter rhythm independent of
+    // however many rain papers are airborne.
+    const findQueuedPaper = () => {
+      for (let i = 0; i < N_LIFECYCLE; i++) {
+        if (papers[i].phase === "queued") return papers[i];
+      }
+      return null;
+    };
 
     const tick = (now: number) => {
       // ── Typewriter slot ──
@@ -479,6 +549,7 @@ export function PapersRain({ className }: Props) {
 
       // ── Per-paper physics ──
       const wind = Math.sin(now * LEAF_WIND_FREQ) * LEAF_WIND_AMP;
+      const rainWind = Math.sin(now * RAIN_WIND_FREQ) * RAIN_WIND_AMP;
       for (const p of papers) {
         if (p.phase === "queued" || p.phase === "typing") continue;
         p.flutter += 1;
@@ -500,19 +571,40 @@ export function PapersRain({ className }: Props) {
             p.phaseStart = now;
           }
         } else if (p.phase === "drifting") {
-          const wobble =
-            Math.sin(now * LEAF_WOBBLE_FREQ + p.wobblePhase) * LEAF_WOBBLE_AMP;
-          p.vx += LEAF_BASE_WIND + (wind + wobble) * 0.04;
-          if (Math.random() < LEAF_GUST_PROB)
-            p.vx += (Math.random() - 0.3) * LEAF_GUST_KICK;
-          p.vy += LEAF_GRAVITY;
-          p.vx *= LEAF_VX_DRAG;
-          p.vy *= LEAF_VY_DRAG;
-          p.x += p.vx;
-          p.y += p.vy;
-          // Off-screen → recycle back into the queue.
-          if (p.x > COLS + 6 || p.x < -PAPER_W - 4 || p.y > ROWS + 6) {
-            spawnQueued(p);
+          if (p.mode === "fly") {
+            const wobble =
+              Math.sin(now * LEAF_WOBBLE_FREQ + p.wobblePhase) * LEAF_WOBBLE_AMP;
+            p.vx += LEAF_BASE_WIND + (wind + wobble) * 0.04;
+            if (Math.random() < LEAF_GUST_PROB)
+              p.vx += (Math.random() - 0.3) * LEAF_GUST_KICK;
+            p.vy += LEAF_GRAVITY;
+            p.vx *= LEAF_VX_DRAG;
+            p.vy *= LEAF_VY_DRAG;
+            p.x += p.vx;
+            p.y += p.vy;
+            // Off-screen → recycle back into the typewriter queue.
+            if (p.x > COLS + 6 || p.x < -PAPER_W - 4 || p.y > ROWS + 6) {
+              spawnQueued(p);
+            }
+          } else {
+            // Rain mode — top-down fall with lateral wobble. No base
+            // wind; gravity is the dominant force, wobble + gusts
+            // give the leaf-feel without ever pushing the paper off
+            // the side faster than it falls.
+            const wobble =
+              Math.sin(now * RAIN_WOBBLE_FREQ + p.wobblePhase) * RAIN_WOBBLE_AMP;
+            p.vx += (rainWind + wobble) * 0.05;
+            if (Math.random() < RAIN_GUST_PROB)
+              p.vx += (Math.random() - 0.5) * RAIN_GUST_KICK;
+            p.vy += RAIN_GRAVITY;
+            p.vx *= RAIN_VX_DRAG;
+            p.vy *= RAIN_VY_DRAG;
+            p.x += p.vx;
+            p.y += p.vy;
+            // Off-screen → respawn at the top edge.
+            if (p.y > ROWS + 4 || p.x > COLS + 8 || p.x < -PAPER_W - 8) {
+              spawnRainTop(p);
+            }
           }
         }
       }
