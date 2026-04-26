@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Literature QC** - Tavily search, novelty verdict, cited references, hypothesis input (completed 2026-04-26)
 - [x] **Phase 3: Multi-Agent Pipeline** - 4-agent parallel debate, structured JSON plan output (completed 2026-04-26)
 - [x] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views (completed 2026-04-26)
-- [ ] **Phase 5: Grounding & Citations** - Supplier scraping, inline citations, tooltip system, URL verify
+- [x] **Phase 5: Grounding & Citations (LITE)** - 1 Tavily call/Plan enriches Materials, clickable citations w/ native tooltip (per-row + URL verify deferred to .planning/DEFERRED.md) — completed 2026-04-26
 - [ ] **Phase 6: Live Trace & Validation Grid** - Agent activity rail, test grid ticking green
 - [ ] **Phase 7: Closed-Loop Corrections + Propagation Demo** - Lab rules, correction popover, diff modal
 - [ ] **Phase 8: Polish, Demo, Pitch** - Visual polish, demo rehearsal, video recording, submission
