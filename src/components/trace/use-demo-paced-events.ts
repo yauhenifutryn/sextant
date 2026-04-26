@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
 
 // STUB until Phase 3 ships @/lib/plan/trace.ts
 // Mirrors D-62 (AgentEvent discriminated union). When `src/lib/plan/trace.ts`
@@ -21,6 +20,26 @@ type AgentEvent =
   | { stage: "error"; run_id: string; agent_id: AgentId; error_message: string; retryable: boolean; ts: string };
 
 /**
+ * Read the `demoPace` URL param without using next/navigation's
+ * `useSearchParams()`. The hook deliberately avoids that import because
+ * `useSearchParams()` triggers Next.js 15's CSR-bailout requirement on
+ * statically-generated pages, forcing the entire page into a Suspense
+ * boundary which is not the trace-rail's concern (and out of plan scope —
+ * `src/app/app/page.tsx` is a forbidden zone for Plan 06-02). Reading
+ * `window.location.search` from inside `useEffect` is post-mount and
+ * client-only, so SSG completes cleanly. The default `paceMs=0` means
+ * pre-mount renders behave identically to the no-param case (zero delay).
+ */
+function readPaceMs(): number {
+  if (typeof window === "undefined") return 0;
+  const params = new URLSearchParams(window.location.search);
+  const p = params.get("demoPace");
+  if (p === "slow") return 3500;
+  if (p === "ultraslow") return 6000;
+  return 0;
+}
+
+/**
  * Demo-pace queue: when ?demoPace=slow is in the URL, drip-feed
  * agentEvents with a delay so the trace rail staircases visibly during
  * the 60s demo recording. Without this, cache-hit runs flash all
@@ -31,13 +50,13 @@ type AgentEvent =
  * for the recording.
  */
 export function useDemoPacedEvents(events: AgentEvent[]): AgentEvent[] {
-  const params = useSearchParams();
-  const paceMs = (() => {
-    const p = params?.get("demoPace");
-    if (p === "slow") return 3500;
-    if (p === "ultraslow") return 6000;
-    return 0;
-  })();
+  // paceMs is read once on mount via useState initializer (client-only).
+  // Default is 0 during SSG / pre-mount so the hook is a pure pass-through.
+  const [paceMs, setPaceMs] = useState<number>(0);
+
+  useEffect(() => {
+    setPaceMs(readPaceMs());
+  }, []);
 
   const [paced, setPaced] = useState<AgentEvent[]>([]);
   const knownRef = useRef<Set<AgentEvent>>(new Set());
