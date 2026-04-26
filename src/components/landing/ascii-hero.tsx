@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 import { Magnetic } from "./magnetic";
 import { SextantMark } from "./sextant-mark";
@@ -30,25 +31,35 @@ import { VideoAscii } from "./video-ascii";
  *     .l-ascii-stage              ← eyebrow + headline + sub + buttons
  */
 export function AsciiHero() {
+  // Render the colored video layer ONLY after client mount so the SSR
+  // HTML and the post-hydration tree match exactly. Earlier we shipped
+  // the <video> in the SSR output, which produced a hydration mismatch
+  // whenever a user's cached client bundle lagged behind the server
+  // bundle (Turbopack HMR + browser cache split on rapid edits). With
+  // the colored layer being a client-only enhancement, SSR shows just
+  // the ASCII renderer, then the colored video fades in after mount.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <header id="top" className="l-ascii-hero">
       <div className="l-ascii-hero-bg" aria-hidden="true">
         {/* Soft colored video wash — same /hero.mp4 source as the ASCII
          * sampler, played at low opacity + blur so the original colors
          * (white coats, colored petri dishes, lab fixtures) bleed through
-         * and tint the ASCII pattern. The two playheads desync slightly
-         * over a few seconds; that's fine — it just adds a subtle
-         * shimmer instead of locked-step rendering. */}
-        <video
-          className="l-ascii-hero-color"
-          src="/hero.mp4"
-          autoPlay
-          muted
-          playsInline
-          loop
-          preload="auto"
-          aria-hidden="true"
-        />
+         * and tint the ASCII pattern. */}
+        {mounted ? (
+          <video
+            className="l-ascii-hero-color"
+            src="/hero.mp4"
+            autoPlay
+            muted
+            playsInline
+            loop
+            preload="auto"
+            aria-hidden="true"
+          />
+        ) : null}
         <VideoAscii className="l-ascii-hero-vascii" />
       </div>
       <div className="l-ascii-hero-scrim" aria-hidden="true" />

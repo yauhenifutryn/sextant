@@ -418,12 +418,13 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  /* Heavy blur + low opacity: the lab scene reads as a soft colored
-   * wash, not a recognizable photo. The ASCII pattern on top is what
-   * the eye focuses on; the video just supplies ambient color. */
-  opacity: 0.18;
-  filter: blur(24px) saturate(1.3) contrast(1.05);
-  -webkit-filter: blur(24px) saturate(1.3) contrast(1.05);
+  /* Heavy blur + moderate opacity: the lab scene reads as a soft
+   * colored wash that supplies ambient color across the whole hero
+   * (especially the right side where ASCII content is sparser).
+   * ASCII pattern on top is what the eye focuses on. */
+  opacity: 0.28;
+  filter: blur(28px) saturate(1.35) contrast(1.05);
+  -webkit-filter: blur(28px) saturate(1.35) contrast(1.05);
   pointer-events: none;
 }
 /* The VideoAscii's <pre> element gets an enlarged font + monospace
@@ -439,7 +440,10 @@
   letter-spacing: 0.02em;
   font-weight: 600;
   color: #0F4C3A;
-  opacity: 1;
+  /* Subtler ASCII — reads as fine print / texture rather than a
+   * dominant pattern. The scientists are still recognizable but
+   * don't fight the headline for visual hierarchy. */
+  opacity: 0.45;
   display: block;
   text-align: left;
   padding: 28px;
@@ -453,21 +457,16 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  /* Two-layer scrim so the text column (headline + sub + CTAs) gets a
-   * tall, near-opaque wash while the ASCII pattern at the edges stays
-   * vivid. The first ellipse is a wider/taller column over the text
-   * area; the second is a soft halo that fades out to ASCII territory. */
+  /* Tight scrim only behind the actual text column — no halo bleeding
+   * into the ASCII territory. The text itself doesn't need much wash
+   * now that ASCII opacity is reduced; just enough to keep the sub-
+   * text legible against any dense ASCII spillover. */
   background:
     radial-gradient(
-      ellipse 38% 55% at 50% 50%,
-      rgba(250, 250, 247, 0.92) 0%,
-      rgba(250, 250, 247, 0.74) 45%,
-      rgba(250, 250, 247, 0.20) 90%,
-      rgba(250, 250, 247, 0) 100%
-    ),
-    radial-gradient(
-      ellipse 70% 60% at 50% 50%,
-      rgba(250, 250, 247, 0.18) 0%,
+      ellipse 30% 48% at 50% 50%,
+      rgba(250, 250, 247, 0.85) 0%,
+      rgba(250, 250, 247, 0.55) 55%,
+      rgba(250, 250, 247, 0.05) 95%,
       rgba(250, 250, 247, 0) 100%
     );
 }
