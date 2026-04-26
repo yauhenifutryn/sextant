@@ -51,3 +51,7 @@ yarn-error.log*
 
 # Phase 2 chip-approval gate sentinel (local only — never commit)
 .planning/phases/02-literature-qc/.chip-approval
+
+# Phase 3 — multi-agent run artifacts (D-64). Disk read-through cache; never commit.
+data/runs/*.json
+!data/runs/.gitkeep
