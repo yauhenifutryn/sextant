@@ -135,14 +135,18 @@ const TYPE_Y = ROWS - TYPEWRITER_BASE.length;
 // pages is short — enough to show the carriage emptying between
 // pages but not so long that the cadence feels languid.
 const TYPING_MS = 1700;
-const ASCEND_MS = 750;
 const TYPING_GAP_MS = 160;
 
-// Phase-2 (ascending) physics — quick lift out of the typewriter,
-// only a few cells of vertical travel before gravity flips and the
-// paper hands off to leaf-drift mode.
-const ASCEND_VY = -0.85;
-const ASCEND_GRAVITY = 0.062;
+// Ejecting + fold sequence. After typing finishes, the just-typed
+// big page rises out of the carriage with strong upward velocity;
+// during the rise it visibly folds in two steps (full → folded →
+// small flying sheet) before handing off to leaf-drift physics.
+const EJECT_MS = 720;          // total ejecting-phase duration
+const EJECT_FOLD1_AT = 360;    // big page collapses to a folded card
+const EJECT_FOLD2_AT = 500;    // folded card collapses to small sheet
+const EJECT_VY = -1.0;         // strong upward initial velocity
+const EJECT_GRAVITY = 0.058;   // decelerates so most of the fold
+                               // completes near the apex of the rise
 
 // Phase-3 (leaf drift) physics. The dominant force is rightward wind
 // (slow, oscillating, with per-paper wobble + occasional gusts). Both
@@ -160,7 +164,21 @@ const LEAF_WOBBLE_AMP = 0.18;
 const LEAF_GUST_PROB = 0.013;
 const LEAF_GUST_KICK = 0.18;
 
-type Phase = "queued" | "typing" | "ascending" | "drifting";
+type Phase = "queued" | "typing" | "ejecting" | "drifting";
+
+// "Folded card" frame — the intermediate render between the big
+// typed page and the small flying sheet. Texture suggests a creased
+// half-fold, with a horizontal fold-line and a softer body. 12×4.
+const MEDIUM_PAPER: string[] = [
+  "╭──────────╮",
+  "│ ░░ ▒▒ ░░ │",
+  "│┄┄┄┄┄┄┄┄┄┄│",
+  "╰──────────╯",
+];
+const MEDIUM_W = MEDIUM_PAPER[0].length;
+const MEDIUM_H = MEDIUM_PAPER.length;
+const BIG_W = PAPER_AREA_W + 2; // +2 for left/right borders
+const BIG_H = PAPER_AREA_H + 2; // +2 for top/bottom borders
 
 type Paper = {
   x: number;
@@ -203,20 +221,25 @@ function startTyping(p: Paper, now: number, textIdx: number) {
   p.textIdx = textIdx;
 }
 
-function startAscending(p: Paper, now: number) {
-  p.phase = "ascending";
+/**
+ * Transition from typing to ejecting. The big-paper renderer uses
+ * `p.x`/`p.y` as the LEFT-TOP of the 26×7 paper bounding box (the
+ * border + 5 content rows). When ejecting hands off to drifting we
+ * shift `p.x`/`p.y` so leaf physics treats the same coordinate as
+ * the small flying paper's left-top instead.
+ */
+function startEjecting(p: Paper, now: number) {
+  p.phase = "ejecting";
   p.phaseStart = now;
-  // Position the small flying paper at the carriage outlet.
-  p.x = EJECT_X + (Math.random() - 0.5) * 0.5;
-  p.y = EJECT_Y;
-  p.vx = (Math.random() - 0.5) * 0.35;
-  p.vy = ASCEND_VY;
-}
-
-function startDrifting(p: Paper, now: number) {
-  p.phase = "drifting";
-  p.phaseStart = now;
-  // Hand-off velocity from ascend already in place; no reset.
+  p.x = TYPE_X + PAPER_AREA_X - 1; // -1 so the big paper's ╭ border
+                                   // aligns with the column 1 left of
+                                   // the typewriter's underscore run
+  p.y = TYPE_Y + PAPER_AREA_Y - 1; // -1 so the big paper's top border
+                                   // sits 1 row above the typewriter's
+                                   // paper-area top — the page reads
+                                   // as "lifting off the carriage"
+  p.vx = (Math.random() - 0.5) * 0.4;
+  p.vy = EJECT_VY;
 }
 
 type Props = { className?: string };
@@ -348,11 +371,68 @@ export function PapersRain({ className }: Props) {
       }
     };
 
-    const renderDynamic = () => {
+    // Generic stamper for arbitrary-shape ASCII rectangles. Used for
+    // the big and medium "fold" frames during the eject phase. Spaces
+    // in the source rows are skipped (treated as transparent) so the
+    // shape's silhouette doesn't paint over neighbors.
+    const stampShape = (rows: string[], ix: number, iy: number) => {
+      for (let dy = 0; dy < rows.length; dy++) {
+        const row = rows[dy];
+        const py = iy + dy;
+        if (py < 0 || py >= ROWS) continue;
+        for (let dx = 0; dx < row.length; dx++) {
+          const px = ix + dx;
+          if (px < 0 || px >= COLS) continue;
+          const ch = row[dx];
+          if (ch === " ") continue;
+          grid[py * COLS + px] = ch;
+        }
+      }
+    };
+
+    // Build the big-paper frame for a given typed message. Border +
+    // five content rows = BIG_H rows tall, BIG_W wide. The content
+    // is the FULL typed message (the paper reads as "freshly typed,
+    // about to fly out").
+    const buildBigPaper = (textIdx: number): string[] => {
+      const message = TYPED_LINES[textIdx];
+      const inner = BIG_W - 2;
+      const out: string[] = [];
+      out.push("╭" + "─".repeat(inner) + "╮");
+      for (let i = 0; i < PAPER_AREA_H; i++) {
+        const line = (message[i] ?? "").slice(0, inner);
+        out.push("│" + line + " ".repeat(inner - line.length) + "│");
+      }
+      out.push("╰" + "─".repeat(inner) + "╯");
+      return out;
+    };
+
+    const renderDynamic = (now: number) => {
       grid.fill(" ");
       for (const p of papers) {
         if (p.phase === "queued" || p.phase === "typing") continue;
-        stamp(p);
+        if (p.phase === "ejecting") {
+          // Three-stage fold during ejecting: full typed page →
+          // creased fold-card → small flying sheet. p.x/p.y track
+          // the BIG paper's left-top throughout; medium and small
+          // frames offset to stay centered within that footprint.
+          const elapsed = now - p.phaseStart;
+          const ix = Math.floor(p.x);
+          const iy = Math.floor(p.y);
+          if (elapsed < EJECT_FOLD1_AT) {
+            stampShape(buildBigPaper(p.textIdx), ix, iy);
+          } else if (elapsed < EJECT_FOLD2_AT) {
+            const dx = Math.floor((BIG_W - MEDIUM_W) / 2);
+            const dy = Math.floor((BIG_H - MEDIUM_H) / 2);
+            stampShape(MEDIUM_PAPER, ix + dx, iy + dy);
+          } else {
+            const dx = Math.floor((BIG_W - PAPER_W) / 2);
+            const dy = Math.floor((BIG_H - PAPER_H) / 2);
+            stamp({ ...p, x: p.x + dx, y: p.y + dy });
+          }
+        } else {
+          stamp(p);
+        }
       }
       let out = "";
       for (let y = 0; y < ROWS; y++) {
@@ -365,7 +445,7 @@ export function PapersRain({ className }: Props) {
       // Static frame — no animation. Render typewriter empty + the
       // pre-seeded drifting papers at their initial positions.
       typewriterPre.textContent = buildTypewriter(0, null, false);
-      renderDynamic();
+      renderDynamic(performance.now());
       return;
     }
 
@@ -389,7 +469,7 @@ export function PapersRain({ className }: Props) {
       } else {
         const elapsed = now - typingPaper.phaseStart;
         if (elapsed >= TYPING_MS) {
-          startAscending(typingPaper, now);
+          startEjecting(typingPaper, now);
           lastTypingFinishedAt = now;
           typingPaper = null;
         } else {
@@ -402,15 +482,22 @@ export function PapersRain({ className }: Props) {
       for (const p of papers) {
         if (p.phase === "queued" || p.phase === "typing") continue;
         p.flutter += 1;
-        if (p.phase === "ascending") {
-          p.vy += ASCEND_GRAVITY;
+        if (p.phase === "ejecting") {
+          p.vy += EJECT_GRAVITY;
           p.vx *= 0.99;
           p.x += p.vx;
           p.y += p.vy;
-          // Switch to leaf-drifting once vy turns positive (apex
-          // passed) or the ascend window expires.
-          if (p.vy >= 0 || now - p.phaseStart >= ASCEND_MS) {
-            startDrifting(p, now);
+          if (now - p.phaseStart >= EJECT_MS) {
+            // Hand off to leaf drift. Re-anchor p.x/p.y so they track
+            // the small flying paper's left-top — the renderer was
+            // offsetting from the big-paper origin during eject; once
+            // we leave the eject phase, p.x/p.y need to be the small
+            // paper's coords directly so leaf physics + off-screen
+            // checks line up.
+            p.x += Math.floor((BIG_W - PAPER_W) / 2);
+            p.y += Math.floor((BIG_H - PAPER_H) / 2);
+            p.phase = "drifting";
+            p.phaseStart = now;
           }
         } else if (p.phase === "drifting") {
           const wobble =
@@ -450,7 +537,7 @@ export function PapersRain({ className }: Props) {
           typewriterPre.textContent = buildTypewriter(0, null, false);
         }
       }
-      renderDynamic();
+      renderDynamic(now);
     };
 
     const loop = (now: number) => {
