@@ -1,15 +1,12 @@
-import { Settings } from "lucide-react";
-
 /**
  * Header bar (D-17). 56px tall, full-width, only rendered on `/app/*`
  * routes via the nested layout — never on `/` (landing).
  *
- * Phase 1 placeholder: text wordmark "Sextant". Phase 8 replaces with
- * `public/logo.svg` from the Claude Design output (D-28a).
+ * Avatar and Settings buttons were removed pre-demo: they were dead stubs and
+ * a non-working button under judges' eyes hurts more than a missing one.
+ * The lab profile drawer (LOOP-05) is in DEFERRED.md.
  *
- * Right-side controls (avatar, lab-rules pill, settings cog) are stubs —
- * clicking them does nothing in Phase 1. They have aria-labels for
- * keyboard / screen-reader accessibility (DESIGN-04).
+ * The "lab rules" pill goes live in Phase 7 via useLabRules().
  */
 export function HeaderBar() {
   return (
@@ -22,18 +19,6 @@ export function HeaderBar() {
         <span className="font-mono text-xs text-ink rounded-full border border-borderwarm bg-surface px-3 py-1">
           0 lab rules
         </span>
-        <button
-          type="button"
-          aria-label="Lab profile"
-          className="h-9 w-9 rounded-full bg-surface border border-borderwarm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
-        />
-        <button
-          type="button"
-          aria-label="Settings"
-          className="text-muted-foreground hover:text-ink rounded-md p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
-        >
-          <Settings size={20} strokeWidth={1.5} />
-        </button>
       </div>
     </header>
   );

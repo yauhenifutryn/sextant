@@ -36,7 +36,7 @@ export function AsciiHero() {
       <nav id="sx-nav" className="l-ascii-nav">
         <div className="wrap l-ascii-nav-inner">
           <Link href="#top" className="l-ascii-brand" aria-label="Sextant home">
-            <SextantMark size={22} />
+            <SextantMark size={30} />
             <span>Sextant</span>
           </Link>
           <div className="l-ascii-links">

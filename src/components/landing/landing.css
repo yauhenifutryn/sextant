@@ -110,14 +110,15 @@
 .l-nav-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-height: 44px;
 }
 .l-nav-brand-text {
   font-family: var(--font-display-l);
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+  color: var(--ink);
 }
 .l-nav-links {
   display: flex;
@@ -572,11 +573,11 @@
 .l-ascii-brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-family: var(--font-display-l);
-  font-weight: 500;
-  font-size: 16px;
-  letter-spacing: -0.01em;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.015em;
   color: var(--ink);
   text-decoration: none;
 }
@@ -922,14 +923,14 @@ a.l-btn-primary:hover svg {
 
 /* ==================== SECTIONS ==================== */
 .landing-root section {
-  padding: 120px 0;
+  padding: 80px 0;
   position: relative;
   background: var(--bg);
   z-index: 1;
 }
 @media (max-width: 760px) {
   .landing-root section {
-    padding: 88px 0;
+    padding: 56px 0;
   }
 }
 .l-section-label {
@@ -1336,9 +1337,12 @@ a.l-btn-primary:hover svg {
 }
 
 .l-agent-pulse {
+  /* Moved from top-right (collided with .l-agent-tag "01") to bottom-right.
+   * The tag now owns the top-right; the pulse signals "live" from the
+   * bottom-right corner of the Researcher card without overlapping text. */
   position: absolute;
-  top: 14px;
-  right: 14px;
+  bottom: 12px;
+  right: 12px;
   width: 6px;
   height: 6px;
   border-radius: 50%;
@@ -1502,48 +1506,50 @@ a.l-btn-primary:hover svg {
  *
  * Each arrow's two paths use pathLength=100 + stroke-dashoffset so the
  * dash math is in a 0..100 space regardless of actual SVG length. We
- * slice --loop-progress so:
- *   arrow #1 (between card 0 and card 1) fills 0.05..0.55 of progress
- *   arrow #2 (between card 1 and card 2) fills 0.55..1.00 of progress
- * The clamp keeps offset between 0 and 100 so we don't overshoot. The
- * arrow tip lags the line slightly (sub-slice 0.6..1.0 of each arrow's
- * own slice) so it feels like the line draws to the head, then the tip
- * appears, instead of both appearing simultaneously. */
+ * slice --loop-progress so both arrows are FULLY DRAWN by the time the
+ * user reads the third card (progress ~0.6), not stretched to the very
+ * bottom of the section. Earlier ranges (0.55→1.0 with 220 multiplier)
+ * left the second arrow visibly incomplete in normal scroll behavior.
+ *   arrow #1 line fills 0.05..0.30 of progress (multiplier 400 = full draw in 0.25 of progress)
+ *   arrow #1 tip fills 0.25..0.40 of progress
+ *   arrow #2 line fills 0.30..0.55 of progress
+ *   arrow #2 tip fills 0.50..0.65 of progress
+ * The clamp keeps offset between 0 and 100 so we don't overshoot. */
 .l-loop-row > .l-loop-arrow:nth-child(2) .loop-arrow-line {
   stroke-dasharray: 100;
   stroke-dashoffset: clamp(
     0,
-    calc(100 - (var(--loop-progress, 0) - 0.05) * 200),
+    calc(100 - (var(--loop-progress, 0) - 0.05) * 400),
     100
   );
-  transition: stroke-dashoffset 90ms linear;
+  transition: stroke-dashoffset 120ms linear;
 }
 .l-loop-row > .l-loop-arrow:nth-child(2) .loop-arrow-tip {
   stroke-dasharray: 100;
   stroke-dashoffset: clamp(
     0,
-    calc(100 - (var(--loop-progress, 0) - 0.4) * 600),
+    calc(100 - (var(--loop-progress, 0) - 0.25) * 700),
     100
   );
-  transition: stroke-dashoffset 90ms linear;
+  transition: stroke-dashoffset 120ms linear;
 }
 .l-loop-row > .l-loop-arrow:nth-child(4) .loop-arrow-line {
   stroke-dasharray: 100;
   stroke-dashoffset: clamp(
     0,
-    calc(100 - (var(--loop-progress, 0) - 0.55) * 220),
+    calc(100 - (var(--loop-progress, 0) - 0.30) * 400),
     100
   );
-  transition: stroke-dashoffset 90ms linear;
+  transition: stroke-dashoffset 120ms linear;
 }
 .l-loop-row > .l-loop-arrow:nth-child(4) .loop-arrow-tip {
   stroke-dasharray: 100;
   stroke-dashoffset: clamp(
     0,
-    calc(100 - (var(--loop-progress, 0) - 0.85) * 700),
+    calc(100 - (var(--loop-progress, 0) - 0.50) * 700),
     100
   );
-  transition: stroke-dashoffset 90ms linear;
+  transition: stroke-dashoffset 120ms linear;
 }
 @media (prefers-reduced-motion: reduce) {
   /* Reduced-motion users: don't withhold the arrows. Show them filled
@@ -2001,4 +2007,116 @@ a.l-btn-primary:hover svg {
   .l-ascii-stage pre.ascii {
     animation: none !important;
   }
+  .l-solve-stage.visible .l-agent-dot,
+  .l-stage-center .ticks i,
+  .l-loop-card[data-i] {
+    animation: none !important;
+  }
+}
+
+/* ==================== AMBIENT MOTION (the 2 graphs) ====================
+ * Token-cheap, GPU-only animations to keep the method radial and the
+ * closed-loop strip feeling live without re-running scroll math. They
+ * fire on .visible so they don't burn cycles before the section is in
+ * view; they auto-pause via prefers-reduced-motion above.
+ */
+
+/* 1. Method radial — agent dots breathe softly with a subtle ring pulse,
+ * each one phase-shifted so they don't beat in unison. The base color +
+ * box-shadow stays — we just animate the box-shadow ring outward. */
+@keyframes l-agent-dot-breathe {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(15, 76, 58, 0.14);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(15, 76, 58, 0.06);
+  }
+}
+@keyframes l-agent-dot-breathe-clay {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(184, 92, 56, 0.14);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(184, 92, 56, 0.06);
+  }
+}
+@keyframes l-agent-dot-breathe-ink {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(26, 26, 26, 0.10);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(26, 26, 26, 0.04);
+  }
+}
+@keyframes l-agent-dot-breathe-blue {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.14);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(74, 111, 165, 0.06);
+  }
+}
+.l-solve-stage.visible .l-agent-dot.researcher {
+  animation: l-agent-dot-breathe 3.6s ease-in-out infinite;
+}
+.l-solve-stage.visible .l-agent-dot.skeptic {
+  animation: l-agent-dot-breathe-clay 3.6s ease-in-out 0.4s infinite;
+}
+.l-solve-stage.visible .l-agent-dot.operator {
+  animation: l-agent-dot-breathe-ink 3.6s ease-in-out 0.8s infinite;
+}
+.l-solve-stage.visible .l-agent-dot.compliance {
+  animation: l-agent-dot-breathe-blue 3.6s ease-in-out 1.2s infinite;
+}
+
+/* 2. Plan center — the 5 ticks pulse like a streaming-loader (one tick
+ * brightens at a time, sweeping left-to-right). Reads as "the plan is
+ * being written right now" without any JS. */
+@keyframes l-stage-tick-sweep {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+.l-solve-stage.visible .l-stage-center .ticks i {
+  animation: l-stage-tick-sweep 1.6s ease-in-out infinite;
+}
+.l-solve-stage.visible .l-stage-center .ticks i:nth-child(2) {
+  animation-delay: 0.16s;
+}
+.l-solve-stage.visible .l-stage-center .ticks i:nth-child(3) {
+  animation-delay: 0.32s;
+}
+.l-solve-stage.visible .l-stage-center .ticks i:nth-child(4) {
+  animation-delay: 0.48s;
+}
+.l-solve-stage.visible .l-stage-center .ticks i:nth-child(5) {
+  animation-delay: 0.64s;
+}
+
+/* 3. Closed-loop cards — once the section is visible, the active card
+ * subtly lifts and gets a soft shadow on a 4s loop, cycling card-by-card.
+ * Reads as "the loop is alive" without redrawing anything. */
+@keyframes l-loop-card-glow {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0);
+  }
+  50% {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px -10px rgba(15, 76, 58, 0.18);
+  }
+}
+.l-loop-canvas.visible .l-loop-card[data-i="0"] {
+  animation: l-loop-card-glow 4.8s ease-in-out infinite;
+}
+.l-loop-canvas.visible .l-loop-card[data-i="1"] {
+  animation: l-loop-card-glow 4.8s ease-in-out 1.6s infinite;
+}
+.l-loop-canvas.visible .l-loop-card[data-i="2"] {
+  animation: l-loop-card-glow 4.8s ease-in-out 3.2s infinite;
 }

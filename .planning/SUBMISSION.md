@@ -43,21 +43,32 @@ Contract Research Organization (CRO) operators, principal investigators at biote
 
 Sextant is a chat-driven web application that runs four cooperating AI agents in parallel — Researcher, Skeptic, CRO Operator, Compliance — and produces a structured 5-section experiment plan (Protocol, Materials, Budget, Timeline, Validation) in under a minute. Core features:
 
-- **Literature QC** — Tavily search across arXiv, Semantic Scholar, and protocols.io produces a novelty verdict with 3 cited references in under 4 seconds.
-- **Multi-agent plan generation** — Four agents fan out in parallel, each owns one slice of the plan, a fifth consolidator merges. Live trace rail shows each agent's role and current task.
-- **Grounded typed artifact** — Every reagent, every catalog number, every protocol step carries a clickable citation. Hard rule: no claim ships without a verifiable URL.
-- **Closed-loop corrections** — Click any plan line, submit a correction. The system extracts a typed lab rule (not freeform text) into a JSON store.
-- **Propagation demo** — Submit a second hypothesis and the new plan visibly applies the previously-captured rules without re-prompting. A side-by-side diff modal labels each changed line with the rule that was applied.
+- Literature QC - Tavily search across arXiv, Semantic Scholar, and protocols.io produces a novelty verdict with 3 cited references in under 4 seconds.
+- Multi-agent plan generation — Four agents fan out in parallel, each owns one slice of the plan, a fifth consolidator merges. Live trace rail shows each agent's role and current task.
+- Grounded typed artifact — Every reagent, every catalog number, every protocol step carries a clickable citation. Hard rule: no claim ships without a verifiable URL.
+- Closed-loop corrections — Click any plan line, submit a correction. The system extracts a typed lab rule (not freeform text) into a JSON store.
+- Propagation demo — Submit a second hypothesis and the new plan visibly applies the previously-captured rules without re-prompting. A side-by-side diff modal labels each changed line with the rule that was applied.
 
 ### 4. Unique Selling Proposition (USP)
 
-We're not another GPT wrapper. The differentiator lives in three places:
+We're not another GPT wrapper. The differentiator runs through three layers — one shipped, two on the roadmap.
 
-1. **Typed lab-rule artifact + closed loop** — Every scientist correction extracts a typed, queryable rule into that lab's private store. Over months of real CRO usage, the rule store becomes a private asset competitors can't replicate. This is data network effects at the lab-tenant level — the actual moat for v2 of the product.
-2. **Grounded-typed-artifact contract** — ChatGPT writes prose. Sextant produces a queryable Plan JSON with `citations: Citation[]` per line, a `grounded` provenance flag, and a 5-section schema a CRO operator can act on. The provenance discipline (no claim without verifiable URL, post-stream provenance check, repair callbacks) is regulated-domain trust posture model labs won't ship by default.
-3. **Domain-calibrated multi-agent roles** — Researcher / Skeptic / CRO Operator / Compliance encode CRO workflow assumptions a generic chat doesn't. Replaceable in isolation; valuable when calibrated against real CRO feedback over time.
+**Layer 1 (shipped in this prototype):**
+1. **Typed lab-rule artifact + closed loop.** Every scientist correction extracts a typed, queryable rule (`{ rule, scope, reasoning, source_correction }`) into that lab's private store. Over months of real CRO usage, the rule store becomes a private asset competitors cannot replicate. Data network effects at the lab-tenant level.
+2. **Grounded-typed-artifact contract.** ChatGPT writes prose. Sextant produces a queryable Plan JSON with `citations: Citation[]` per line, a `grounded` provenance flag, and a 5-section schema a CRO operator can act on. The provenance discipline (no claim without verifiable URL, post-stream provenance check, repair callbacks) is the regulated-domain trust posture model labs won't ship by default.
+3. **Domain-calibrated multi-agent roles.** Researcher / Skeptic / CRO Operator / Compliance encode CRO workflow assumptions a generic chat doesn't. Replaceable in isolation; valuable when calibrated against real CRO feedback over time.
 
-The hackathon ships the prototype that proves the closed loop *can* close. The investment thesis is scaling the closure.
+**Layer 2 (roadmap — workflow lock-in via integrations):**
+4. **Warehouse stock integration.** Read-only connector into the customer's inventory system (LIMS, ELN, or dedicated lab inventory tool). When the Operator agent assembles the materials table, it cross-references reagents the lab already has on hand vs. what needs to be ordered. Plans become budget-aware and ordering-aware in one pass.
+5. **Auto-order from industry-standard procurement platforms.** For customers on standard punch-out catalogs (Sigma-Aldrich SciQuest, Thermo Fisher OneSource, VWR, Coupa, Jaggaer), Sextant drafts a purchase order pre-filled with catalog numbers, quantities, and the requesting scientist's account info. One-click submit from the Materials tab.
+6. **Auto-emailed orders to private suppliers.** For customers with private supplier lists (sole-source vendors, custom oligos, antibody producers), Sextant drafts an order email per vendor, attaches a structured quote-request PDF, and queues it for one-click send. Same materials table, two delivery channels.
+7. **ELN/LIMS write-back.** Push the finalized plan into Benchling / LabArchives / sapio / Genohub as a pre-populated experiment shell.
+
+**Layer 3 (roadmap — the deepest moat):**
+8. **Private model fine-tuning on accumulated rule stores.** After enough corrections, each lab's rule store becomes training data for a private model layer competitors cannot replicate. Institutional knowledge → private model.
+9. **Embedded regulatory compliance.** FDA 21 CFR Part 11, GxP, IRB workflow integration. Append-only Merkle-chained audit log of every rule change and every plan generation as the regulatory artifact.
+
+The hackathon ships Layer 1. The investment thesis is scaling Layers 2 and 3 — Layer 1 alone is an impressive demo; Layers 2 and 3 are what make Sextant a CRO operating system that displaces incumbent workflow tooling.
 
 ### 5. Implementation & Technology
 
@@ -65,15 +76,17 @@ TypeScript-only monorepo. **Stack:** Next.js 16 App Router on Node 20, Tailwind 
 
 ### 6. Results & Impact
 
-Built solo in 24 hours. **Live demo flow:** chip-click hypothesis → grounded literature verdict with 3 cited URLs (3.8s wallclock cache-miss, 65ms cache-hit) → 4 agents fan out in parallel in the trace rail → consolidated experiment plan paints into a 5-tab canvas with Protocol, Materials, Budget, Timeline, and Validation sections (~45s end-to-end) → user clicks any plan line, submits a correction → typed lab rule extracted and persisted → second hypothesis submitted → new plan visibly applies the rule, surfaced in a side-by-side diff modal. **Real-world impact:** turns 2-3 weeks of CRO scoping work into 3 minutes, and — uniquely — every correction makes the system smarter for that lab's specific domain. The closed loop is the differentiator: every scientist interaction compounds into compounding institutional value. Anti-claim: this is the prototype, not proof of moat. Real defensibility takes months of real CRO usage. The pitch is "watch the loop close in 60 seconds; the investment thesis is scaling the closure."
+Built solo in 24 hours. Live demo flow: chip-click hypothesis → grounded literature verdict with 3 cited URLs (3.8s wallclock cache-miss, 65ms cache-hit) → 4 agents fan out in parallel in the trace rail → consolidated experiment plan paints into a 5-tab canvas with Protocol, Materials, Budget, Timeline, and Validation sections (~45s end-to-end) → user clicks any plan line, submits a correction → typed lab rule extracted and persisted → second hypothesis submitted → new plan visibly applies the rule, surfaced in a side-by-side diff modal. **Real-world impact:** turns 2-3 weeks of CRO scoping work into 3 minutes, and — uniquely — every correction makes the system smarter for that lab's specific domain. The closed loop is the differentiator: every scientist interaction compounds into compounding institutional value. Anti-claim: this is the prototype, not proof of moat. Real defensibility takes months of real CRO usage. The pitch is "watch the loop close in 60 seconds; the investment thesis is scaling the closure.
 
 ---
 
 ## Form: Additional Information (optional)
 
-**Why this matters for the broader AI ecosystem:** Sextant is a working example of the YC AI-native principles in a regulated B2B domain — closed loops over open loops, queryable typed artifacts over free text, multi-agent orchestration with cited provenance, no human middleware in the UI. The same architecture pattern (typed-artifact + closed-loop correction + propagation) generalizes beyond CRO scoping to any domain where expert corrections currently die in tribal knowledge: legal contract review, insurance underwriting, regulatory filings, accounting close-out.
+Why this matters for the broader AI ecosystem: Sextant is a working example of the YC AI-native principles in a regulated B2B domain - closed loops over open loops, queryable typed artifacts over free text, multi-agent orchestration with cited provenance, no human middleware in the UI. The same architecture pattern (typed-artifact + closed-loop correction + propagation) generalizes beyond CRO scoping to any domain where expert corrections currently die in tribal knowledge - legal contract review, insurance underwriting, regulatory filings, accounting close-out.
 
-**Honest limits:** Built solo in 24 hours. The lab rule store is seeded with 3-5 demo rules; real defensibility requires months of real-lab usage. Real ELN/LIMS/procurement integrations, multi-tenancy, and regulatory audit logs are roadmap items, not shipped features. The Phase 7 propagation demo is the moat-validation evidence — without it the project would reduce to another GPT wrapper.
+**Honest limits:** Built solo in 24 hours. The lab rule store is seeded with 3-5 demo rules; real defensibility requires months of real-lab usage. Real ELN/LIMS/procurement integrations, multi-tenancy, and regulatory audit logs are roadmap items, not shipped features. The Phase 7 propagation demo is the moat-validation evidence - without it the project would reduce to another GPT wrapper.
+
+**Roadmap commitment to investors / judges:** the prototype proves the closed loop closes. What turns Sextant from "impressive demo" into a CRO operating system is the integration layer — read-only connectors into the lab's existing inventory / LIMS / ELN systems, draft-PO generation against industry-standard procurement platforms (SciQuest, OneSource, Coupa, Jaggaer), and auto-drafted vendor emails for private supplier lists. That layer is what produces workflow lock-in and turns each lab's accumulated corrections into a private model layer competitors cannot replicate. Today's prototype is the typed-artifact + closed-loop foundation those integrations bolt onto.
 
 ---
 
