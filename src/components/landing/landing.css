@@ -325,6 +325,19 @@
   overflow: hidden;
   isolation: isolate;
 }
+/* Full-bleed override — when VideoAscii is rendered as the hero backdrop
+ * (.l-ascii-hero-vascii), strip the chrome so it fills its parent edge
+ * to edge. Parent .l-ascii-hero-bg sets the bounding box. */
+.l-vascii.l-ascii-hero-vascii {
+  max-width: none;
+  aspect-ratio: auto;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
 .l-vascii-out {
   position: absolute;
   inset: 0;
@@ -359,6 +372,243 @@
     color: var(--primary);
     opacity: 0.85;
   }
+}
+
+/* ==================== ASCII HERO (full-bleed) ====================
+ *
+ * Replaces the cinematic-video hero on /. The same live video-ASCII
+ * renderer used in the side-by-side /v1 variant fills the whole hero
+ * viewport, with a warm-white scrim laid over so the headline stays
+ * readable. Palette stays in the locked light theme — forest-green
+ * characters on warm off-white, dark ink for the overlay text. */
+
+.l-ascii-hero {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 24px;
+  isolation: isolate;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+}
+.l-ascii-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+/* The VideoAscii's <pre> element gets an enlarged font + monospace
+ * lineheight so its 96×54 character grid fills the viewport. Color
+ * stays forest green so the ASCII reads as part of the brand band. */
+.l-ascii-hero-bg .l-vascii-out {
+  font-size: clamp(7px, 1.05vw, 12px);
+  line-height: 0.92;
+  color: var(--primary);
+  opacity: 0.42;
+  display: block;
+  text-align: left;
+  padding: 32px;
+}
+.l-ascii-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 65% 55% at 50% 45%,
+      rgba(250, 250, 247, 0.85) 0%,
+      rgba(250, 250, 247, 0.55) 50%,
+      rgba(250, 250, 247, 0.78) 100%
+    );
+}
+
+.l-ascii-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  background: rgba(250, 250, 247, 0.78);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms var(--ease), background 200ms var(--ease);
+}
+.l-ascii-nav.scrolled {
+  border-bottom-color: var(--border);
+}
+.l-ascii-nav-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.l-ascii-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display-l);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.l-ascii-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  font-size: 13.5px;
+}
+.l-ascii-links a {
+  color: var(--muted);
+  transition: color 160ms ease;
+  text-decoration: none;
+  padding: 8px 0;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.l-ascii-links a:hover {
+  color: var(--ink);
+}
+.l-ascii-cta {
+  font-family: var(--font-display-l);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--bg) !important;
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 9px 18px !important;
+  border-radius: 999px;
+  transition: background 200ms ease, transform 200ms ease;
+  min-height: 38px !important;
+}
+.l-ascii-cta:hover {
+  background: #0d3f30;
+  transform: scale(1.03);
+}
+@media (max-width: 720px) {
+  .l-ascii-links a:not(.l-ascii-cta) {
+    display: none;
+  }
+}
+
+.l-ascii-stage {
+  position: relative;
+  z-index: 2;
+  max-width: 920px;
+  padding: 96px 0 80px;
+  animation: l-ascii-rise 800ms var(--ease) 100ms both;
+  opacity: calc(1 - var(--hero-progress, 0) * 1.4);
+  transform: translateY(calc(var(--hero-progress, 0) * -48px));
+  transition: opacity 80ms linear, transform 80ms linear;
+}
+@keyframes l-ascii-rise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.l-ascii-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono-l);
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+.l-ascii-eyebrow .bar {
+  display: inline-block;
+  width: 28px;
+  height: 1px;
+  background: var(--muted-2);
+}
+.l-ascii-title {
+  font-family: var(--font-display-l);
+  font-weight: 500;
+  font-size: clamp(44px, 7vw, 92px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  margin: 0 0 24px;
+  text-wrap: balance;
+}
+.l-ascii-title em {
+  font-style: normal;
+  color: var(--primary);
+}
+.l-ascii-sub {
+  font-size: clamp(15px, 1.4vw, 18px);
+  color: var(--muted);
+  max-width: 620px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+.l-ascii-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.l-ascii-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display-l);
+  font-weight: 500;
+  font-size: 14.5px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  min-height: 48px;
+  text-decoration: none;
+  transition: background 200ms ease, transform 200ms ease, border-color 200ms ease;
+  cursor: pointer;
+}
+.l-ascii-btn.primary {
+  color: var(--bg);
+  background: var(--ink);
+  border: 1px solid var(--ink);
+}
+.l-ascii-btn.primary:hover {
+  background: #000;
+  transform: scale(1.03);
+}
+.l-ascii-btn.ghost {
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-strong);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.l-ascii-btn.ghost:hover {
+  background: rgba(255, 255, 255, 0.85);
+  border-color: var(--ink);
+}
+.l-ascii-btn svg {
+  transition: transform 200ms ease;
+}
+.l-ascii-btn:hover svg {
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .l-ascii-stage { animation: none; }
+  .l-ascii-btn:hover, .l-ascii-cta:hover { transform: none; }
 }
 
 .l-hero-eyebrow {

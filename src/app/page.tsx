@@ -1,7 +1,6 @@
 import "@/components/landing/landing.css";
-import "@/components/landing/cinematic-hero.css";
 
-import { CinematicHero } from "@/components/landing/cinematic-hero";
+import { AsciiHero } from "@/components/landing/ascii-hero";
 import { CustomCursor } from "@/components/landing/custom-cursor";
 import { LandingClosedLoop } from "@/components/landing/closed-loop";
 import { LandingFinalCta } from "@/components/landing/final-cta";
@@ -12,28 +11,32 @@ import { LandingProblem } from "@/components/landing/problem";
 import { LandingTechStrip } from "@/components/landing/tech-strip";
 
 /**
- * Sextant landing — Cinematic hero (promoted from /v2).
+ * Sextant landing — full-bleed ASCII hero.
+ *
+ * Locked direction: the live video → ASCII renderer (hand-writing in a
+ * notebook, sampled frame-by-frame to a 96×54 character grid) fills the
+ * entire hero viewport at low opacity, with a warm-white scrim and the
+ * headline + CTA centered on top. Same warm + forest palette as the rest
+ * of the landing — the cinematic dark variant is retired.
  *
  * Composition:
- *   - CinematicHero      fullscreen video bg + glassmorphic dark nav,
- *                        owns its own nav so we drop <LandingNav />
+ *   - AsciiHero          full-bleed ASCII backdrop + nav + headline + CTA
  *   - LandingProblem     one-line strikethrough headline
- *   - LandingMethod      four-agent radial diagram + 4-cell explainer grid
- *   - LandingClosedLoop  three-step correction → rule → applied diagram
- *   - LandingTechStrip   Anthropic / Gemini / Tavily / Vercel marks
+ *   - LandingMethod      four-agent radial diagram (mouse parallax) + grid
+ *   - LandingClosedLoop  three-step diagram (scroll-driven arrow draw)
+ *   - LandingTechStrip   Anthropic / Gemini / Tavily / Vercel wordmarks
  *   - LandingFinalCta    secondary CTA + validation-grid sidecar
  *   - LandingFooter      minimal mark + meta line
- *   - LandingObservers   IntersectionObserver + scroll listener +
- *                        JS smooth-scroll for nav anchors
+ *   - LandingObservers   IntersectionObserver + scroll + smooth-scroll +
+ *                        radial mouse parallax + closed-loop scroll-progress
  *
- * The lab-notebook variant lives at /v1 (legacy), the cinematic spec is
- * still mirrored at /v2 so we can A/B without re-promoting.
+ * Variants kept for comparison: /v1 (side-by-side ASCII), /v2 (SVG cartoon).
  */
 export default function Landing() {
   return (
     <div className="landing-root">
       <main>
-        <CinematicHero />
+        <AsciiHero />
         <LandingProblem />
         <LandingMethod />
         <LandingClosedLoop />
