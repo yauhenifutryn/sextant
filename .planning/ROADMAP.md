@@ -84,7 +84,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Timeline tab shows a phased breakdown with dependencies legible at a glance
   5. Validation tab lists success criteria with measurement methods
   6. All five tabs are navigable by keyboard (Tab / arrow keys) and the active tab is visually distinct
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 04-01-PLAN.md — Add shadcn Tabs primitive + 5 leaf renderers (Protocol/Materials/Budget/Timeline/Validation) + CitationSlot + format helpers (D4-02, D4-05..D4-08, D4-10, D4-15; PLAN-01..PLAN-05)
+- [ ] 04-02-PLAN.md — Build PlanTabs shell (compose 5 leaves, route compliance_notes by target_kind, render compliance_summary footer) + PlanSkeleton loading scaffold (D4-03, D4-04, D4-09, D4-11, D4-13; PLAN-01..PLAN-06)
+- [ ] 04-03-PLAN.md — Wire PlanTabs into PlanCanvas (3-state coexistence per D4-12) + thread plan prop from dashboard + final acceptance gate (D4-12; PLAN-01..PLAN-06)
 **UI hint**: yes
 
 ### Phase 5: Grounding & Citations
@@ -154,7 +157,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Foundation | 3/3 | Complete | 2026-04-25 |
 | 2. Literature QC | 3/3 | Complete | 2026-04-26 |
 | 3. Multi-Agent Pipeline | 2/3 | In Progress | - |
-| 4. Plan Canvas UI | 0/TBD | Not started | - |
+| 4. Plan Canvas UI | 0/3 | Not started | - |
 | 5. Grounding & Citations | 0/TBD | Not started | - |
 | 6. Live Trace & Validation Grid | 0/2 | Not started | - |
 | 7. Closed-Loop + Propagation Demo | 0/TBD | Not started | - |
