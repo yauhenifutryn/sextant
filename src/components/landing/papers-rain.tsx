@@ -39,64 +39,104 @@ const PAPERS_SHAPES: string[][] = [
   ["╭───╮", "│  ─│", "│─ ─│", "╰───╯"],
 ];
 
-// Typewriter base art. The paper-area rows (rows 1-4 below) carry
+// Typewriter base art. The paper-area rows (rows 1-5 below) carry
 // `_______` placeholders that the renderer replaces every frame with
-// either:
-//   - the currently-typed message (typing phase), or
-//   - a single textured-blank line (no paper present), or
-//   - empty spaces (paper has just ejected and is ascending)
-// Each row is exactly 34 chars wide so columns line up.
+// the currently-typed message, a fully-blank sheet (idle), or empty
+// space (no sheet — just after ejection). Each row is exactly 36
+// chars wide so columns line up.
 const TYPEWRITER_BASE: string[] = [
-  "         ╭─────────────────╮     ",
-  "         │_________________│     ",
-  "         │_________________│     ",
-  "         │_________________│     ",
-  "         │_________________│     ",
-  "    ┌────┴─────────────────┴────┐",
-  "    │ ████████████████████████ │ ",
-  "    │ ┌──────────────────────┐ │ ",
-  "    │ │ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ │ │ ",
-  "    │ │ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ │ │ ",
-  "    │ │ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ │ │ ",
-  "    │ │   ▔▔▔▔▔▔▔▔▔▔▔▔▔▔   │ │ ",
-  "    │ └──────────────────────┘ │ ",
-  "    └──────────────────────────┘ ",
+  "     ╭────────────────────────╮     ",
+  "     │________________________│     ",
+  "     │________________________│     ",
+  "     │________________________│     ",
+  "     │________________________│     ",
+  "     │________________________│     ",
+  "  ┌──┴────────────────────────┴──┐  ",
+  "  │ ████████████████████████████ │  ",
+  "  │ ┌──────────────────────────┐ │  ",
+  "  │ │ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣  │ │  ",
+  "  │ │ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣  │ │  ",
+  "  │ │ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣ ▣  │ │  ",
+  "  │ │   ▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔   │ │  ",
+  "  │ └──────────────────────────┘ │  ",
+  "  └──────────────────────────────┘  ",
 ];
 
-// Where the typed-chars overlay lands inside TYPEWRITER_BASE.
-const PAPER_AREA_X = 10; // column where the `___` block starts
-const PAPER_AREA_Y = 1; // first underscore row (0-indexed)
-const PAPER_AREA_W = 17; // width of the `___` block
-const PAPER_AREA_H = 4; // four rows of paper content
+// Where the typed-chars overlay lands inside TYPEWRITER_BASE. The
+// paper-area is now 24 chars wide × 5 rows tall — wide enough for a
+// real-looking document with multiple lines of meaningful content.
+const PAPER_AREA_X = 6;
+const PAPER_AREA_Y = 1;
+const PAPER_AREA_W = 24;
+const PAPER_AREA_H = 5;
 
-// Short scientific snippets the typewriter cycles through. Each
-// message is an array of up-to-four ≤17-char rows. Total chars per
-// message determine typing duration along with TYPE_CPS.
+// Short agent-log snippets the typewriter cycles through. Each
+// message is up-to-five ≤24-char rows; total chars per message ×
+// effective CPS determine typing duration along with TYPING_MS.
 const TYPED_LINES: string[][] = [
-  ["[ researcher ]", "Sigma SAB4500153", "  -> citation OK"],
-  ["[ operator ]", "n=8 dose + sham", "  -> budget OK"],
-  ["[ skeptic ]", "power 0.78 < 0.8", "  -> n→12 needed"],
-  ["[ compliance ]", "IACUC #4421 BSL2", "  -> gate green"],
-  ["[ researcher ]", "PubMed 29435693", "  -> linked OK"],
-  ["[ operator ]", "PBS pH 7.4 1mL", "  -> price $14"],
-  ["[ skeptic ]", "missing sham arm", "  -> rule LR-12"],
+  [
+    "[ researcher · 03:14:22 ]",
+    "claim: anti-Ki67 marks",
+    "  proliferation activity",
+    "src: Sigma SAB4500153",
+    "  -> citation OK",
+  ],
+  [
+    "[ skeptic · 03:14:31 ]",
+    "missing sham control arm",
+    "  power 0.78 < 0.8",
+    "  rule LR-12 applied",
+    "  -> n=8 → n=12",
+  ],
+  [
+    "[ operator · 03:14:42 ]",
+    "PBS pH 7.4 1mL × n=12",
+    "  catalog Thermo 10010",
+    "  unit $14.20 / 500mL",
+    "  -> total $2,840",
+  ],
+  [
+    "[ compliance · 03:14:55 ]",
+    "IACUC #4421 active",
+    "  biosafety BSL-2 OK",
+    "  ethics gate green",
+    "  -> proceed",
+  ],
+  [
+    "[ researcher · 03:15:09 ]",
+    "PubMed 29435693",
+    "  Nature Cell Bio 2018",
+    "  doi 10.1038/s41556-",
+    "  -> linked, OK",
+  ],
+  [
+    "[ operator · 03:15:21 ]",
+    "primary ab dilution",
+    "  1:200 in PBS-T",
+    "  Thermo PA5-19884",
+    "  -> reagent OK",
+  ],
 ];
 
 const COLS = 80;
-const ROWS = 50;
+const ROWS = 52;
 const PAPER_W = 5;
 const PAPER_H = 4;
-const N_PAPERS = 22;
+const N_PAPERS = 28;
 const FRAME_GATE_MS = 38; // ~26 fps
 
 // Typewriter is anchored bottom-left in the canvas grid.
 const TYPE_X = 0;
 const TYPE_Y = ROWS - TYPEWRITER_BASE.length;
 
-// Phase durations.
-const TYPING_MS = 2200;
-const ASCEND_MS = 950;
-const TYPING_GAP_MS = 280; // small pause between consecutive pages
+// Phase durations. Typing is intentionally fast (~60 cps over a
+// ~95-char message) so the typewriter visibly chews through pages
+// instead of one slow page every five seconds. The gap between two
+// pages is short — enough to show the carriage emptying between
+// pages but not so long that the cadence feels languid.
+const TYPING_MS = 1700;
+const ASCEND_MS = 750;
+const TYPING_GAP_MS = 160;
 
 // Phase-2 (ascending) physics — quick lift out of the typewriter,
 // only a few cells of vertical travel before gravity flips and the
@@ -136,9 +176,10 @@ type Paper = {
   wobblePhase: number; // per-paper wobble offset
 };
 
-// Where the small flying-paper appears just after ejection — just
-// above the typewriter's paper outlet.
-const EJECT_X = TYPE_X + 11;
+// Where the small flying-paper appears just after ejection — at the
+// top of the typewriter's paper outlet, horizontally centered on the
+// new wider paper-area (PAPER_AREA_X..+PAPER_AREA_W).
+const EJECT_X = TYPE_X + PAPER_AREA_X + Math.floor((PAPER_AREA_W - PAPER_W) / 2);
 const EJECT_Y = TYPE_Y - 3;
 
 function spawnQueued(p: Paper) {
