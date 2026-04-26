@@ -418,9 +418,12 @@
   height: 100%;
   object-fit: cover;
   z-index: 0;
-  opacity: 0.32;
-  filter: blur(10px) saturate(1.45) contrast(1.1);
-  -webkit-filter: blur(10px) saturate(1.45) contrast(1.1);
+  /* Heavy blur + low opacity: the lab scene reads as a soft colored
+   * wash, not a recognizable photo. The ASCII pattern on top is what
+   * the eye focuses on; the video just supplies ambient color. */
+  opacity: 0.18;
+  filter: blur(24px) saturate(1.3) contrast(1.05);
+  -webkit-filter: blur(24px) saturate(1.3) contrast(1.05);
   pointer-events: none;
 }
 /* The VideoAscii's <pre> element gets an enlarged font + monospace
@@ -434,13 +437,12 @@
   font-size: clamp(8px, 1.1vw, 13px);
   line-height: 0.92;
   letter-spacing: 0.02em;
-  font-weight: 500;
+  font-weight: 600;
   color: #0F4C3A;
-  opacity: 0.92;
+  opacity: 1;
   display: block;
   text-align: left;
   padding: 28px;
-  mix-blend-mode: multiply;
 }
 /* Scrim is now even softer because the colored video is doing some of
  * the visual work. Just enough warm wash in the center to keep the
@@ -451,12 +453,22 @@
   inset: 0;
   z-index: 2;
   pointer-events: none;
+  /* Two-layer scrim so the text column (headline + sub + CTAs) gets a
+   * tall, near-opaque wash while the ASCII pattern at the edges stays
+   * vivid. The first ellipse is a wider/taller column over the text
+   * area; the second is a soft halo that fades out to ASCII territory. */
   background:
     radial-gradient(
-      ellipse 50% 40% at 50% 48%,
-      rgba(250, 250, 247, 0.62) 0%,
-      rgba(250, 250, 247, 0.28) 60%,
-      rgba(250, 250, 247, 0.08) 100%
+      ellipse 38% 55% at 50% 50%,
+      rgba(250, 250, 247, 0.92) 0%,
+      rgba(250, 250, 247, 0.74) 45%,
+      rgba(250, 250, 247, 0.20) 90%,
+      rgba(250, 250, 247, 0) 100%
+    ),
+    radial-gradient(
+      ellipse 70% 60% at 50% 50%,
+      rgba(250, 250, 247, 0.18) 0%,
+      rgba(250, 250, 247, 0) 100%
     );
 }
 
