@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 4 Plan 02 (Plan Canvas UI Wave 2 — PlanTabs 5-tab shell + PlanSkeleton loading scaffold) COMPLETE. 2 new files shipped at commits c48409a (Task 1: src/components/plan/plan-skeleton.tsx 67 lines — static 5-label fake tablist + 3 animate-pulse Protocol-shape skeleton cards, geometry mirrors real TabsList for stable loading→loaded swap, aria-busy=true for screen readers per D4-11), 83f609b (Task 2: src/components/plan/plan-tabs.tsx 162 lines — 5-tab Radix Tabs shell ordered Protocol→Materials→Budget→Timeline→Validation per D4-03 with defaultValue=protocol, compliance_notes routed by target_kind per D4-09 [global→above tablist, protocol_step→top of Protocol panel, material_row→top of Materials panel] via private ComplianceStrip helper with border-l-4 severity accents (info=borderwarm, caution=clay, blocking=destructive) + 1px neutral 3-sides enclosure mirroring verdict-card discriminated borders, compliance_summary as italic muted line under tablist always visible, pure-render commitment held with 0 useState/0 useEffect since Radix owns tab state, D4-13 no internal scroll, D4-16 trust-the-type no defensive guards). 1 deviation auto-fixed: PlanSkeleton tab-label array reformatted from one-line to one-per-line for strict acceptance grep (wc -l counts matching lines not occurrences) — zero behavior change. 0 new dependencies, 0 schema mutations. Project-wide tsc green per task. ~2m 36s wall, 2 commits. Wave 3 (04-03-PLAN.md — wire PlanTabs into PlanCanvas + 3-state coexistence per D4-12) unblocked: import <PlanTabs plan={plan} /> + <PlanSkeleton /> directly with zero API churn."
-last_updated: "2026-04-26T10:46:04Z"
-last_activity: 2026-04-26 -- Phase 4 Plan 02 (PlanTabs shell + PlanSkeleton) COMPLETE
+stopped_at: "Phase 4 Plan 03 (Plan Canvas UI Wave 3 — PlanTabs+PlanSkeleton wire-in to PlanCanvas + dashboard prop threading) COMPLETE. Phase 4 fully shipped. 0 new files, 2 modified at commits 064e9cc (Task 1: src/components/plan-canvas.tsx +35/-8 — extended Props with plan: Plan | null + planIsLoading: boolean, added 3-state coexistence per D4-12 with mutually-exclusive showPlan/showSkeleton/showHero guards below pinned VerdictCard; state (b) renders <PlanTabs plan={plan} /> when plan != null, state (c) renders <PlanSkeleton /> when plan===null AND (verdictActive OR planIsLoading), state (a) preserves empty-state hero verbatim when nothing active; single overflow-y-auto on the section per D4-13; trust-the-type per D4-16 with only the type-narrowing guard at the JSX root), d3bc4f3 (Task 2: src/app/app/page.tsx +2 lines threading plan={plan.plan} + planIsLoading={plan.isLoading} on <PlanCanvas />; usePlan() call already present from Phase 3, TraceRail wiring untouched, D-63 auto-fire useEffect intact). 0 deviations. Project-wide tsc green per task and final. All 6 PLAN-XX acceptance grep checks PASS (PLAN-01 Protocol <ol>+step_number+duration_estimate; PLAN-02 Materials <table> + 6 column headers verbatim; PLAN-03 Budget bg-forest/30+Total+formatCurrency; PLAN-04 Timeline depends_on+duration_days; PLAN-05 Validation measurement_method+pass_criteria; PLAN-06 5 tabs + Radix primitive + active-tab forest underline). One acceptance-grep false positive documented: [0 sources] matched a JSDoc comment in citation-slot.tsx line 23 (Wave 1 locked file) that documents the rule — actual code at line 33 returns null for empty arrays per CLAUDE.md hard rule #1; not a violation. ~2m 38s wall, 2 commits. Phase 5 (grounding) unblocked at CitationSlot leaf level with zero shell churn."
+last_updated: "2026-04-26T10:55:00Z"
+last_activity: 2026-04-26 -- Phase 4 Plan 03 (PlanCanvas wire-in + dashboard threading) COMPLETE — Phase 4 SHIPPED
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 14
-  completed_plans: 13
-  percent: 93
+  completed_plans: 14
+  percent: 100
 ---
 
 # Project State
@@ -25,12 +25,12 @@ See: .planning/PROJECT.md (updated 2026-04-25)
 
 ## Current Position
 
-Phase: 4 (Plan Canvas UI) — EXECUTING
-Plan: 3 of 3 (next: plan-canvas.tsx wire-in + 3-state coexistence per D4-12)
-Status: Executing Phase 4
-Last activity: 2026-04-26 -- Phase 4 Plan 02 (PlanTabs shell + PlanSkeleton) COMPLETE
+Phase: 4 (Plan Canvas UI) — COMPLETE → next: Phase 5 (Grounding & Citations) UNBLOCKED
+Plan: 3 of 3 done (04-01 + 04-02 + 04-03 all shipped)
+Status: Phase 5 ready to plan
+Last activity: 2026-04-26 -- Phase 4 Plan 03 (PlanCanvas wire-in + dashboard threading) COMPLETE — Phase 4 SHIPPED
 
-Progress: [█████████░] ~93% (Phase 1 + Phase 2 + Phase 3 done; Phase 4 Wave 2 of 3 done)
+Progress: [██████████] Phases 1-4 complete (4 of 8); Phase 5 (grounding) unblocked at CitationSlot leaf level with zero shell churn
 
 ## Production environment
 
@@ -44,9 +44,9 @@ Progress: [█████████░] ~93% (Phase 1 + Phase 2 + Phase 3 don
 
 **Velocity:**
 
-- Total plans completed: 10 (3 in Phase 1 + 3 in Phase 2 + 2 in Phase 3 + 2 in Phase 4)
-- Average duration: ~7 min 43 sec
-- Total execution time: ~77 min 16 sec
+- Total plans completed: 12 (3 in Phase 1 + 3 in Phase 2 + 3 in Phase 3 + 3 in Phase 4)
+- Average duration: ~6 min 49 sec (estimate)
+- Total execution time: ~82 min (estimate)
 
 **By Phase:**
 
@@ -54,13 +54,13 @@ Progress: [█████████░] ~93% (Phase 1 + Phase 2 + Phase 3 don
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | ~12 min 30 sec | ~6 min 15 sec |
 | 2. Literature QC | 3/3 | ~44 min 35 sec | ~14 min 52 sec |
-| 3. Multi-Agent Pipeline | 2/3 | ~12 min 20 sec | ~6 min 10 sec |
-| 4. Plan Canvas UI | 2/3 | ~7 min 50 sec | ~3 min 55 sec |
+| 3. Multi-Agent Pipeline | 3/3 | ~12 min 20 sec + 03-03 | ~5 min |
+| 4. Plan Canvas UI | 3/3 | ~10 min 28 sec | ~3 min 29 sec |
 
 **Recent Trend:**
 
-- Last 10 plans: 04-02 (~2m 36s, 2 commits, 1 auto-fixed deviation — PlanSkeleton tab-label array reformatted one-per-line for strict acceptance grep; zero behavior change; PlanTabs 5-tab shell composes Wave 1 leaves with compliance routing per D4-09 + compliance_summary footer; PlanSkeleton geometry mirrors real TabsList; pure-render commitment held with 0 useState/useEffect; project-wide tsc green per task), 04-01 (~5m 14s, 3 commits, 2 auto-fixed deviations — Citation type derived locally via z.infer because qc/schema.ts is locked + JSDoc planSchema rephrase to satisfy strict grep; verbatim plan-body advantage held; project-wide tsc green per task; 8 leaf files + 1 dep ready for Wave 2 to wire), 03-02 (~10m wall, 3 commits, 0 deviations — 5 LLM-call modules with verbatim plan-supplied file bodies; all grep acceptance chains passed first-time; tsc green per task; consolidator's server-side metadata post-fill prevents LLM-injected provenance), 03-01 (~2m 20s, 3 commits, 0 deviations — pure-data Zod + Node fs work; all grep acceptance chains passed first-time; Phase 6 unblocked at commit 395a861; tsc green; git check-ignore negation proven), 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
-- Trend: 04-02 sets a new fastest-plan-execution record at ~2m 36s — pure composition over typed Wave 1 leaves with zero new dependencies and zero schema mutations. The verbatim-plan-body advantage compounds: when prior waves ship typed primitives, the next wave is a render-layer assembly job. The single deviation was a strict-grep formatting alignment (line-count vs occurrence-count of tab labels), not an implementation bug. Wave 3 wire-in is now unblocked; PlanCanvas can import <PlanTabs /> and <PlanSkeleton /> directly with zero API churn.
+- Last 10 plans: 04-03 (~2m 38s, 2 commits, 0 deviations — pure wire-in: 35-line PlanCanvas extension with showPlan/showSkeleton/showHero mutually-exclusive guards per D4-12 + 2-line dashboard threading plan={plan.plan} + planIsLoading={plan.isLoading}; project-wide tsc green; all 6 PLAN-XX acceptance grep checks PASS; one [0 sources] grep false-positive on JSDoc rule-documentation in Wave 1 locked file documented as non-violation), 04-02 (~2m 36s, 2 commits, 1 auto-fixed deviation — PlanSkeleton tab-label array reformatted one-per-line for strict acceptance grep; zero behavior change; PlanTabs 5-tab shell composes Wave 1 leaves with compliance routing per D4-09 + compliance_summary footer; PlanSkeleton geometry mirrors real TabsList; pure-render commitment held with 0 useState/useEffect; project-wide tsc green per task), 04-01 (~5m 14s, 3 commits, 2 auto-fixed deviations — Citation type derived locally via z.infer because qc/schema.ts is locked + JSDoc planSchema rephrase to satisfy strict grep; verbatim plan-body advantage held; project-wide tsc green per task; 8 leaf files + 1 dep ready for Wave 2 to wire), 03-02 (~10m wall, 3 commits, 0 deviations — 5 LLM-call modules with verbatim plan-supplied file bodies; all grep acceptance chains passed first-time; tsc green per task; consolidator's server-side metadata post-fill prevents LLM-injected provenance), 03-01 (~2m 20s, 3 commits, 0 deviations — pure-data Zod + Node fs work; all grep acceptance chains passed first-time; Phase 6 unblocked at commit 395a861; tsc green; git check-ignore negation proven), 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
+- Trend: 04-03 ties 04-02's velocity at ~2m 38s — the integration wave for a properly-decomposed phase is a 2-file edit (consumer extends Props + dashboard threads through). Phase 4 (3 waves: leaves → shell → wire-in) shipped in ~10m 28s total — exemplar of "Wave 1 ships typed primitives → Wave 2 ships pure-render shell → Wave 3 wires in with zero API churn". Phase 5 (grounding) is now unblocked at the CitationSlot leaf level — Phase 5 work drops into existing slots without restructuring PlanTabs or PlanCanvas.
 
 *Updated after each plan completion*
 
@@ -71,6 +71,9 @@ Progress: [█████████░] ~93% (Phase 1 + Phase 2 + Phase 3 don
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-03: 3-state coexistence in PlanCanvas via mutually-exclusive boolean guards (showPlan / showSkeleton / showHero) — pure derivations of (qcObject, qcIsLoading, plan, planIsLoading); no useState, no useReducer, no race condition possible. Each guard is one line of derivation; transitions are implicit in React reconciliation. The right pattern when guards are O(N=3) and stateless. Single defensive narrowing kept (`{showPlan && plan && <PlanTabs plan={plan} />}`) — not a defensive guard against bad data; it's a TypeScript narrowing required by the prop type since `plan: Plan | null` and PlanTabs requires `Plan`. D4-16 still honored: zero `.protocol/.materials/etc` null checks beyond the root.
+- 04-03: showSkeleton intentionally fires when `verdictActive` even before plan stream starts — matches Wave 3 must_haves; gives a visually stable target while QC is in flight. The plan-checker flagged this as a minor warning; D4-12 explicitly authorizes this UX (verdict-only state shows the skeleton silhouette as a stable loading→loaded swap target). Tightening the guard to require `planIsLoading` would create a brief flash of empty space between QC verdict and plan-stream onset.
+- 04-03: Acceptance-grep `[0 sources]` matched a JSDoc comment in `src/components/plan/citation-slot.tsx` line 23 (Wave 1 locked file) that documents the rule itself. The actual code at line 33 reads `if (!citations || citations.length === 0) return null;` — CLAUDE.md hard rule #1 is enforced verbatim. The grep is a false positive on rule-documentation; not a violation. Wave 1 file is locked per execution constraints; not modified.
 - 04-02: Compliance routing centralized in PlanTabs — notes filtered ONCE at the shell by `target_kind` (`globalNotes`, `protocolNotes`, `materialNotes`), then rendered via private `<ComplianceStrip />` helper at three precise locations (above tablist for global; top of Protocol panel for protocol_step; top of Materials panel for material_row). Severity → `border-l-4` accent map at module scope (info=borderwarm, caution=clay, blocking=destructive) with 1px neutral 3-sides enclosure mirroring verdict-card discriminated borders. The accent IS the signal; rest of geometry stays calm.
 - 04-02: PlanTabs is a pure composition shell — no useState, no useEffect (Radix Tabs owns all tab state), no defensive guards beyond the `Plan`-typed prop contract per D4-16. The single composition point for the canvas: Wave 3 wires `<PlanTabs plan={plan} />` directly, no API churn.
 - 04-02: PlanSkeleton tab-strip geometry intentionally mirrors Wave 1's real `<TabsList>` (`inline-flex items-center justify-start gap-6 border-b border-borderwarm pb-2` root + `font-display text-sm font-medium pb-2 -mb-px border-b-2` per label). Active-tab indicator is muted `border-borderwarm` (not `border-forest`) — placeholder, not real selected state. Visually stable loading→loaded swap when the real Tabs mounts.
@@ -129,5 +132,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-26
-Stopped at: Phase 4 Plan 02 (Plan Canvas UI Wave 2 — PlanTabs 5-tab shell + PlanSkeleton loading scaffold) COMPLETE. 2 new files shipped at commits c48409a (Task 1: src/components/plan/plan-skeleton.tsx 67 lines — static 5-label fake tablist + 3 animate-pulse Protocol-shape skeleton cards, geometry mirrors real TabsList for stable loading→loaded swap, aria-busy=true for screen readers per D4-11), 83f609b (Task 2: src/components/plan/plan-tabs.tsx 162 lines — 5-tab Radix Tabs shell ordered Protocol→Materials→Budget→Timeline→Validation per D4-03 with defaultValue=protocol, compliance_notes routed by target_kind per D4-09 [global→above tablist, protocol_step→top of Protocol panel, material_row→top of Materials panel] via private ComplianceStrip helper with border-l-4 severity accents (info=borderwarm, caution=clay, blocking=destructive) + 1px neutral 3-sides enclosure mirroring verdict-card discriminated borders, compliance_summary as italic muted line under tablist always visible, pure-render commitment held with 0 useState/0 useEffect since Radix owns tab state, D4-13 no internal scroll, D4-16 trust-the-type no defensive guards). 1 deviation auto-fixed: PlanSkeleton tab-label array reformatted from one-line to one-per-line for strict acceptance grep (wc -l counts matching lines not occurrences) — zero behavior change. 0 new dependencies, 0 schema mutations. Project-wide tsc green per task. ~2m 36s wall, 2 commits. Wave 3 (04-03-PLAN.md — wire PlanTabs into PlanCanvas + 3-state coexistence per D4-12) unblocked: import <PlanTabs plan={plan} /> + <PlanSkeleton /> directly with zero API churn.
-Resume file: .planning/phases/04-plan-canvas-ui/04-03-PLAN.md (Wave 3)
+Stopped at: Phase 4 Plan 03 (Plan Canvas UI Wave 3 — PlanTabs+PlanSkeleton wire-in to PlanCanvas + dashboard prop threading) COMPLETE. 0 new files, 2 modified at commits 064e9cc (Task 1: src/components/plan-canvas.tsx +35/-8 — extended Props with plan: Plan | null + planIsLoading: boolean, added 3-state coexistence per D4-12 with mutually-exclusive showPlan/showSkeleton/showHero guards below pinned VerdictCard), d3bc4f3 (Task 2: src/app/app/page.tsx +2 lines threading plan={plan.plan} + planIsLoading={plan.isLoading}). 0 deviations. Project-wide tsc green per task and final. All 6 PLAN-XX acceptance grep checks PASS. One acceptance-grep false positive documented: [0 sources] matched a JSDoc rule-documentation comment in citation-slot.tsx line 23 (Wave 1 locked file); actual code at line 33 returns null for empty arrays per CLAUDE.md hard rule #1 — not a violation. ~2m 38s wall, 2 commits. Phase 4 SHIPPED.
+Resume file: Phase 5 (Grounding & Citations) — needs planning. Run /gsd-plan-phase 5 in a fresh chat.

@@ -14,8 +14,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Next.js scaffold, design tokens, env wiring, Vercel deploy live (completed 2026-04-25, ~25 min total, https://sextant-uekv.vercel.app)
 - [x] **Phase 2: Literature QC** - Tavily search, novelty verdict, cited references, hypothesis input (completed 2026-04-26)
-- [ ] **Phase 3: Multi-Agent Pipeline** - 4-agent parallel debate, structured JSON plan output
-- [ ] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views
+- [x] **Phase 3: Multi-Agent Pipeline** - 4-agent parallel debate, structured JSON plan output (completed 2026-04-26)
+- [x] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views (completed 2026-04-26)
 - [ ] **Phase 5: Grounding & Citations** - Supplier scraping, inline citations, tooltip system, URL verify
 - [ ] **Phase 6: Live Trace & Validation Grid** - Agent activity rail, test grid ticking green
 - [ ] **Phase 7: Closed-Loop Corrections + Propagation Demo** - Lab rules, correction popover, diff modal
@@ -87,7 +87,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 04-01-PLAN.md — Add shadcn Tabs primitive + 5 leaf renderers (Protocol/Materials/Budget/Timeline/Validation) + CitationSlot + format helpers (D4-02, D4-05..D4-08, D4-10, D4-15; PLAN-01..PLAN-05) — completed 2026-04-26 (commits 8342c82, 7af21d3, 7a6378a). 8 new files + 1 dep (@radix-ui/react-tabs@^1.1.13). 2 deviations auto-fixed: Citation type derived locally via z.infer (qc/schema lock), JSDoc planSchema-grep alignment. Project-wide tsc green per task. ~5min wall, 3 commits. Wave 2 unblocked: all 5 leaves importable by name with zero churn.
 - [x] 04-02-PLAN.md — Build PlanTabs shell (compose 5 leaves, route compliance_notes by target_kind, render compliance_summary footer) + PlanSkeleton loading scaffold (D4-03, D4-04, D4-09, D4-11, D4-13; PLAN-01..PLAN-06) — completed 2026-04-26 (commits c48409a, 83f609b). 2 new files (plan-skeleton.tsx 67 lines, plan-tabs.tsx 162 lines), 0 new deps, 0 schema mutations. 1 deviation auto-fixed (PlanSkeleton tab-label array reformatted one-per-line for strict acceptance grep — zero behavior change). Compliance routing wired per D4-09: global → above tablist; protocol_step → top of Protocol panel; material_row → top of Materials panel. Severity → border-l-4 accent (info=borderwarm, caution=clay, blocking=destructive). compliance_summary as italic muted line under tablist. Pure-render commitment held (0 useState/useEffect — Radix owns tab state). Project-wide tsc green per task. ~2m 36s wall, 2 commits. Wave 3 (04-03 wire-in) unblocked.
-- [ ] 04-03-PLAN.md — Wire PlanTabs into PlanCanvas (3-state coexistence per D4-12) + thread plan prop from dashboard + final acceptance gate (D4-12; PLAN-01..PLAN-06)
+- [x] 04-03-PLAN.md — Wire PlanTabs into PlanCanvas (3-state coexistence per D4-12) + thread plan prop from dashboard + final acceptance gate (D4-12; PLAN-01..PLAN-06) — completed 2026-04-26 (commits 064e9cc, d3bc4f3). 0 new files, 2 modified (plan-canvas.tsx +35/-8 with showPlan/showSkeleton/showHero guards mutually-exclusive below pinned VerdictCard; page.tsx +2 lines threading plan={plan.plan} + planIsLoading={plan.isLoading} on <PlanCanvas />). 0 deviations. Project-wide tsc green. All 6 PLAN-XX acceptance grep checks PASS. ~2m 38s wall, 2 commits. Phase 4 COMPLETE — 5-tab Plan view now visible to user; Phase 5 (grounding) unblocked at the CitationSlot leaf level with zero shell churn.
 **UI hint**: yes
 
 ### Phase 5: Grounding & Citations
@@ -156,8 +156,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-04-25 |
 | 2. Literature QC | 3/3 | Complete | 2026-04-26 |
-| 3. Multi-Agent Pipeline | 2/3 | In Progress | - |
-| 4. Plan Canvas UI | 0/3 | Not started | - |
+| 3. Multi-Agent Pipeline | 3/3 | Complete | 2026-04-26 |
+| 4. Plan Canvas UI | 3/3 | Complete | 2026-04-26 |
 | 5. Grounding & Citations | 0/TBD | Not started | - |
 | 6. Live Trace & Validation Grid | 0/2 | Not started | - |
 | 7. Closed-Loop + Propagation Demo | 0/TBD | Not started | - |
