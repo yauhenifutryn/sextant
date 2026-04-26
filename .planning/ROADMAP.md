@@ -13,7 +13,7 @@ Eight phases take the project from a bare Next.js scaffold to a live, judge-read
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Next.js scaffold, design tokens, env wiring, Vercel deploy live (completed 2026-04-25, ~25 min total, https://sextant-uekv.vercel.app)
-- [ ] **Phase 2: Literature QC** - Tavily search, novelty verdict, cited references, hypothesis input
+- [x] **Phase 2: Literature QC** - Tavily search, novelty verdict, cited references, hypothesis input (completed 2026-04-26)
 - [ ] **Phase 3: Multi-Agent Pipeline** - 4-agent parallel debate, structured JSON plan output
 - [ ] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views
 - [ ] **Phase 5: Grounding & Citations** - Supplier scraping, inline citations, tooltip system, URL verify
@@ -55,7 +55,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 - [x] 02-01-PLAN.md — Chip preflight gate (D-30 BLOCKING) + AI SDK v5 install + 6 server-side lib modules: tavily client, Zod schema, prompt, cache, provenance guard, model IDs (LITQC-01/02/03; D-30..D-37, D-40, D-46, D-47, D-50, D-51, D-53) — completed 2026-04-26 (commits 1988e41, 6d107f8, 1e9984c, 4ddf7fe, 00a6c05, fbc1d50). 6 lib files + 3 deps (ai@5.0.179, @ai-sdk/google@2.0.70, @ai-sdk/react@2.0.181). Build green.
 - [x] 02-02-PLAN.md — POST /api/qc streaming route (Tavily → streamObject → toTextStreamResponse) + useQc client hook (LITQC-01/02/03, INPUT-02; D-38, D-39, D-48, D-49, D-52) — completed 2026-04-26 (commits 29a2d61, aaae5b7, d82246a). 2 created files + 2 modified (D-53 model swap to gemini-2.5-flash + system prompt rewrite to disambiguate ok-discriminator vs verdict-label). Smoke gate passes: cache-miss HTTP 200 in 3.4s with valid verdict + 3 cited URLs (well under 8s D-52 budget); cache-hit HTTP 200 in 8.5ms (well under 1s assertion); structured qc.request log emitted on each request. CLAUDE.md hard rule #1 intact (provenance check runs after experimental_repairText reconstruction).
-- [ ] 02-03-PLAN.md — VerdictCard / CitationCard / ChatThread components + dashboard wire-in (Enter submit, chip flow, 4 union states) (INPUT-01, INPUT-02, LITQC-04; D-41..D-44, D-46, D-48)
+- [x] 02-03-PLAN.md — VerdictCard / CitationCard / ChatThread components + dashboard wire-in (Enter submit, chip flow, 4 union states) (INPUT-01, INPUT-02, LITQC-04; D-41..D-44, D-46, D-48) — completed 2026-04-26 (commits 444f0a8, 1995856, 5f09cd5, fb55656). 3 created + 3 modified files. End-to-end smoke gate passes on live dev server: chip h1 (CRP biosensor) returns `verdict:"similar-work-exists"` with 3 cited Springer/PMC/MDPI URLs in 3.8s wallclock; cache-hit in 65ms (5ms server-side). All 4 D-48 union states wired (verdict + error retryable=false exercised live; clarify + no-evidence + retryable=true logically covered). One commit-hygiene incident (stray landing-polish files swept into Task 3 commit) documented in 02-03-SUMMARY.md. Phase 2 success criteria 1-4 satisfied.
 **UI hint**: no
 
 ### Phase 3: Multi-Agent Pipeline
@@ -145,7 +145,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-04-25 |
-| 2. Literature QC | 2/3 | In Progress | - |
+| 2. Literature QC | 3/3 | Complete | 2026-04-26 |
 | 3. Multi-Agent Pipeline | 0/TBD | Not started | - |
 | 4. Plan Canvas UI | 0/TBD | Not started | - |
 | 5. Grounding & Citations | 0/TBD | Not started | - |

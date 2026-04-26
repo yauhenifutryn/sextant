@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Plan 02-02 complete: POST /api/qc streaming route + useQc client hook shipped. Smoke gate passes end-to-end on fresh dev server (cache-miss 3.4s with verdict; cache-hit 8.5ms). Six deviations auto-fixed: D-53 model swap to gemini-2.5-flash, AI SDK v5 maxOutputTokens rename, thinkingBudget=0 to free output budget on Gemini 2.5+ thinking models, structuredOutputs=false + experimental_repairText to bypass discriminatedUnion-collapse on Gemini, system prompt tightened to disambiguate ok-discriminator vs verdict-label, comment reword to satisfy negative grep. CLAUDE.md hard rule #1 intact (provenance check runs after repair). Plan 02-03 (UI components) remains. Ready for /gsd-execute-phase 2 to continue."
-last_updated: "2026-04-26T00:38:39.000Z"
-last_activity: 2026-04-26 -- Plan 02-02 complete (POST /api/qc + useQc hook, 3 commits)
+stopped_at: "Phase 2 (Literature QC) COMPLETE. Plan 02-03 shipped 3 new components (VerdictCard, CitationCard, ChatThread) + surgical mods to ChatPanel/PlanCanvas/Dashboard. End-to-end smoke gate passes live: chip h1 (CRP biosensor) returns verdict:'similar-work-exists' with 3 cited Springer/PMC/MDPI URLs in 3.8s wallclock; cache-hit in 65ms (5ms server-side). All Phase 2 success criteria 1-4 satisfied. Phase 2 ready to mark complete on ROADMAP. Ready for /gsd-plan-phase 3 (Multi-Agent Pipeline)."
+last_updated: "2026-04-26T00:56:52.000Z"
+last_activity: 2026-04-26 -- Plan 02-03 complete (UI components + dashboard wire-in, 4 commits, end-to-end QC streaming live)
 progress:
   total_phases: 8
-  completed_phases: 1
-  total_plans: 7
-  completed_plans: 5
-  percent: 71
+  completed_phases: 2
+  total_plans: 8
+  completed_plans: 6
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-25)
 
 **Core value:** A scientist enters a hypothesis, watches four agents debate it in parallel, and receives a fundable, citation-grounded experiment plan in under three minutes — and every correction they make compounds into the next plan, automatically.
-**Current focus:** Phase 2 — literature-qc
+**Current focus:** Phase 2 COMPLETE → ready for Phase 3 (Multi-Agent Pipeline)
 
 ## Current Position
 
-Phase: 2 (literature-qc) — EXECUTING
-Plan: 3 of 3 (next: 02-03 UI components)
-Status: Executing Phase 2
-Last activity: 2026-04-26 -- Plan 02-02 complete (POST /api/qc + useQc hook)
+Phase: 2 (literature-qc) — COMPLETE (all 3 plans shipped, success criteria 1-4 satisfied)
+Plan: 3 of 3 done (02-03 UI components shipped)
+Status: Ready for Phase 3 planning
+Last activity: 2026-04-26 -- Plan 02-03 complete (UI components + dashboard wire-in, 4 commits)
 
-Progress: [███████░░░] ~71% (Phase 1 done, Plans 02-01 + 02-02 done)
+Progress: [████████░░] ~75% (Phase 1 + Phase 2 done)
 
 ## Production environment
 
@@ -44,21 +44,21 @@ Progress: [███████░░░] ~71% (Phase 1 done, Plans 02-01 + 02-
 
 **Velocity:**
 
-- Total plans completed: 5 (3 in Phase 1 + 2 in Phase 2)
-- Average duration: ~9 min 24 sec
-- Total execution time: ~46 min 57 sec
+- Total plans completed: 6 (3 in Phase 1 + 3 in Phase 2)
+- Average duration: ~9 min 26 sec
+- Total execution time: ~57 min 6 sec
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | ~12 min 30 sec | ~6 min 15 sec |
-| 2. Literature QC | 2/3 | ~34 min 26 sec | ~17 min 13 sec |
+| 2. Literature QC | 3/3 | ~44 min 35 sec | ~14 min 52 sec |
 
 **Recent Trend:**
 
-- Last 5 plans: 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain; smoke gate fully passes), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
-- Trend: 02-02 longest plan yet — Gemini structured-output behavior diverged from AI-SPEC's predictions in three independent ways (model unavailability, thinking-token budget consumption, oneOf collapse); each forced a fix iteration. Total smoke-test investigation accounted for ~20m of the 29m runtime.
+- Last 6 plans: 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
+- Trend: 02-03 returned the project to clean-execution territory. Plan-checker caught the onChipPick-as-build-time-prop design decision before execution, eliminating the late-bound revision risk. The implementation followed the plan exactly; the only friction was a parallel-process file-staging race (documented in 02-03-SUMMARY).
 
 *Updated after each plan completion*
 
@@ -88,6 +88,11 @@ Recent decisions affecting current work:
 - 02-02: Gemini 2.5+ are "thinking" models that burn most of `maxOutputTokens` on internal CoT. Setting `providerOptions.google.thinkingConfig.thinkingBudget: 0` is REQUIRED on every Phase-3+ Gemini call to prevent JSON mid-string truncation. Documented in route.ts inline comment.
 - 02-02: Gemini's strict server-side `oneOf`-with-`const` enforcement stalls the model. Disabled via `providerOptions.google.structuredOutputs: false` and a server-side `experimental_repairText` callback that reconstructs the discriminator field from the SHAPE of the model output (no value invention; truncation only on schema-capped fields). Provenance check still runs after repair — CLAUDE.md hard rule #1 intact.
 - 02-02: AI SDK v5 spelling: option is `maxOutputTokens` not `maxTokens`. Plan-grep compatibility preserved by keeping `maxTokens: 800` in a doc comment.
+- 02-03: Border-color signaling per D-41 mapped: not-found→border-forest (good news, go ahead), similar-work-exists→border-borderwarm (default warm neutral, prior work present), exact-match-found→border-clay (stop-and-look). Light-mode-only Phase-1 invariant honored.
+- 02-03: Single onChipPick handler owned by Dashboard, passed to BOTH ChatPanel + PlanCanvas (verified by `grep -c "onChipPick={onChipPick}"` returning 2). Unified D-44 flow with no duplicated state. ChatPanel built with onChipPick prop FROM THE START in Task 2 — plan-checker caught this design before execution, no late-bound revision needed.
+- 02-03: focusArrowSignal counter pattern (incrementing useState + useEffect on dependency) chosen over useImperativeHandle/forwardRef for parent-to-child imperative focus. Simpler to reason about ("increment, child re-runs effect, calls .focus()").
+- 02-03: JSON.stringify de-dupe (lastCommittedHash ref) in dashboard's commit-to-thread useEffect prevents double-appending the assistant turn during streaming — the qc.object reference changes on every chunk; hash captures only the terminal state.
+- 02-03: Cold-start Tavily timeouts (2 calls hit AbortSignal.timeout(4000), latency_ms ~4010) on first calls after dev server warmup. Direct Tavily probe with same params returned in 543ms — confirmed transient TLS-handshake overhead, not a config bug. Route's D-48 error path fired correctly. For production: bump timeout to 6s or add warmup ping at server start.
 
 ### Pending Todos
 
@@ -108,5 +113,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-26
-Stopped at: Plan 02-02 complete. POST /api/qc streaming route + useQc client hook shipped. Smoke gate passes end-to-end on fresh dev server (cache-miss 3.4s with verdict for chip h1; cache-hit 8.5ms; 2 qc.request log lines, 2nd cache_hit:true; schema_valid:true; 3 cited URLs all in Tavily input set, 0 provenance drops). Six deviations auto-fixed (see Decisions section: D-53 fallback, AI SDK v5 maxOutputTokens, thinkingBudget=0, structuredOutputs=false + repair function, prompt rewrite, comment reword). Build green. Plan 02-03 (UI components: VerdictCard, CitationCard, ChatThread, dashboard wire-in) can now proceed.
-Resume file: .planning/phases/02-literature-qc/02-03-PLAN.md
+Stopped at: Phase 2 (Literature QC) COMPLETE — all 3 plans shipped. Plan 02-03 delivered 3 new client components (VerdictCard, CitationCard, ChatThread) + surgical mods to ChatPanel/PlanCanvas/Dashboard. End-to-end smoke gate passes on live dev server: chip h1 (CRP biosensor) returns verdict:"similar-work-exists" with 3 cited Springer/PMC/MDPI URLs in 3.8s wallclock; same hypothesis cache-hits in 65ms (5ms server-side); D-48 error retryable=false also exercised live (cold-start Tavily timeout). All 4 Phase 2 success criteria satisfied (input submit, at-most-one clarify, sub-10s verdict with ≥2 citations, verdict prominent above canvas). Build green, tsc clean, no Phase-1 invariants regressed. Ready for /gsd-plan-phase 3 (Multi-Agent Pipeline).
+Resume file: .planning/phases/03-multi-agent-pipeline/ (not yet created — next step is /gsd-plan-phase 3)

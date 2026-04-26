@@ -9,16 +9,16 @@ Requirements for the must-ship hackathon MVP (hours 0-14). Each maps to roadmap 
 
 ### Input
 
-- [ ] **INPUT-01**: User can submit a scientific hypothesis through a chat-style text input
-- [ ] **INPUT-02**: System detects ambiguity and asks at most one clarifying question before proceeding
+- [x] **INPUT-01**: User can submit a scientific hypothesis through a chat-style text input — completed Plan 02-03
+- [x] **INPUT-02**: System detects ambiguity and asks at most one clarifying question before proceeding — completed Plan 02-03 (D-46 client enforcement via clarifyConsumed + suffix-injection)
 - [ ] **INPUT-03**: Empty state surfaces 4 example hypotheses (taken verbatim from the Fulcrum brief) as one-click chips
 
 ### Literature QC
 
-- [ ] **LITQC-01**: System queries Tavily across arXiv, Semantic Scholar, and protocols.io with the user's hypothesis
-- [ ] **LITQC-02**: System returns a novelty verdict ("not found", "similar work exists", "exact match found")
-- [ ] **LITQC-03**: System surfaces at least 2 cited references with title, source URL, and 1-line excerpt
-- [ ] **LITQC-04**: Lit-QC verdict is rendered prominently above the plan canvas
+- [x] **LITQC-01**: System queries Tavily across arXiv, Semantic Scholar, and protocols.io with the user's hypothesis — completed Plan 02-02
+- [x] **LITQC-02**: System returns a novelty verdict ("not found", "similar work exists", "exact match found") — completed Plan 02-02
+- [x] **LITQC-03**: System surfaces at least 2 cited references with title, source URL, and 1-line excerpt — completed Plan 02-02 (live smoke confirms 3 cited URLs returned for chip h1)
+- [x] **LITQC-04**: Lit-QC verdict is rendered prominently above the plan canvas — completed Plan 02-03 (VerdictCard slotted at top of PlanCanvas, hero hides when QC active)
 
 ### Multi-Agent Plan Generation
 
@@ -104,13 +104,13 @@ The differentiator (hours 14-18). Stretch goal that wins the demo if completed.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INPUT-01 | Phase 2 | Pending |
-| INPUT-02 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
+| INPUT-01 | Phase 2 | Complete (Plan 02-03) |
+| INPUT-02 | Phase 2 | Complete (Plan 02-03) |
 | INPUT-03 | Phase 1 | Pending |
-| LITQC-01 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
-| LITQC-02 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
-| LITQC-03 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
-| LITQC-04 | Phase 2 | Pending |
+| LITQC-01 | Phase 2 | Complete (Plan 02-02 + 02-03) |
+| LITQC-02 | Phase 2 | Complete (Plan 02-02 + 02-03) |
+| LITQC-03 | Phase 2 | Complete (Plan 02-02 + 02-03) |
+| LITQC-04 | Phase 2 | Complete (Plan 02-03) |
 | AGENT-01 | Phase 3 | Pending |
 | AGENT-02 | Phase 3 | Pending |
 | AGENT-03 | Phase 3 | Pending |
