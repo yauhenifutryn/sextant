@@ -116,6 +116,85 @@ Then `/gsd-plan-phase 6 --auto` runs cleanly.
 - **NO** mobile responsive — desktop demo only.
 - **NO** keyboard navigation polish (TRACE-01..04 don't require it; if you add it, keep to 5 min max).
 
+## ⚠ MANDATORY: demo-pace toggle (add this to the trace rail)
+
+**Why this is critical:** Phase 8 demo recording requires the trace rail to staircase visibly across ~15 seconds (so judges can see the parallel agent fan-out). On a cache-hit run all 5 events arrive in <100ms — without pacing, the rows flash done instantly and look fake.
+
+Phase 3 plan instructed the executor to add a SERVER-SIDE env var `SEXTANT_DEMO_PACE_MS` that paces event emission. **Add this CLIENT-SIDE safety net to your trace rail anyway** — it's a 15-line addition that gives us a fallback if the server-side toggle didn't ship cleanly.
+
+### Drop-in snippet for `src/components/trace-rail.tsx`
+
+```tsx
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import type { AgentEvent } from "@/lib/plan/trace";
+
+/**
+ * Demo-pace queue: when ?demoPace=slow is in the URL, drip-feed agentEvents
+ * with a delay so the trace rail staircases visibly during the 60s demo
+ * recording. Without this, cache-hit runs flash all events in <100ms.
+ */
+function useDemoPacedEvents(events: AgentEvent[]): AgentEvent[] {
+  const params = useSearchParams();
+  const paceMs = (() => {
+    const p = params?.get("demoPace");
+    if (p === "slow") return 3500;
+    if (p === "ultraslow") return 6000;
+    return 0; // production default — no pacing
+  })();
+
+  const [paced, setPaced] = useState<AgentEvent[]>([]);
+  const queueRef = useRef<AgentEvent[]>([]);
+  const drainingRef = useRef(false);
+
+  useEffect(() => {
+    if (paceMs === 0) {
+      setPaced(events);
+      return;
+    }
+    // Identify newly arrived events (since the last queue snapshot)
+    const known = new Set(queueRef.current);
+    const newOnes = events.filter((e) => !known.has(e));
+    queueRef.current = events;
+    if (newOnes.length === 0) return;
+
+    let cancelled = false;
+    const drain = (toDrip: AgentEvent[]) => {
+      drainingRef.current = true;
+      let i = 0;
+      const tick = () => {
+        if (cancelled || i >= toDrip.length) {
+          drainingRef.current = false;
+          return;
+        }
+        setPaced((prev) => [...prev, toDrip[i]!]);
+        i += 1;
+        setTimeout(tick, paceMs);
+      };
+      tick();
+    };
+    drain(newOnes);
+    return () => {
+      cancelled = true;
+    };
+  }, [events, paceMs]);
+
+  return paceMs === 0 ? events : paced;
+}
+
+// Inside the TraceRail component:
+// const pacedEvents = useDemoPacedEvents(agentEvents);
+// ...then render `pacedEvents` instead of `agentEvents` everywhere.
+```
+
+**To activate during recording:** open `https://sextant-uekv.vercel.app/app?demoPace=slow` (or `?demoPace=ultraslow` for an even slower rehearsal).
+
+**To verify it works:** click chip H1 with `?demoPace=slow` in the URL after caches are warm. The 4 agent rows should appear one-by-one over ~14 seconds, NOT all at once. If they all flash done instantly, the snippet isn't wired correctly — fix before recording.
+
+**Append a one-liner to `.planning/demo-recipe.md` "Confirm trace-rail demo-pace toggle is ON" section** noting which option (server-side env var or this URL param) you ended up shipping, so the recording session knows which lever to pull.
+
 ## Trigger condition (when to start)
 
 You can plan Phase 6 right now (the prop interface is locked in 03-CONTEXT.md D-62; the AgentEvent type definition is fixed).

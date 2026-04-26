@@ -17,7 +17,7 @@
 | **Challenge** | 04 — Fulcrum Science: The AI Scientist |
 | **Program Type** | (auto-fills after challenge select) |
 | **Live Project URL** | https://sextant-uekv.vercel.app |
-| **GitHub Repo URL** | https://github.com/yauhenifutryn/sextant ⚠ **flip to PUBLIC before submitting** |
+| **GitHub Repo URL** | https://github.com/yauhenifutryn/sextant ✅ **PUBLIC** (verified 2026-04-26) |
 | **Technologies/Tags** | TypeScript, Next.js 16, React 19, Vercel AI SDK v5, Gemini 2.5 Flash, Tavily, Multi-Agent, Structured Output, Tailwind v4, shadcn/ui, Framer Motion, Zod |
 | **Additional Tags** | AI Scientist, CRO, Closed-Loop Learning, Grounded Generation, Provenance, B2B SaaS |
 
@@ -79,6 +79,12 @@ Built solo in 24 hours. **Live demo flow:** chip-click hypothesis → grounded l
 
 ## Demo Video (60s, max) — UI/UX showcase
 
+> **Full standalone reference: `.planning/demo-recipe.md`.** This section is a summary; consult the recipe file before recording.
+
+### ⚠ Two non-negotiable pre-flight items
+1. **Cache-warm 4 chips** (5-min protocol — see `demo-recipe.md`).
+2. **Activate trace-rail demo-pace toggle** (`SEXTANT_DEMO_PACE_MS=3500` env var OR `?demoPace=slow` URL param). Without it, cache-hit runs flash all 4 agent rows done in <100ms and the demo looks fake.
+
 ### Cache-warming protocol (run 5 minutes before recording)
 
 1. Open https://sextant-uekv.vercel.app/app in the browser you'll record.
@@ -117,6 +123,8 @@ Cut the 0:25-0:50 segment to a single still frame: a Figma-drawn before/after co
 ---
 
 ## Tech Video (60s, max) — architecture + implementation
+
+> **Full standalone reference: `.planning/tech-video.md`.** Has the verified Mermaid source, render instructions, narration script with pronunciation tips, and beat-by-beat pacing for the optional build animation.
 
 ### Architecture diagram (Mermaid source — render at https://mermaid.live, screenshot at high resolution)
 
@@ -175,10 +183,12 @@ graph LR
 
 ## Pre-flight checklist (do these BEFORE submitting)
 
-- [ ] **Flip GitHub repo to PUBLIC** — currently private per STATE.md. Required for submission archive.
+- [x] ✅ GitHub repo PUBLIC (verified by user 2026-04-26)
 - [ ] Verify https://sextant-uekv.vercel.app responds and the full demo flow works end-to-end (lit-QC + plan + correction + propagation).
-- [ ] Cache-warm 4 demo chips, then record demo video.
-- [ ] Render architecture diagram (mermaid.live → PNG) and record tech video.
+- [ ] **Cache-warm 4 demo chips** (5-min protocol — see `.planning/demo-recipe.md`).
+- [ ] **Activate trace-rail demo-pace toggle** (server env var `SEXTANT_DEMO_PACE_MS=3500` OR URL param `?demoPace=slow`). Verify by clicking chip H1 — agent rows must staircase visibly, not flash done instantly.
+- [ ] Record demo video using the shot list in `.planning/demo-recipe.md`.
+- [ ] Render architecture diagram (mermaid.live → PNG) and record tech video using `.planning/tech-video.md`.
 - [ ] Both videos: H.264 MP4, max 60s each, target <30MB each.
 - [ ] Team photo: solo team — one landscape photo, good lighting, face centered. 16:9 ratio recommended.
 - [ ] Copy-paste all 6 structured description fields from this doc into the form.
