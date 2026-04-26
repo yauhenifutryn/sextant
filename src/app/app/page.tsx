@@ -7,7 +7,9 @@ import { ChatPanel } from "@/components/chat-panel";
 import { PlanCanvas } from "@/components/plan-canvas";
 import { TraceRail } from "@/components/trace-rail";
 import { useQc } from "@/components/qc/use-qc";
+import { usePlan } from "@/components/plan/use-plan";
 import type { ChatMessage } from "@/components/qc/chat-thread";
+import type { QCResponse } from "@/lib/qc/schema";
 
 /**
  * Sextant dashboard shell (D-16, D-18, DESIGN-02).
@@ -30,8 +32,10 @@ export default function Dashboard() {
   const [focusArrowSignal, setFocusArrowSignal] = useState(0);
   const [clarifyConsumed, setClarifyConsumed] = useState(false);
   const lastCommittedHash = useRef<string | null>(null);
+  const lastSubmittedRef = useRef<string>("");
 
   const qc = useQc();
+  const plan = usePlan();
 
   // Unified chip-click handler shared by ChatPanel + PlanCanvas (D-44).
   const onChipPick = (text: string) => {
@@ -57,6 +61,11 @@ export default function Dashboard() {
     // Reset the previous response state on the canvas; new stream begins.
     qc.clear();
     lastCommittedHash.current = null;
+    // D-63: capture the typed text so the auto-fire useEffect can re-submit it
+    // to /api/plan once the QC verdict resolves. `draft` may have been cleared
+    // by the user typing again before the verdict settles.
+    lastSubmittedRef.current = finalHypothesis;
+    plan.clear(); // reset previous plan state on a new submission
     qc.submit({ hypothesis: finalHypothesis });
   };
 
@@ -121,6 +130,29 @@ export default function Dashboard() {
     }
   }, [qc.object, qc.isLoading]);
 
+  // D-63: auto-chain plan generation when verdict is "not-found" or
+  // "similar-work-exists". For "exact-match-found", the user must click
+  // the "Generate anyway →" button (clay accent) on the verdict card.
+  useEffect(() => {
+    const obj = qc.object;
+    if (!obj?.ok || qc.isLoading) return;
+    if (obj.ok !== "verdict") return;
+    if (
+      obj.verdict !== "not-found" &&
+      obj.verdict !== "similar-work-exists"
+    ) {
+      return;
+    }
+    // De-dupe: don't re-fire if a plan is already streaming for this submission.
+    if (plan.isLoading || plan.plan) return;
+    plan.submit({
+      hypothesis: lastSubmittedRef.current,
+      qc_run_id: null,
+      qcContext: obj as QCResponse,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qc.object, qc.isLoading]);
+
   // Generic fetch failure (network / 500) — treated as retryable error in chat.
   useEffect(() => {
     if (!qc.error) return;
@@ -155,7 +187,11 @@ export default function Dashboard() {
         qcObject={qc.object}
         qcIsLoading={qc.isLoading}
       />
-      <TraceRail />
+      <TraceRail
+        agentEvents={plan.agentEvents}
+        plan={plan.plan}
+        isLoading={plan.isLoading}
+      />
     </div>
   );
 }
