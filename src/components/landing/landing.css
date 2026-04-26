@@ -312,163 +312,86 @@
   }
 }
 
-/* ==================== VIDEO ASCII (legacy /v1 hero) ==================== */
-.l-vascii {
-  position: relative;
-  width: 100%;
-  max-width: 520px;
-  aspect-ratio: 16 / 9;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  isolation: isolate;
-}
-/* Full-bleed override — when VideoAscii is rendered as the hero backdrop
- * (.l-ascii-hero-vascii), strip the chrome so it fills its parent edge
- * to edge. Parent .l-ascii-hero-bg sets the bounding box. */
-.l-vascii.l-ascii-hero-vascii {
-  max-width: none;
-  aspect-ratio: auto;
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.l-vascii-out {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  padding: 0;
-  font-family: var(--font-mono-l);
-  font-size: clamp(5px, 0.85vw, 8px);
-  line-height: 0.95;
-  letter-spacing: 0;
-  color: var(--primary);
-  white-space: pre;
-  user-select: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.l-vascii-loading {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono-l);
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-@media (prefers-reduced-motion: reduce) {
-  .l-vascii-out {
-    color: var(--primary);
-    opacity: 0.85;
-  }
-}
-
-/* ==================== ASCII HERO (full-bleed) ====================
+/* ==================== ASCII HERO (split layout) ====================
  *
- * Replaces the cinematic-video hero on /. The same live video-ASCII
- * renderer used in the side-by-side /v1 variant fills the whole hero
- * viewport, with a warm-white scrim laid over so the headline stays
- * readable. Palette stays in the locked light theme — forest-green
- * characters on warm off-white, dark ink for the overlay text. */
+ * Editorial two-column hero. Left half: a slow-typed monospace agent
+ * log (ProtocolStream) — what the four agents actually do, rendered as
+ * text-as-design instead of as a video conversion. Right half: clean
+ * eyebrow / headline / sub / CTAs on warm paper. The two halves face
+ * each other rather than the headline floating on noise.
+ *
+ * Mobile: the stream collapses to a faint full-width backdrop and the
+ * stage centers over it. */
 
 .l-ascii-hero {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   align-items: center;
-  text-align: center;
-  padding: 0 24px;
   isolation: isolate;
   overflow: hidden;
   background: var(--bg);
   color: var(--ink);
 }
 .l-ascii-hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-}
-/* Color-wash video layer — original hero.mp4 played behind the ASCII at
- * low opacity, blurred so the lab scene reads as a soft colored photo
- * underlay rather than a recognizable video. The ASCII characters on
- * top trace the high-contrast luminance edges; the color comes from
- * this layer. Saturation pushed up so the petri dishes' yellow/red/
- * blue/green stays readable through the blur. */
-.l-ascii-hero-color {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-  /* Heavy blur + moderate opacity: the lab scene reads as a soft
-   * colored wash that supplies ambient color across the whole hero
-   * (especially the right side where ASCII content is sparser).
-   * ASCII pattern on top is what the eye focuses on. */
-  opacity: 0.28;
-  filter: blur(28px) saturate(1.35) contrast(1.05);
-  -webkit-filter: blur(28px) saturate(1.35) contrast(1.05);
-  pointer-events: none;
-}
-/* The VideoAscii's <pre> element gets an enlarged font + monospace
- * lineheight so its 96×54 character grid fills the viewport. Switched
- * from forest-green at 0.78 opacity to deep ink at 0.92 — pairs better
- * with the colored video wash behind it (forest-on-blurred-color was
- * muddy; ink-on-color reads as a clean print over a tinted photo). */
-.l-ascii-hero-bg .l-vascii-out {
   position: relative;
   z-index: 1;
-  font-size: clamp(8px, 1.1vw, 13px);
-  line-height: 0.92;
-  letter-spacing: 0.02em;
-  font-weight: 600;
-  color: #0F4C3A;
-  /* Subtler ASCII — reads as fine print / texture rather than a
-   * dominant pattern. The scientists are still recognizable but
-   * don't fight the headline for visual hierarchy. */
-  opacity: 0.45;
-  display: block;
-  text-align: left;
-  padding: 28px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 96px 24px 80px 64px;
+  overflow: hidden;
+  /* Soft right-edge fade so the stream dissolves into paper before the
+   * headline starts — no hard column boundary. */
+  -webkit-mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
+  mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
 }
-/* Scrim is now even softer because the colored video is doing some of
- * the visual work. Just enough warm wash in the center to keep the
- * headline legible while the colored ASCII layer stays vivid at the
- * edges. */
-.l-ascii-hero-scrim {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  /* Tight scrim only behind the actual text column — no halo bleeding
-   * into the ASCII territory. The text itself doesn't need much wash
-   * now that ASCII opacity is reduced; just enough to keep the sub-
-   * text legible against any dense ASCII spillover. */
-  background:
-    radial-gradient(
-      ellipse 30% 48% at 50% 50%,
-      rgba(250, 250, 247, 0.85) 0%,
-      rgba(250, 250, 247, 0.55) 55%,
-      rgba(250, 250, 247, 0.05) 95%,
-      rgba(250, 250, 247, 0) 100%
-    );
+
+/* Protocol stream — the typed agent log replacing the video sampler. */
+.l-pstream {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  font-family: var(--font-mono-l);
+}
+.l-pstream-out {
+  margin: 0;
+  padding: 0;
+  font-size: clamp(10px, 0.85vw, 12.5px);
+  line-height: 1.55;
+  letter-spacing: 0;
+  color: var(--primary);
+  opacity: 0.78;
+  white-space: pre;
+  user-select: none;
+  font-weight: 500;
+}
+.l-pstream-out::after {
+  content: "▍";
+  margin-left: 1px;
+  color: var(--primary);
+  opacity: 0.85;
+  animation: l-pstream-caret 1s steps(2, jump-none) infinite;
+}
+@keyframes l-pstream-caret {
+  0% { opacity: 0.85; }
+  50% { opacity: 0; }
+  100% { opacity: 0.85; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-pstream-out::after { animation: none; opacity: 0; }
+}
+
+@media (max-width: 900px) {
+  .l-ascii-hero {
+    grid-template-columns: 1fr;
+    align-content: center;
+  }
+  .l-ascii-hero-bg {
+    display: none;
+  }
 }
 
 .l-ascii-nav {
@@ -549,8 +472,9 @@
 .l-ascii-stage {
   position: relative;
   z-index: 3;
-  max-width: 920px;
-  padding: 96px 0 80px;
+  max-width: 720px;
+  padding: 96px 80px 80px 32px;
+  text-align: left;
   animation: l-ascii-rise 800ms var(--ease) 100ms both;
   opacity: calc(1 - var(--hero-progress, 0) * 1.4);
   transform: translateY(calc(var(--hero-progress, 0) * -48px));
@@ -580,9 +504,9 @@
 .l-ascii-title {
   font-family: var(--font-display-l);
   font-weight: 500;
-  font-size: clamp(44px, 7vw, 92px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
+  font-size: clamp(38px, 4.4vw, 64px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   color: var(--ink);
   margin: 0 0 24px;
   text-wrap: balance;
@@ -592,18 +516,28 @@
   color: var(--primary);
 }
 .l-ascii-sub {
-  font-size: clamp(15px, 1.4vw, 18px);
+  font-size: clamp(15px, 1.1vw, 17px);
   color: var(--muted);
-  max-width: 620px;
-  margin: 0 auto 36px;
+  max-width: 520px;
+  margin: 0 0 36px;
   line-height: 1.6;
 }
 .l-ascii-actions {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
   flex-wrap: wrap;
+}
+@media (max-width: 900px) {
+  .l-ascii-stage {
+    max-width: 720px;
+    padding: 132px 24px 80px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  .l-ascii-sub { margin-left: auto; margin-right: auto; }
+  .l-ascii-actions { justify-content: center; }
 }
 .l-ascii-btn {
   display: inline-flex;

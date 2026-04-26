@@ -1,68 +1,34 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 import { Magnetic } from "./magnetic";
+import { ProtocolStream } from "./protocol-stream";
 import { SextantMark } from "./sextant-mark";
-import { VideoAscii } from "./video-ascii";
 
 /**
- * AsciiHero — full-bleed ASCII backdrop, headline + CTA overlaid centered.
+ * AsciiHero — editorial hero with a typed agent-log column on the left.
  *
- * The user direction after pivoting away from the cinematic-video hero:
- * the same live video→ASCII renderer used in the side-by-side /v1
- * variant, blown up to fill the entire hero viewport. The scientist
- * writing in a notebook (public/hero.mp4) is sampled frame-by-frame and
- * mapped to a forest-green character density ramp, then a soft warm-
- * white scrim sits on top to keep the headline readable without
- * obscuring the ASCII pattern.
- *
- * Palette: warm off-white background, forest green ASCII chars, dark ink
- * for the headline. Same vocabulary as the rest of the landing — the
- * cinematic dark hero is now retired.
+ * Replaces the prior live-video → ASCII rendering. The video sampler
+ * produced shapes that read as artifact, not as the product. This hero
+ * is text-as-design: a slow-typed monospace transcript of what the four
+ * agents actually do (cite a reagent, demand a sham control, swap a
+ * supplier, run compliance), occupying the left half of the viewport.
+ * The headline + CTA sit in the right half on clean paper. The two
+ * columns face each other rather than the headline floating on noise.
  *
  * Composition:
  *   .l-ascii-hero
- *     .l-ascii-hero-bg            ← VideoAscii, expanded to fill 100vh
- *       .l-vascii (overridden)
- *     .l-ascii-hero-scrim         ← warm-white radial gradient
+ *     .l-ascii-hero-bg            ← ProtocolStream column (left half)
  *     <nav>                       ← brand + sections + CTA
- *     .l-ascii-stage              ← eyebrow + headline + sub + buttons
+ *     .l-ascii-stage              ← eyebrow + headline + sub + buttons (right)
  */
 export function AsciiHero() {
-  // Render the colored video layer ONLY after client mount so the SSR
-  // HTML and the post-hydration tree match exactly. Earlier we shipped
-  // the <video> in the SSR output, which produced a hydration mismatch
-  // whenever a user's cached client bundle lagged behind the server
-  // bundle (Turbopack HMR + browser cache split on rapid edits). With
-  // the colored layer being a client-only enhancement, SSR shows just
-  // the ASCII renderer, then the colored video fades in after mount.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   return (
     <header id="top" className="l-ascii-hero">
       <div className="l-ascii-hero-bg" aria-hidden="true">
-        {/* Soft colored video wash — same /hero.mp4 source as the ASCII
-         * sampler, played at low opacity + blur so the original colors
-         * (white coats, colored petri dishes, lab fixtures) bleed through
-         * and tint the ASCII pattern. */}
-        {mounted ? (
-          <video
-            className="l-ascii-hero-color"
-            src="/hero.mp4"
-            autoPlay
-            muted
-            playsInline
-            loop
-            preload="auto"
-            aria-hidden="true"
-          />
-        ) : null}
-        <VideoAscii className="l-ascii-hero-vascii" />
+        <ProtocolStream />
       </div>
-      <div className="l-ascii-hero-scrim" aria-hidden="true" />
 
       <nav id="sx-nav" className="l-ascii-nav">
         <div className="wrap l-ascii-nav-inner">
