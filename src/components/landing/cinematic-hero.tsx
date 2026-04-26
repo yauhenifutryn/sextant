@@ -56,7 +56,10 @@ import { SextantMark } from "./sextant-mark";
  */
 const VIDEO_SRC = "/hero.mp4";
 
-const POSTER_SRC = "/hero-poster.jpg"; // optional; ok if 404
+// Poster prop omitted — we have no static poster image and the fallback
+// gradient backdrop already shows while the video buffers. Setting a
+// non-existent poster src created a noisy 404 in the network panel during
+// demos.
 
 export function CinematicHero() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -87,7 +90,7 @@ export function CinematicHero() {
   }, [reduced]);
 
   return (
-    <header className="l-cine" data-video-ready={videoReady ? "true" : "false"}>
+    <header id="top" className="l-cine" data-video-ready={videoReady ? "true" : "false"}>
       {/* SVG filter defs are served as a static asset at /cine-filter.svg
        * and referenced from CSS via filter: url('/cine-filter.svg#...').
        * Inline JSX <svg width="0" height="0"> caused a hydration mismatch
@@ -105,7 +108,6 @@ export function CinematicHero() {
         muted
         playsInline
         preload="auto"
-        poster={POSTER_SRC}
         aria-hidden="true"
       >
         <source src={VIDEO_SRC} type="video/mp4" />

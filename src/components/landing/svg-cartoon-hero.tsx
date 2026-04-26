@@ -38,7 +38,7 @@ export function SvgCartoonHero() {
   }, []);
 
   return (
-    <header className="l-cine l-cartoon" data-reduced={reduced ? "true" : "false"}>
+    <header id="top" className="l-cine l-cartoon" data-reduced={reduced ? "true" : "false"}>
       {/* Soft tinted backdrop — replaces the video on /v2. Same forest-clay
        * glow used by the cinematic fallback so the page identity is
        * coherent across the hero variants. */}
