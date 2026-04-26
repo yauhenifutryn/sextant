@@ -186,6 +186,8 @@ export default function Dashboard() {
         onChipPick={onChipPick}
         qcObject={qc.object}
         qcIsLoading={qc.isLoading}
+        plan={plan.plan}
+        planIsLoading={plan.isLoading}
       />
       <TraceRail
         agentEvents={plan.agentEvents}
