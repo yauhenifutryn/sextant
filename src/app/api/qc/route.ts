@@ -21,7 +21,7 @@ import { qcSystemPrompt, qcUserPrompt } from "@/lib/qc/prompt";
 import { tavilySearch, type TavilyResult } from "@/lib/tavily";
 import { hashHypothesis, getCached, setCached } from "@/lib/qc/cache";
 import { validateCitationProvenance } from "@/lib/qc/provenance";
-import { LIT_QC_MODEL_ID } from "@/lib/models";
+import { pickAvailableLitQcModel } from "@/lib/models";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -46,10 +46,15 @@ export async function POST(req: Request) {
       citations_provenance_dropped: 0,
       schema_valid: true,
       latency_ms: Date.now() - t0,
-      model_id: LIT_QC_MODEL_ID,
+      model_id: "cache",
     });
     return Response.json(cached);
   }
+
+  // ---- Pick the best currently-available Gemini model (60s cached).
+  // Walks MODEL_LADDER in order, probing each with a 1-token call. Falls back
+  // automatically when the preview tier is 503'ing capacity.
+  const modelId = await pickAvailableLitQcModel();
 
   // ---- Retrieve (D-31, D-32, D-33). Single broad Tavily call. No retry in v1.
   let tavilyResults: TavilyResult[];
@@ -73,14 +78,14 @@ export async function POST(req: Request) {
       citations_provenance_dropped: 0,
       schema_valid: true,
       latency_ms: Date.now() - t0,
-      model_id: LIT_QC_MODEL_ID,
+      model_id: modelId,
     });
     return Response.json(errorResponse);
   }
 
   // ---- Stream-judge (D-34, D-38).
   const result = streamObject({
-    model: google(LIT_QC_MODEL_ID),
+    model: google(modelId),
     schema: qcResponseSchema,
     system: qcSystemPrompt,
     prompt: qcUserPrompt(hypothesis, tavilyResults),
@@ -130,7 +135,7 @@ export async function POST(req: Request) {
           citations_provenance_dropped: 0,
           schema_valid: false,
           latency_ms: Date.now() - t0,
-          model_id: LIT_QC_MODEL_ID,
+          model_id: modelId,
         });
         return;
       }
@@ -156,7 +161,7 @@ export async function POST(req: Request) {
         citations_provenance_dropped: outcome.droppedCount,
         schema_valid: true,
         latency_ms: Date.now() - t0,
-        model_id: LIT_QC_MODEL_ID,
+        model_id: modelId,
       });
     },
   });
