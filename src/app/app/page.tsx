@@ -8,8 +8,10 @@ import { PlanCanvas } from "@/components/plan-canvas";
 import { TraceRail } from "@/components/trace-rail";
 import { useQc } from "@/components/qc/use-qc";
 import { usePlan } from "@/components/plan/use-plan";
+import { useLabRules } from "@/hooks/use-lab-rules";
 import type { ChatMessage } from "@/components/qc/chat-thread";
 import type { QCResponse } from "@/lib/qc/schema";
+import type { Plan } from "@/lib/plan/schema";
 
 /**
  * Sextant dashboard shell (D-16, D-18, DESIGN-02).
@@ -36,6 +38,9 @@ export default function Dashboard() {
 
   const qc = useQc();
   const plan = usePlan();
+  const labRules = useLabRules();
+  const [previousPlan, setPreviousPlan] = useState<Plan | null>(null);
+  const lastSeenPlanRef = useRef<Plan | null>(null);
 
   // Unified chip-click handler shared by ChatPanel + PlanCanvas (D-44).
   const onChipPick = (text: string) => {
@@ -153,6 +158,25 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qc.object, qc.isLoading]);
 
+  // D7-17: snapshot the most recent plan as `previousPlan` whenever the
+  // current plan transitions into a NEW value. Sequence:
+  //   - First run: plan.plan transitions null → A. lastSeenPlanRef captures A.
+  //     previousPlan stays null (no prior plan to compare against).
+  //   - Second run: plan.plan transitions null → B (after a clear() and a fresh
+  //     stream). lastSeenPlanRef has A. We promote A → previousPlan, then
+  //     update lastSeenPlanRef to B.
+  // The user can now click "Compare with previous plan" on Plan B.
+  useEffect(() => {
+    const next = plan.plan;
+    if (!next) return;
+    // De-dupe — only trigger on actual run_id change.
+    if (lastSeenPlanRef.current?.run_id === next.run_id) return;
+    if (lastSeenPlanRef.current) {
+      setPreviousPlan(lastSeenPlanRef.current);
+    }
+    lastSeenPlanRef.current = next;
+  }, [plan.plan]);
+
   // Generic fetch failure (network / 500) — treated as retryable error in chat.
   useEffect(() => {
     if (!qc.error) return;
@@ -188,6 +212,9 @@ export default function Dashboard() {
         qcIsLoading={qc.isLoading}
         plan={plan.plan}
         planIsLoading={plan.isLoading}
+        previousPlan={previousPlan}
+        hypothesis={lastSubmittedRef.current || null}
+        onRuleCaptured={labRules.refresh}
       />
       <TraceRail
         agentEvents={plan.agentEvents}
