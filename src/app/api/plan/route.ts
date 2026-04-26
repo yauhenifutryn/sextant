@@ -21,10 +21,12 @@
 import { createUIMessageStream, createUIMessageStreamResponse } from "ai";
 import { pickAvailableLitQcModel } from "@/lib/models";
 import {
-  hashHypothesis,
+  hashRunInput,
   getCachedRun,
   setCachedRun,
 } from "@/lib/plan/cache";
+import { getLabRules } from "@/lib/lab-rules/store";
+import type { LabRule } from "@/lib/lab-rules/schema";
 import type { Plan, AgentArtifact } from "@/lib/plan/schema";
 import { runResearcher } from "@/lib/plan/agents/researcher";
 import { runSkeptic } from "@/lib/plan/agents/skeptic";
@@ -73,7 +75,13 @@ export async function POST(req: Request) {
       message: "No prior lit-QC context supplied.",
     };
 
-  const hypothesis_hash = await hashHypothesis(hypothesis);
+  // D7-08: load the in-effect lab rules ONCE per request. Read-through from
+  // disk; ~10 rules max in demo. We pass the list to all 4 agent runners and
+  // also include it in the cache key so Plan A (no rules) and Plan B (rules
+  // captured) get DIFFERENT cache entries (D7-11, PROP-02 prerequisite).
+  const labRules: LabRule[] = await getLabRules();
+
+  const hypothesis_hash = await hashRunInput(hypothesis, labRules);
   const run_id = newRunId();
 
   // ---- Cache short-circuit (D-65). Same-stream shape so client decodes
@@ -103,6 +111,7 @@ export async function POST(req: Request) {
     hypothesis_hash,
     qc_run_id,
     hypothesis_len: hypothesis.length,
+    lab_rules_count: labRules.length,
   });
 
   // ---- Pick the available Gemini model ONCE; share across all 5 calls (D-55).
@@ -113,10 +122,10 @@ export async function POST(req: Request) {
       // ---- Fan out 4 agents in parallel (D-54). Promise.allSettled so
       // a single agent failure does NOT abort the run (D-66).
       const [resR, resS, resO, resC] = await Promise.allSettled([
-        runResearcher({ hypothesis, qcContext, modelId, writer, run_id }),
-        runSkeptic({ hypothesis, qcContext, modelId, writer, run_id }),
-        runOperator({ hypothesis, qcContext, modelId, writer, run_id }),
-        runCompliance({ hypothesis, qcContext, modelId, writer, run_id }),
+        runResearcher({ hypothesis, qcContext, modelId, writer, run_id, labRules }),
+        runSkeptic({ hypothesis, qcContext, modelId, writer, run_id, labRules }),
+        runOperator({ hypothesis, qcContext, modelId, writer, run_id, labRules }),
+        runCompliance({ hypothesis, qcContext, modelId, writer, run_id, labRules }),
       ]);
 
       // Unwrap to {slice, elapsed_ms, error?} or build a null-slice artifact.
