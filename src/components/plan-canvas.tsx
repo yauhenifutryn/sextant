@@ -1,8 +1,11 @@
 "use client";
 
 import type { QCResponse } from "@/lib/qc/schema";
+import type { Plan } from "@/lib/plan/schema";
 import { VerdictCard } from "@/components/qc/verdict-card";
 import { ExampleChips } from "@/components/example-chips";
+import { PlanTabs } from "@/components/plan/plan-tabs";
+import { PlanSkeleton } from "@/components/plan/plan-skeleton";
 
 type DeepPartial<T> = T extends object ? { [K in keyof T]?: DeepPartial<T[K]> } : T;
 
@@ -10,18 +13,36 @@ type Props = {
   onChipPick: (text: string) => void;
   qcObject: DeepPartial<QCResponse> | undefined;
   qcIsLoading: boolean;
+  plan: Plan | null;
+  planIsLoading: boolean;
 };
 
 /**
- * Plan canvas — Phase 2 lifts the empty-state hero (D-18) below a pinned
- * <VerdictCard /> slot at the top of the column (D-41, LITQC-04).
+ * Plan canvas — Phase 4 wires PlanTabs into the canvas column.
  *
- * When a hypothesis is in flight or has produced a verdict / no-evidence
- * card, the hero hides so the verdict reads as the primary signal. When
- * the QC is idle (no object, not loading), the hero is the empty-state.
+ * Three display states (D4-12), all below the pinned <VerdictCard /> slot:
+ *   (a) Empty hero        — no QC active AND no plan: original chip prompt.
+ *   (b) PlanTabs          — plan is non-null: render the 5-tab Plan view.
+ *   (c) PlanSkeleton      — plan is null but QC is in flight or plan is
+ *                            loading: animated 5-tab scaffold.
+ *
+ * The pinned <VerdictCard /> always shows when QC has fired (D-41 from Phase 2,
+ * preserved by D4-12). Phase 4 sits BELOW it inside the canvas column.
+ *
+ * D4-13: this section owns the only `overflow-y-auto`; PlanTabs MUST NOT
+ * introduce a second scroll container.
  */
-export function PlanCanvas({ onChipPick, qcObject, qcIsLoading }: Props) {
+export function PlanCanvas({
+  onChipPick,
+  qcObject,
+  qcIsLoading,
+  plan,
+  planIsLoading,
+}: Props) {
   const verdictActive = !!qcObject?.ok || qcIsLoading;
+  const showPlan = plan !== null;
+  const showSkeleton = !showPlan && (verdictActive || planIsLoading);
+  const showHero = !verdictActive && !showPlan && !planIsLoading;
 
   return (
     <section
@@ -33,8 +54,14 @@ export function PlanCanvas({ onChipPick, qcObject, qcIsLoading }: Props) {
         <VerdictCard object={qcObject} isLoading={qcIsLoading} />
       </div>
 
-      {/* Phase-1 empty-state hero — hides while QC is active */}
-      {!verdictActive && (
+      {/* D4-12 state (b): rendered Plan tabs */}
+      {showPlan && plan && <PlanTabs plan={plan} />}
+
+      {/* D4-12 state (c): plan in flight, scaffold the tab shape */}
+      {showSkeleton && <PlanSkeleton />}
+
+      {/* D4-12 state (a): empty hero with example chips */}
+      {showHero && (
         <div className="flex-1 flex items-center justify-center">
           <div className="max-w-xl text-center flex flex-col items-center gap-8">
             <h2 className="font-display text-3xl font-medium tracking-tight text-ink leading-tight">
