@@ -1,0 +1,39 @@
+graph LR
+    User[Scientist] --> UI[Next.js 16 App<br/>shadcn/ui + Tailwind v4]
+
+    UI -->|hypothesis| QC["/api/qc"]
+    QC --> T1[Tavily Search<br/>arXiv + SemScholar + protocols.io]
+    QC --> G1[Gemini 2.5 Flash<br/>Lit-QC scorer]
+    QC -->|verdict + 3 cited URLs<br/>~4s| UI
+
+    UI -->|auto-chain on verdict| Plan["/api/plan"]
+    Plan --> R[Researcher Agent]
+    Plan --> S[Skeptic Agent]
+    Plan --> O[Operator Agent]
+    Plan --> C[Compliance Agent]
+
+    R --> T2[Tavily protocols.io]
+    R --> G2[Gemini 2.5 Flash]
+    S --> G2
+    O --> G2
+    C --> G2
+
+    R --> Cons[Consolidator<br/>Gemini 2.5 Flash<br/>+ thinking budget]
+    S --> Cons
+    O --> Cons
+    C --> Cons
+
+    Cons -->|Plan JSON + AgentEvents<br/>over single SSE stream<br/>via createUIMessageStream| UI
+    Cons -.->|fire-and-forget| Disk1[("data/runs/&lt;id&gt;.json")]
+
+    UI -->|line correction| Rule["/api/lab-rule"]
+    Rule --> G3[Gemini 2.5 Flash<br/>typed rule extractor]
+    G3 --> Disk2[("data/lab_rules.json")]
+    Disk2 -.->|injected into next plan's<br/>agent prompts| Plan
+
+    classDef api fill:#fef3e6,stroke:#3a4a3a,color:#1a2a1a,stroke-width:2px
+    classDef llm fill:#e8f0e8,stroke:#3a4a3a,color:#1a2a1a
+    classDef disk fill:#f0ede5,stroke:#5a4a3a,color:#1a2a1a,stroke-dasharray:3 3
+    class QC,Plan,Rule api
+    class G1,G2,G3,R,S,O,C,Cons llm
+    class Disk1,Disk2 disk

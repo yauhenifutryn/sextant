@@ -87,21 +87,23 @@ For a 24h deadline, Option 1 is the right answer. Don't over-polish.
 - Same MP4 spec as the demo: H.264, max 60s, target <30MB.
 - Save as `demo/sextant-tech-v1.mp4`.
 
-## Step 3 — Narration script
+## Step 3 — Narration script (plain English, no buzzwords)
 
-**~145 words, ~58 seconds at conversational pace (~2.5 words/sec). Practice once before recording.**
+**~145 words, ~58 seconds at conversational pace (~2.5 words/sec). Practice once before recording. Pause briefly at each paragraph break.**
 
-Read the script slowly. Don't rush. Pause for ~0.5s at each paragraph break.
+This script was rewritten 2026-04-26 to strip technical-marketing language (no "leverages", "synergies", "next-generation"). Hackathon judges have heard 200 buzzword-soup demos today; plain cause-and-effect grammar with named real technologies wins.
 
 ---
 
-> Sextant is a TypeScript monorepo on Next.js 16, deployed to Vercel.
+> The user types a hypothesis. It goes to `/api/qc`. That route searches arXiv, Semantic Scholar, and protocols.io using the Tavily API, then sends the results to Gemini 2.5 Flash. Gemini writes a verdict — "similar work exists," "not found," or "exact match" — with three real citations. About four seconds.
 >
-> The browser sends a hypothesis to `/api/qc`, which fires a Tavily search across arXiv, Semantic Scholar, and protocols.io, scores novelty with Gemini 2.5 Flash, and streams a verdict with three cited URLs in under four seconds.
+> Then the hypothesis goes to `/api/plan`. Four Gemini calls run in parallel. Each one is an agent — Researcher, Skeptic, Operator, Compliance — and each writes one section of the plan. A fifth call reads all four and merges them into one JSON document.
 >
-> That triggers `/api/plan`, which fans out to four parallel Gemini calls — Researcher, Skeptic, CRO Operator, Compliance — using `Promise.all`. A fifth consolidator call merges them into a typed Plan JSON. Per-agent trace events ride the same SSE stream as the Plan, using the Vercel AI SDK's `createUIMessageStream` pattern.
+> The browser receives the plan and per-agent status events on the same connection, using the Vercel AI SDK.
 >
-> When the scientist corrects a line, `/api/lab-rule` extracts a typed rule into a JSON store. On the next hypothesis, the agent prompts read that store — the new plan visibly applies the rules, surfaced in a diff modal.
+> When the user corrects a line, we save the correction as a typed rule in a JSON file. The next hypothesis reads those rules, and the agents follow them. The new plan changes automatically.
+>
+> Every claim in the plan links to its source. We never invent a catalog number or a price.
 >
 > Hard rule: every claim cites a verifiable URL. No hallucinated catalog numbers. The closed loop is the moat.
 
