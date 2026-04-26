@@ -845,7 +845,10 @@
   gap: 12px;
   flex-wrap: wrap;
 }
-.l-btn-primary {
+/* Selector includes `a` element to beat `.landing-root a { color: inherit }`
+ * (specificity 0,1,1). Without the `a`, the link inherits parent var(--ink)
+ * and the text disappears on the ink-black background. */
+a.l-btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -859,14 +862,14 @@
   min-height: 44px;
   transition: background 200ms var(--ease), transform 200ms var(--ease);
 }
-.l-btn-primary:hover {
+a.l-btn-primary:hover {
   background: #000;
   transform: scale(1.03);
 }
-.l-btn-primary svg {
+a.l-btn-primary svg {
   transition: transform 200ms var(--ease);
 }
-.l-btn-primary:hover svg {
+a.l-btn-primary:hover svg {
   transform: translateX(2px);
 }
 .l-btn-secondary {
