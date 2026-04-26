@@ -49,6 +49,11 @@ PROJECT_LOG.md
 UI_TRINITY.md
 docs/plans/2026-01-20-project-log-design.md
 
+# Private developer-only files (never commit) — internal planning, design briefs, AI instructions
+CLAUDE.md
+CLAUDE_DESIGN_BRIEF.md
+.planning/
+
 # Demo artifacts
 /demo/recordings/
 /demo/raw/
