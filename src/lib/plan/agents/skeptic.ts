@@ -20,6 +20,7 @@ import { z } from "zod";
 import type { UIMessageStreamWriter } from "ai";
 import { validationCheckSchema } from "@/lib/plan/schema";
 import type { QCResponse } from "@/lib/qc/schema";
+import type { LabRule } from "@/lib/lab-rules/schema";
 
 export const skepticSliceSchema = z.object({
   validation: z.array(validationCheckSchema).min(5),
@@ -58,12 +59,23 @@ For each check:
 
 Emit ONLY the JSON object. No prose, no markdown fencing.`;
 
-function skepticUserPrompt(hypothesis: string, qcContext: QCResponse): string {
+function skepticUserPrompt(
+  hypothesis: string,
+  qcContext: QCResponse,
+  labRules: LabRule[],
+): string {
   const qcSummary =
     qcContext.ok === "verdict"
       ? `Lit-QC verdict: ${qcContext.verdict}\nReasoning: ${qcContext.reasoning}`
       : `Lit-QC verdict: ${qcContext.ok}`;
-  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}`;
+  // D7-09: append the LAB RULES block AFTER existing context.
+  const labRulesBlock =
+    labRules.length > 0
+      ? `\n\nLAB RULES (apply these to your output):\n${labRules
+          .map((r) => `- ${r.rule} (because: ${r.reasoning})`)
+          .join("\n")}`
+      : "";
+  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}${labRulesBlock}`;
 }
 
 const DEMO_PACE_MS = Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0);
@@ -74,8 +86,9 @@ export async function runSkeptic(args: {
   modelId: string;
   writer: UIMessageStreamWriter;
   run_id: string;
+  labRules?: LabRule[];
 }): Promise<{ slice: SkepticSlice | null; elapsed_ms: number; error?: string }> {
-  const { hypothesis, qcContext, modelId, writer, run_id } = args;
+  const { hypothesis, qcContext, modelId, writer, run_id, labRules = [] } = args;
   const t0 = Date.now();
 
   writer.write({
@@ -107,7 +120,7 @@ export async function runSkeptic(args: {
       model: google(modelId),
       schema: skepticSliceSchema,
       system: SKEPTIC_SYSTEM,
-      prompt: skepticUserPrompt(hypothesis, qcContext),
+      prompt: skepticUserPrompt(hypothesis, qcContext, labRules),
       temperature: 0.2,
       maxOutputTokens: 1200,
       providerOptions: {

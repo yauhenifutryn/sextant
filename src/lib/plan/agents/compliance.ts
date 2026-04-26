@@ -15,6 +15,7 @@ import { z } from "zod";
 import type { UIMessageStreamWriter } from "ai";
 import { complianceNoteSchema } from "@/lib/plan/schema";
 import type { QCResponse } from "@/lib/qc/schema";
+import type { LabRule } from "@/lib/lab-rules/schema";
 
 export const complianceSliceSchema = z.object({
   compliance_notes: z.array(complianceNoteSchema).default([]),
@@ -42,12 +43,40 @@ COMPLIANCE_SUMMARY (1 paragraph, ≤600 chars):
 
 Emit ONLY the JSON object. No prose, no markdown fencing.`;
 
-function complianceUserPrompt(hypothesis: string, qcContext: QCResponse): string {
+function complianceUserPrompt(
+  hypothesis: string,
+  qcContext: QCResponse,
+  labRules: LabRule[],
+): string {
   const qcSummary =
     qcContext.ok === "verdict"
       ? `Lit-QC verdict: ${qcContext.verdict}\nReasoning: ${qcContext.reasoning}`
       : `Lit-QC verdict: ${qcContext.ok}`;
-  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}`;
+
+  // D7-09: append the standard LAB RULES block.
+  const labRulesBlock =
+    labRules.length > 0
+      ? `\n\nLAB RULES (apply these to your output):\n${labRules
+          .map((r) => `- ${r.rule} (because: ${r.reasoning})`)
+          .join("\n")}`
+      : "";
+
+  // D7-10: compliance agent gets EXTRA instruction. Any rule with
+  // scope=validation_check or scope=global is treated as a "house compliance
+  // constraint" — emit a compliance_notes entry that references the rule's
+  // source text so the propagation lands VISIBLY in the UI, not just in
+  // agent reasoning.
+  const houseRules = labRules.filter(
+    (r) => r.scope === "validation_check" || r.scope === "global",
+  );
+  const houseRulesBlock =
+    houseRules.length > 0
+      ? `\n\nHOUSE COMPLIANCE CONSTRAINTS (D7-10): the following lab rules MUST also produce a compliance_notes entry in your output. For each rule below, emit ONE compliance_notes item with target_kind="global" (or "protocol_step" / "material_row" if there's a clear target index), severity="caution", and a note that explicitly quotes the rule's source phrase so the user sees the propagation:\n${houseRules
+          .map((r) => `- ${r.rule}`)
+          .join("\n")}`
+      : "";
+
+  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}${labRulesBlock}${houseRulesBlock}`;
 }
 
 const DEMO_PACE_MS = Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0);
@@ -58,8 +87,9 @@ export async function runCompliance(args: {
   modelId: string;
   writer: UIMessageStreamWriter;
   run_id: string;
+  labRules?: LabRule[];
 }): Promise<{ slice: ComplianceSlice | null; elapsed_ms: number; error?: string }> {
-  const { hypothesis, qcContext, modelId, writer, run_id } = args;
+  const { hypothesis, qcContext, modelId, writer, run_id, labRules = [] } = args;
   const t0 = Date.now();
 
   writer.write({
@@ -91,7 +121,7 @@ export async function runCompliance(args: {
       model: google(modelId),
       schema: complianceSliceSchema,
       system: COMPLIANCE_SYSTEM,
-      prompt: complianceUserPrompt(hypothesis, qcContext),
+      prompt: complianceUserPrompt(hypothesis, qcContext, labRules),
       temperature: 0.2,
       maxOutputTokens: 1200,
       providerOptions: {

@@ -17,6 +17,7 @@ import { z } from "zod";
 import type { UIMessageStreamWriter } from "ai";
 import { protocolStepSchema } from "@/lib/plan/schema";
 import type { QCResponse } from "@/lib/qc/schema";
+import type { LabRule } from "@/lib/lab-rules/schema";
 import { tavilySearch, type TavilyResult } from "@/lib/tavily";
 
 export const researcherSliceSchema = z.object({
@@ -42,6 +43,7 @@ function researcherUserPrompt(
   hypothesis: string,
   qcContext: QCResponse,
   protocolsResults: TavilyResult[],
+  labRules: LabRule[],
 ): string {
   const evidence = protocolsResults
     .map(
@@ -53,7 +55,15 @@ function researcherUserPrompt(
     qcContext.ok === "verdict"
       ? `Lit-QC verdict: ${qcContext.verdict}\nReasoning: ${qcContext.reasoning}\nCitations: ${qcContext.citations.map((c) => c.url).join(", ")}`
       : `Lit-QC verdict: ${qcContext.ok}`;
-  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}\n\nPROTOCOL EVIDENCE BLOCK (${protocolsResults.length} results from protocols.io):\n${evidence || "(none — proceed with standard protocol)"}`;
+  // D7-09: append the LAB RULES block AFTER existing context. System prompt
+  // is unchanged (preserves Google implicit prefix-cache benefit).
+  const labRulesBlock =
+    labRules.length > 0
+      ? `\n\nLAB RULES (apply these to your output):\n${labRules
+          .map((r) => `- ${r.rule} (because: ${r.reasoning})`)
+          .join("\n")}`
+      : "";
+  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}\n\nPROTOCOL EVIDENCE BLOCK (${protocolsResults.length} results from protocols.io):\n${evidence || "(none — proceed with standard protocol)"}${labRulesBlock}`;
 }
 
 const DEMO_PACE_MS = Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0);
@@ -64,8 +74,9 @@ export async function runResearcher(args: {
   modelId: string;
   writer: UIMessageStreamWriter;
   run_id: string;
+  labRules?: LabRule[];
 }): Promise<{ slice: ResearcherSlice | null; elapsed_ms: number; error?: string }> {
-  const { hypothesis, qcContext, modelId, writer, run_id } = args;
+  const { hypothesis, qcContext, modelId, writer, run_id, labRules = [] } = args;
   const t0 = Date.now();
 
   writer.write({
@@ -117,7 +128,7 @@ export async function runResearcher(args: {
       model: google(modelId),
       schema: researcherSliceSchema,
       system: RESEARCHER_SYSTEM,
-      prompt: researcherUserPrompt(hypothesis, qcContext, protocolsResults),
+      prompt: researcherUserPrompt(hypothesis, qcContext, protocolsResults, labRules),
       temperature: 0.2,
       maxOutputTokens: 1500,
       providerOptions: {

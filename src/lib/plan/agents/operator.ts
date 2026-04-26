@@ -21,6 +21,7 @@ import {
   timelinePhaseSchema,
 } from "@/lib/plan/schema";
 import type { QCResponse } from "@/lib/qc/schema";
+import type { LabRule } from "@/lib/lab-rules/schema";
 
 export const operatorSliceSchema = z.object({
   materials: z.array(materialRowSchema).min(1),
@@ -57,12 +58,23 @@ Rules:
 
 Emit ONLY the JSON object. No prose, no markdown fencing.`;
 
-function operatorUserPrompt(hypothesis: string, qcContext: QCResponse): string {
+function operatorUserPrompt(
+  hypothesis: string,
+  qcContext: QCResponse,
+  labRules: LabRule[],
+): string {
   const qcSummary =
     qcContext.ok === "verdict"
       ? `Lit-QC verdict: ${qcContext.verdict}\nReasoning: ${qcContext.reasoning}`
       : `Lit-QC verdict: ${qcContext.ok}`;
-  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}`;
+  // D7-09: append the LAB RULES block AFTER existing context.
+  const labRulesBlock =
+    labRules.length > 0
+      ? `\n\nLAB RULES (apply these to your output):\n${labRules
+          .map((r) => `- ${r.rule} (because: ${r.reasoning})`)
+          .join("\n")}`
+      : "";
+  return `HYPOTHESIS:\n${hypothesis}\n\nLIT-QC CONTEXT:\n${qcSummary}${labRulesBlock}`;
 }
 
 const DEMO_PACE_MS = Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0);
@@ -73,8 +85,9 @@ export async function runOperator(args: {
   modelId: string;
   writer: UIMessageStreamWriter;
   run_id: string;
+  labRules?: LabRule[];
 }): Promise<{ slice: OperatorSlice | null; elapsed_ms: number; error?: string }> {
-  const { hypothesis, qcContext, modelId, writer, run_id } = args;
+  const { hypothesis, qcContext, modelId, writer, run_id, labRules = [] } = args;
   const t0 = Date.now();
 
   writer.write({
@@ -106,7 +119,7 @@ export async function runOperator(args: {
       model: google(modelId),
       schema: operatorSliceSchema,
       system: OPERATOR_SYSTEM,
-      prompt: operatorUserPrompt(hypothesis, qcContext),
+      prompt: operatorUserPrompt(hypothesis, qcContext, labRules),
       temperature: 0.2,
       maxOutputTokens: 2000,
       providerOptions: {
