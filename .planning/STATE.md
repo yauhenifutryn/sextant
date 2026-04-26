@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 3 Plan 01 (Foundations) COMPLETE. 3 pure-data modules shipped: src/lib/plan/{trace,schema,cache}.ts + data/runs/.gitkeep + .gitignore append. trace.ts (commit 395a861) unblocks parallel Phase 6 chat — AgentEvent type now importable from @/lib/plan/trace. schema.ts (commit c875bcf) defines top-level planSchema with 5 sections (protocol/materials/budget/timeline/validation), validation.min(5) enforces TRACE-03 floor at the schema layer, citationSchema reused from @/lib/qc/schema (D-58). cache.ts (commit 3a01168) extends Phase 2 Map pattern with disk read-through to data/runs/<run_id>.json (D-64) — Phase 7 diff modal will reuse the same getCachedRun. Zero deviations, all grep acceptance criteria passed first-time, project-wide tsc green, git check-ignore proven (foo.json ignored, .gitkeep tracked). Wave 1 of 3 complete. Ready for Wave 2 (agent runners + consolidator: 03-02-PLAN.md)."
-last_updated: "2026-04-26T08:55:00.000Z"
-last_activity: 2026-04-26 -- Plan 03-01 complete (foundations: trace + schema + cache + data/runs marker, 3 commits, Phase 6 unblocked)
+stopped_at: "Phase 3 Plan 02 (Agent runners + Consolidator) COMPLETE. 5 LLM-call modules shipped: src/lib/plan/agents/{researcher,skeptic,operator,compliance}.ts + src/lib/plan/consolidator.ts. researcher.ts + skeptic.ts (commit 61299fb) — Researcher does ONE Tavily call filtered to protocols.io and owns Protocol slice; Skeptic owns Validation slice with the 6 VALIDATION_SKELETON names guaranteed via prompt + post-parse Set-diff stub fallback. operator.ts + compliance.ts (commit f85b245) — Operator owns 3 sections (materials+budget+timeline) in one prompt per D-57; Compliance owns notes[]+summary with scientist-to-scientist tone. consolidator.ts (commit 42b1ba6) — 5th LLM call merging 4 slices via planSchema with thinkingBudget:4000 (D-55) and 15s timeout (D-66); server-side post-fill of run_id/model_id/latency/grounded/agent_artifacts prevents LLM from injecting false provenance. All 5 modules: thinkingBudget:0 for debaters, SEXTANT_DEMO_PACE_MS-aware pacing for Phase 8 demo, citations:[] empty (Phase 5 fills), zero deviations, project-wide tsc green. Wave 2 of 3 complete (~10 min wall, 3 commits). Ready for Wave 3 (route handler + usePlan + dashboard auto-fire: 03-03-PLAN.md)."
+last_updated: "2026-04-26T11:10:00.000Z"
+last_activity: 2026-04-26 -- Plan 03-02 complete (agent runners + consolidator: 5 modules, 3 commits, Wave 3 unblocked)
 progress:
   total_phases: 8
   completed_phases: 2
   total_plans: 8
-  completed_plans: 7
-  percent: 80
+  completed_plans: 8
+  percent: 90
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-25)
 
 **Core value:** A scientist enters a hypothesis, watches four agents debate it in parallel, and receives a fundable, citation-grounded experiment plan in under three minutes — and every correction they make compounds into the next plan, automatically.
-**Current focus:** Phase 2 COMPLETE → ready for Phase 3 (Multi-Agent Pipeline)
+**Current focus:** Phase 3 IN PROGRESS — Wave 1 (foundations) + Wave 2 (agent runners + consolidator) shipped; Wave 3 (route handler + usePlan + dashboard auto-fire) is the last Phase 3 hop before Phase 4 (Plan Canvas UI)
 
 ## Current Position
 
-Phase: 3 (multi-agent-pipeline) — IN PROGRESS (Wave 1 of 3 done; foundations shipped)
-Plan: 1 of 3 done (03-01 foundations: trace + schema + cache)
-Status: Ready for Wave 2 (03-02-PLAN.md — agent runners + consolidator)
-Last activity: 2026-04-26 -- Plan 03-01 complete (3 commits, Phase 6 unblocked via trace.ts)
+Phase: 3 (multi-agent-pipeline) — IN PROGRESS (Wave 2 of 3 done; agent runners + consolidator shipped)
+Plan: 2 of 3 done (03-01 foundations + 03-02 runners/consolidator)
+Status: Ready for Wave 3 (03-03-PLAN.md — POST /api/plan route + usePlan hook + dashboard auto-fire)
+Last activity: 2026-04-26 -- Plan 03-02 complete (3 commits: 61299fb, f85b245, 42b1ba6; Wave 3 unblocked)
 
-Progress: [████████▓░] ~80% (Phase 1 + Phase 2 done; Phase 3 Wave 1 done)
+Progress: [█████████░] ~90% (Phase 1 + Phase 2 done; Phase 3 Wave 1+2 done)
 
 ## Production environment
 
@@ -44,9 +44,9 @@ Progress: [████████▓░] ~80% (Phase 1 + Phase 2 done; Phase 3
 
 **Velocity:**
 
-- Total plans completed: 7 (3 in Phase 1 + 3 in Phase 2 + 1 in Phase 3)
-- Average duration: ~8 min 26 sec
-- Total execution time: ~59 min 26 sec
+- Total plans completed: 8 (3 in Phase 1 + 3 in Phase 2 + 2 in Phase 3)
+- Average duration: ~8 min 30 sec
+- Total execution time: ~69 min 26 sec
 
 **By Phase:**
 
@@ -54,12 +54,12 @@ Progress: [████████▓░] ~80% (Phase 1 + Phase 2 done; Phase 3
 |-------|-------|-------|----------|
 | 1. Foundation | 3/3 | ~12 min 30 sec | ~6 min 15 sec |
 | 2. Literature QC | 3/3 | ~44 min 35 sec | ~14 min 52 sec |
-| 3. Multi-Agent Pipeline | 1/3 | ~2 min 20 sec | ~2 min 20 sec |
+| 3. Multi-Agent Pipeline | 2/3 | ~12 min 20 sec | ~6 min 10 sec |
 
 **Recent Trend:**
 
-- Last 7 plans: 03-01 (~2m 20s, 3 commits, 0 deviations — pure-data Zod + Node fs work; all grep acceptance chains passed first-time; Phase 6 unblocked at commit 395a861; tsc green; git check-ignore negation proven), 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
-- Trend: 03-01 sets a new project-fastest baseline (~140s wall) — pure-data plans with verbatim file bodies + strict grep acceptance criteria + analog files (qc/schema.ts, qc/cache.ts) eliminate exploration overhead. Phase 3 Wave 2 will be slower (4 LLM agent runners + consolidator), but Wave 1 establishes the type contracts both Wave 2 and parallel Phase 6 chat depend on.
+- Last 8 plans: 03-02 (~10m wall, 3 commits, 0 deviations — 5 LLM-call modules with verbatim plan-supplied file bodies; all grep acceptance chains passed first-time; tsc green per task; consolidator's server-side metadata post-fill prevents LLM-injected provenance), 03-01 (~2m 20s, 3 commits, 0 deviations — pure-data Zod + Node fs work; all grep acceptance chains passed first-time; Phase 6 unblocked at commit 395a861; tsc green; git check-ignore negation proven), 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
+- Trend: 03-02 sustains the verbatim-plan-body advantage from 03-01 — when the plan supplies full module bodies + strict grep acceptance criteria, executor work reduces to mechanical Write + tsc + commit. 5 LLM-call modules in ~10 minutes wall, 0 deviations, fully type-checked, ready for Wave 3 to consume.
 
 *Updated after each plan completion*
 
@@ -70,6 +70,9 @@ Progress: [████████▓░] ~80% (Phase 1 + Phase 2 done; Phase 3
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 03-02: Skeptic 6-name guarantee implemented as defense-in-depth — prompt instructs the model AND a post-parse Set-diff in the runner appends generic stubs for any names the model omits (description="Required validation check (auto-stub — model omitted).", measurement_method="TBD by Phase 6 evaluator.", pass_criteria="Manual review."). This is reconstruction (filling required schema fields), not invention; the bridge between trace-rail's hardcoded VALIDATION_SKELETON and live data CANNOT silently lose a row.
+- 03-02: Consolidator's metadata post-fill uses object-spread (`{...draft, run_id: args.run_id, model_id: args.modelId, latency_ms: ..., generated_at: ..., grounded: false, agent_artifacts: args.artifacts}`) rather than in-place mutation. Same observable behavior; immutable; satisfies the "server overwrites server-controlled fields" spirit of CLAUDE.md hard rule #1 — the LLM cannot inject false provenance into the Plan even if the prompt asked it to.
+- 03-02: SEXTANT_DEMO_PACE_MS toggle is server-only (no NEXT_PUBLIC_ prefix) and present in all 5 modules — Phase 8 demo recording can `SEXTANT_DEMO_PACE_MS=3000` env-var the trace-rail to a visible pace without code changes. Each module reads it at module load via `Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0)` with default 0 so production runs are unaffected.
 - Init: Fulcrum Science track chosen; pitch as "AI CRO Co-Pilot" ($100B CRO market wedge)
 - Init: Path B for UI — design brief locked in CLAUDE_DESIGN_BRIEF.md, Claude Design runs in parallel
 - Init: Hard rule — if learning loop (Phase 7) not wired by hour 18, fall back to manual before/after slide
@@ -114,5 +117,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-26
-Stopped at: Phase 3 Plan 01 (Foundations) COMPLETE. 3 pure-data modules + dir marker shipped at commits 395a861 (trace.ts — Phase 6 unblocker), c875bcf (schema.ts — 5 sections + validation.min(5) floor), 3a01168 (cache.ts + data/runs/.gitkeep + .gitignore append with negation). Zero deviations, project-wide tsc green, git check-ignore negation pattern proven (data/runs/foo.json ignored, data/runs/.gitkeep tracked). Wave 1 of 3 complete in ~140s wall. Phase 6 chat is unblocked: AgentEvent type importable from @/lib/plan/trace. Ready for Wave 2 (03-02-PLAN.md — agent runners + consolidator) or any pending Phase 6 component work in the parallel chat.
-Resume file: .planning/phases/03-multi-agent-pipeline/03-02-PLAN.md (Wave 2)
+Stopped at: Phase 3 Plan 02 (Agent runners + Consolidator) COMPLETE. 5 LLM-call modules shipped at commits 61299fb (researcher.ts + skeptic.ts — protocols.io-grounded Researcher + Validation owner with 6-name skeleton guarantee), f85b245 (operator.ts + compliance.ts — 3-section Operator + notes/summary Compliance), 42b1ba6 (consolidator.ts — 5th call merging 4 slices via planSchema with thinkingBudget:4000 and server-side metadata post-fill). Zero deviations across all 3 tasks; project-wide tsc green per task; SEXTANT_DEMO_PACE_MS toggle present in all 5 modules (server-only, default 0 in production). Wave 2 of 3 complete (~10 min wall, 3 commits). Wave 3 (03-03-PLAN.md — POST /api/plan route + usePlan hook + dashboard auto-fire wire-in) is the last Phase 3 hop; will consume runResearcher/runSkeptic/runOperator/runCompliance via Promise.allSettled then pipe slices+artifacts through runConsolidator.
+Resume file: .planning/phases/03-multi-agent-pipeline/03-03-PLAN.md (Wave 3)
