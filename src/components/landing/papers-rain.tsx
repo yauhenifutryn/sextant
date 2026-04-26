@@ -648,9 +648,21 @@ export function PapersRain({ className }: Props) {
   }, []);
 
   return (
-    <div className={`l-papers ${className ?? ""}`} aria-hidden="true">
-      <pre ref={typewriterRef} className="l-papers-typewriter" />
-      <pre ref={dynamicRef} className="l-papers-out" />
+    <div
+      className={`l-papers ${className ?? ""}`}
+      aria-hidden="true"
+      suppressHydrationWarning
+    >
+      <pre
+        ref={typewriterRef}
+        className="l-papers-typewriter"
+        suppressHydrationWarning
+      />
+      <pre
+        ref={dynamicRef}
+        className="l-papers-out"
+        suppressHydrationWarning
+      />
     </div>
   );
 }

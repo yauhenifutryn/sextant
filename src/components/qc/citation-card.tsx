@@ -39,7 +39,16 @@ export function CitationCard({ title, url, excerpt, source }: Props) {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block rounded-md border border-borderwarm bg-paper p-3 hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
+      onClick={(e) => {
+        // Defensive fallback: some browsers + portal-based parents
+        // (we now mount inside Radix Dialog from Phase 7) have been
+        // reported to swallow the default <a> navigation. Force-open.
+        if (!e.defaultPrevented) {
+          e.preventDefault();
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      }}
+      className="group block cursor-pointer rounded-md border border-borderwarm bg-paper p-3 hover:bg-surface-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2"
       aria-label={`Open citation: ${title}`}
     >
       <div className="flex items-start gap-3">
