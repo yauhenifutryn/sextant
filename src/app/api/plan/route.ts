@@ -31,6 +31,7 @@ import { runSkeptic } from "@/lib/plan/agents/skeptic";
 import { runOperator } from "@/lib/plan/agents/operator";
 import { runCompliance } from "@/lib/plan/agents/compliance";
 import { runConsolidator } from "@/lib/plan/consolidator";
+import { enrichMaterialsCitations } from "@/lib/plan/citations";
 import type { QCResponse } from "@/lib/qc/schema";
 
 export const runtime = "nodejs";
@@ -205,6 +206,19 @@ export async function POST(req: Request) {
         });
         // Do NOT setCachedRun — the shell is not a real Plan.
         return;
+      }
+
+      // ---- Phase 5 LITE: enrich Materials with one Tavily call.
+      // Failures return [] and we leave plan as-is (CLAUDE.md hard rule #1
+      // — no fake citations). See .planning/DEFERRED.md for per-row + URL
+      // verify scope cuts.
+      const materialsCitations = await enrichMaterialsCitations(plan);
+      if (materialsCitations.length > 0) {
+        plan.plan.materials = plan.plan.materials.map((m) => ({
+          ...m,
+          citations: materialsCitations,
+        }));
+        plan.grounded = true;
       }
 
       // ---- Persist (D-64) — both in-memory and disk.
