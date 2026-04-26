@@ -122,4 +122,12 @@ Record two full takes. Pick the cleaner one. Don't try to record-once-perfect un
 
 ---
 
-*Last updated: 2026-04-26 — Phase 3 plans pending. Update once we know whether Phase 6's URL-param toggle landed vs Phase 3's env-var approach (or both).*
+## Demo-pace mechanism — confirmed shipped 2026-04-26 (Phase 6)
+
+- **Client-side (Phase 6, this plan):** `useDemoPacedEvents` hook at `src/components/trace/use-demo-paced-events.ts`. Activate with URL param `?demoPace=slow` (3500ms between rows, ~14s staircase for 4 agents) or `?demoPace=ultraslow` (6000ms). Default (no param) = pass-through, no delay.
+- **Server-side (Phase 3, separate chat):** env var `SEXTANT_DEMO_PACE_MS` paces event emission at the route. Confirm presence with `grep "SEXTANT_DEMO_PACE_MS" src/app/api/plan/route.ts` after Phase 3 ships.
+- **Belt-and-braces:** Both can run. For the recording, set ONE OR BOTH; demo URL is `https://sextant-uekv.vercel.app/app?demoPace=slow` — works whether or not the server env var is set.
+
+---
+
+*Last updated: 2026-04-26 — Phase 6 client-side toggle confirmed shipped (commit `ee36cc2`). Phase 3 env-var status to be confirmed in parallel chat once `src/app/api/plan/route.ts` lands.*
