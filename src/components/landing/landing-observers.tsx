@@ -31,6 +31,7 @@ export function LandingObservers() {
     const root = document.documentElement;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const loopCanvas = document.querySelector<HTMLElement>(".l-loop-canvas");
+    const solveStage = document.querySelector<HTMLElement>(".l-solve-stage");
 
     let rafId = 0;
     let pending = false;
@@ -40,11 +41,36 @@ export function LandingObservers() {
         if (window.scrollY > 8) nav.classList.add("scrolled");
         else nav.classList.remove("scrolled");
       }
+      // Page scroll progress (0..1) — drives the hairline at the top
+      // of the viewport so the reader gets a non-intrusive sense of
+      // how far through the page they've scrolled.
+      const docH = document.documentElement.scrollHeight - window.innerHeight;
+      const pageProgress = docH > 0 ? Math.min(1, window.scrollY / docH) : 0;
+      root.style.setProperty("--page-progress", pageProgress.toFixed(3));
       // Hero parallax progress — 0 at top of page, 1 once we've scrolled
       // a full viewport past it. Drives the cinematic hero fade-out.
       if (!reduced) {
         const progress = Math.max(0, Math.min(1, window.scrollY / window.innerHeight));
         root.style.setProperty("--hero-progress", progress.toFixed(3));
+      }
+      // Method radial — same scroll-progress trick as the loop arrows.
+      // The four SVG links draw in as the user scrolls through the
+      // method section, so by the time they read the agent grid below
+      // the radial is fully wired.
+      if (solveStage && !reduced) {
+        const rect = solveStage.getBoundingClientRect();
+        const vh = window.innerHeight || 1;
+        const start = vh * 0.9;
+        const end = -rect.height + vh * 0.45;
+        const raw = (start - rect.top) / Math.max(1, start - end);
+        const progress = Math.max(0, Math.min(1, raw));
+        solveStage.style.setProperty("--method-progress", progress.toFixed(3));
+        // Pre-computed dashoffset as a unitless number — calc() in CSS
+        // forces a px result which fights pathLength=100 normalization
+        // on SVG strokes. Setting the offset directly avoids the unit
+        // mismatch and the lines render reliably.
+        const offset = ((1 - progress) * 100).toFixed(2);
+        solveStage.style.setProperty("--method-offset", offset);
       }
       // Closed-loop arrows draw — progress is 0 when the canvas top is at
       // the viewport bottom, and 1 when it's at the viewport top. We slice

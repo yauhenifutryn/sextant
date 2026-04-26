@@ -22,7 +22,7 @@ export function LandingTechStrip() {
     <section className="l-tech">
       <div className="wrap">
         <div className="l-tech-label">Built on</div>
-        <div className="l-tech-row">
+        <div className="l-tech-row" data-anim="tech">
           <span className="mark" aria-label="Anthropic">
             <svg
               width="20"

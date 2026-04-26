@@ -56,6 +56,11 @@ if (MODE === "sections") {
       continue;
     }
     await handle.scrollIntoViewIfNeeded();
+    // Force the page's scroll listener to fire — scrollIntoViewIfNeeded
+    // is a no-op when the section is already in view, so vars driven by
+    // scroll position (--method-progress, --loop-progress, etc.) wouldn't
+    // get written. Dispatching a synthetic scroll event nudges the RAF.
+    await page.evaluate(() => window.dispatchEvent(new Event("scroll")));
     // Reveal/parallax/scroll-progress animations stagger up to ~1300ms.
     // Wait long enough for the slowest agent reveal to settle.
     await page.waitForTimeout(1600);

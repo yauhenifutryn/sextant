@@ -1,8 +1,52 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+const CHECKS = [
+  "Every reagent has a catalog URL",
+  "Budget sums correctly",
+  "No orphan protocol step",
+  "Citations resolve to real sources",
+  "Timeline dependencies valid",
+  "Compliance pipeline passes",
+];
+
+const STAGGER_MS = 220;
 
 export function LandingFinalCta() {
+  const sideRef = useRef<HTMLDivElement | null>(null);
+  const [completed, setCompleted] = useState(0);
+
+  useEffect(() => {
+    const el = sideRef.current;
+    if (!el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) {
+      setCompleted(CHECKS.length);
+      return;
+    }
+    const obs = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            // Stagger ticks one-by-one until all 6 are green.
+            CHECKS.forEach((_, i) => {
+              setTimeout(() => setCompleted((c) => Math.max(c, i + 1)), i * STAGGER_MS);
+            });
+            obs.disconnect();
+            break;
+          }
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <section className="l-cta">
+    <section id="cta" className="l-cta">
       <div className="wrap l-cta-inner">
         <div>
           <h2 className="l-reveal">
@@ -30,21 +74,19 @@ export function LandingFinalCta() {
             </svg>
           </Link>
         </div>
-        <div className="l-cta-side l-reveal delay-3">
+        <div className="l-cta-side l-reveal delay-3" ref={sideRef}>
           <div className="h">
             <span>Validation grid</span>
-            <span className="pill">6 / 6 pass</span>
+            <span
+              className={`pill ${completed === CHECKS.length ? "pill-done" : ""}`}
+              aria-live="polite"
+            >
+              {completed} / {CHECKS.length} pass
+            </span>
           </div>
           <div className="list">
-            {[
-              "Every reagent has a catalog URL",
-              "Budget sums correctly",
-              "No orphan protocol step",
-              "Citations resolve to real sources",
-              "Timeline dependencies valid",
-              "Compliance pipeline passes",
-            ].map((line) => (
-              <div className="item" key={line}>
+            {CHECKS.map((line, i) => (
+              <div className={`item ${i < completed ? "is-passed" : ""}`} key={line}>
                 <span className="check" aria-hidden="true">
                   ✓
                 </span>

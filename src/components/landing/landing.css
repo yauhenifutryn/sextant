@@ -9,19 +9,26 @@
  */
 
 .landing-root {
-  --bg: hsl(var(--background));
-  --surface: hsl(var(--surface));
-  --surface-2: hsl(var(--surface-hover));
-  --border: hsl(var(--border));
+  /* Literal hex copies of the design tokens defined on :root (in
+   * globals.css). Inheriting the global tokens via `var(--primary)`
+   * etc. would be circular: `.landing-root { --primary: hsl(var(--primary)) }`
+   * makes `var(--primary)` resolve to itself, producing an invalid
+   * value and silently falling back to `unset`. The fix: hard-copy
+   * the same hex values here. If a global token changes, mirror it
+   * by hand in this block (the comments preserve the source). */
+  --bg: #FAFAF7;             /* paper / --background */
+  --surface: #F2F1EC;        /* raised / --surface */
+  --surface-2: #EDECE6;      /* hover / --surface-hover */
+  --border: #E2E0D8;         /* border / --border */
   --border-strong: #d4d1c6;
-  --ink: hsl(var(--foreground));
-  --muted: hsl(var(--muted-foreground));
+  --ink: #1A1A1A;            /* ink / --foreground */
+  --muted: #5A5A52;          /* muted text / --muted-foreground */
   --muted-2: #8a887e;
-  --primary: hsl(var(--primary));
+  --primary: #0F4C3A;        /* forest / --primary */
   --primary-soft: #14624a;
   --primary-tint: rgba(15, 76, 58, 0.06);
-  --clay: hsl(var(--secondary));
-  --citation: hsl(var(--citation));
+  --clay: #B85C38;           /* clay / --secondary */
+  --citation: #1F4FB6;       /* link blue / --citation */
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --font-display-l: var(--font-inter-tight), var(--font-inter), system-ui, sans-serif;
@@ -53,6 +60,23 @@
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 32px;
+}
+
+/* Top-of-viewport scroll-progress hairline. Width is driven by
+ * `--page-progress` (set by LandingObservers), so it grows from 0
+ * to 100% as the reader moves down the document. Sits above the
+ * fixed nav so it never gets eaten by the backdrop blur. */
+.landing-root::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: calc(var(--page-progress, 0) * 100%);
+  background: linear-gradient(90deg, var(--primary), var(--primary-soft));
+  z-index: 60;
+  pointer-events: none;
+  transition: width 80ms linear;
 }
 
 /* ==================== NAV ==================== */
@@ -337,7 +361,7 @@
 }
 .l-ascii-hero-bg {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   height: 100%;
   display: flex;
   align-items: center;
@@ -347,6 +371,92 @@
    * headline starts — no hard column boundary. */
   -webkit-mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
   mask-image: linear-gradient(to right, black 0%, black 70%, transparent 100%);
+}
+
+/* PapersRain — full-bleed procedural ASCII paper-rain layer. Sits
+ * under everything (z=0). Low opacity + radial mask keeps it ambient
+ * texture: visible at the corners, fading toward the headline center
+ * so the type stays crisp. */
+.l-ascii-hero-papers {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.l-papers {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Two stacked monospace canvases share the same character grid —
+ * .l-papers-typewriter is the static narrative anchor (a tiny ASCII
+ * typewriter at bottom-left, brighter so the eye reads "scene"), and
+ * .l-papers-out is the dynamic-physics layer (drifting pages, masked
+ * to fade into the headline column). Both anchored bottom-left at the
+ * same font-size so paper-spawn coordinates line up with the
+ * typewriter's paper outlet visually. */
+.l-papers-typewriter,
+.l-papers-out {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-mono-l);
+  font-size: clamp(9px, 0.85vw, 12px);
+  line-height: 0.95;
+  letter-spacing: 0;
+  color: var(--primary);
+  white-space: pre;
+  user-select: none;
+  font-weight: 500;
+  pointer-events: none;
+}
+.l-papers-typewriter {
+  opacity: 0.36;
+  z-index: 1;
+  /* Slight underglow under the typewriter so it reads as "object on a
+   * desk" rather than a floating icon. Pure CSS — no extra DOM. */
+  filter: drop-shadow(0 1px 0 rgba(15, 76, 58, 0.18));
+}
+.l-papers-out {
+  opacity: 0.18;
+  z-index: 0;
+  overflow: hidden;
+  /* Vignette so the rain only shows at the screen edges (corners +
+   * the gap between the stream column and the headline column).
+   * The center cone — where the eyebrow + headline sit — is masked
+   * out so the type stays crisp. */
+  -webkit-mask-image: radial-gradient(
+    ellipse 60% 85% at 72% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.45) 40%,
+    black 95%
+  );
+  mask-image: radial-gradient(
+    ellipse 60% 85% at 72% 50%,
+    transparent 0%,
+    rgba(0, 0, 0, 0.45) 40%,
+    black 95%
+  );
+}
+
+/* Soft warm-paper scrim BEHIND the headline column — keeps the type
+ * crisp against any drifting papers. Tuned tight (only the right
+ * column area) so the rain stays visible where it actually belongs. */
+.l-ascii-hero-scrim {
+  position: absolute;
+  inset: 0 0 0 45%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgba(250, 250, 247, 0) 0%,
+    rgba(250, 250, 247, 0.55) 30%,
+    rgba(250, 250, 247, 0.78) 100%
+  );
 }
 
 /* Protocol stream — the typed agent log replacing the video sampler. */
@@ -390,6 +500,42 @@
     align-content: center;
   }
   .l-ascii-hero-bg {
+    display: none;
+  }
+  .l-ascii-hero-scrim {
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(250, 250, 247, 0.55) 0%,
+      rgba(250, 250, 247, 0.85) 100%
+    );
+  }
+  .l-papers-out {
+    font-size: 8px;
+    opacity: 0.10;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 12%,
+      rgba(0, 0, 0, 0.45) 25%,
+      rgba(0, 0, 0, 0.7) 50%,
+      transparent 85%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      transparent 12%,
+      rgba(0, 0, 0, 0.45) 25%,
+      rgba(0, 0, 0, 0.7) 50%,
+      transparent 85%,
+      transparent 100%
+    );
+  }
+  /* Typewriter would dominate a phone screen — drop it on narrow
+   * widths and let the dynamic papers stand alone with their soft
+   * vertical mask. */
+  .l-papers-typewriter {
     display: none;
   }
 }
@@ -447,17 +593,17 @@
 .l-ascii-links a:hover {
   color: var(--ink);
 }
-.l-ascii-cta {
+.l-ascii-links a.l-ascii-cta {
   font-family: var(--font-display-l);
   font-weight: 500;
   font-size: 13px;
-  color: var(--bg) !important;
+  color: var(--bg);
   background: var(--primary);
   border: 1px solid var(--primary);
-  padding: 9px 18px !important;
+  padding: 9px 18px;
   border-radius: 999px;
   transition: background 200ms ease, transform 200ms ease;
-  min-height: 38px !important;
+  min-height: 38px;
 }
 .l-ascii-cta:hover {
   background: #0d3f30;
@@ -557,10 +703,46 @@
   color: var(--bg);
   background: var(--ink);
   border: 1px solid var(--ink);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.l-ascii-btn.primary::after {
+  /* Diagonal shimmer that sweeps across the button every ~5s. The
+   * gradient is a thin highlight band; we slide it from -120% to
+   * +220% on the X axis. The default cubic-bezier holds the
+   * highlight off-screen for most of the loop so it reads as a
+   * deliberate flash, not a constant glow. */
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 35%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0) 65%,
+    transparent 100%
+  );
+  transform: translateX(-160%);
+  animation: l-btn-sheen 4.8s var(--ease) infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+@keyframes l-btn-sheen {
+  0% { transform: translateX(-160%); }
+  60% { transform: translateX(260%); }
+  100% { transform: translateX(260%); }
 }
 .l-ascii-btn.primary:hover {
   background: #000;
   transform: scale(1.03);
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-ascii-btn.primary::after { animation: none; opacity: 0; }
 }
 .l-ascii-btn.ghost {
   color: var(--ink);
@@ -772,6 +954,45 @@
 .l-problem {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+/* Drift backdrop — failure-mode tags float upward behind the headline,
+ * staggered across the section width and time. Reads as the
+ * subconscious of an ungrounded protocol: every claim missing a link.
+ * Pure CSS animation, no JS. */
+.l-problem-drift {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.l-problem-drift .drift-tag {
+  position: absolute;
+  left: var(--col, 50%);
+  font-family: var(--font-mono-l);
+  font-size: 11px;
+  letter-spacing: 0;
+  color: rgba(184, 92, 56, 0.32);
+  white-space: nowrap;
+  /* Animate `bottom` (parent-relative %) rather than transformY (self-
+   * relative) — the tag is small but the section is several hundred px
+   * tall, and we want each tag to traverse the full height. Slightly
+   * different durations per --i so they desync. */
+  animation: l-problem-drift calc(15s + var(--i, 0) * 1.4s) linear infinite;
+  animation-delay: calc(var(--i, 0) * -2.2s);
+  bottom: -8%;
+}
+@keyframes l-problem-drift {
+  0% { bottom: -8%; opacity: 0; }
+  10% { opacity: 1; }
+  88% { opacity: 1; }
+  100% { bottom: 110%; opacity: 0; }
+}
+.l-problem .wrap {
+  position: relative;
+  z-index: 1;
 }
 .l-problem-headline {
   font-family: var(--font-display-l);
@@ -783,15 +1004,54 @@
   max-width: 960px;
   text-wrap: pretty;
 }
+/* Strikethrough as scale-X pseudo-element — paints in horizontally
+ * once the headline scrolls into view, staggered per word so the eye
+ * tracks: "slow" → "expensive" → "ungrounded". Replaces the static
+ * text-decoration so the cross-out is part of the section's reveal
+ * choreography rather than a flat presentational style. */
 .l-problem-headline .strike {
   color: var(--muted-2);
-  text-decoration: line-through;
-  text-decoration-color: rgba(184, 92, 56, 0.6);
-  text-decoration-thickness: 1.5px;
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+}
+.l-problem-headline .strike::after {
+  content: "";
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  top: 56%;
+  height: 1.5px;
+  background: rgba(184, 92, 56, 0.7);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 700ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.l-problem-headline.visible .strike::after {
+  transform: scaleX(1);
+}
+.l-problem-headline.visible .strike:nth-of-type(1)::after {
+  transition-delay: 300ms;
+}
+.l-problem-headline.visible .strike:nth-of-type(2)::after {
+  transition-delay: 650ms;
+}
+.l-problem-headline.visible .strike:nth-of-type(3)::after {
+  transition-delay: 1000ms;
 }
 .l-problem-headline em {
   font-style: normal;
   color: var(--ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-problem-drift .drift-tag {
+    animation: none;
+    opacity: 0.18;
+  }
+  .l-problem-headline .strike::after {
+    transform: scaleX(1);
+    transition: none !important;
+  }
 }
 
 /* ==================== METHOD (4 AGENTS) ==================== */
@@ -830,11 +1090,33 @@
 .l-solve-svg .link {
   fill: none;
   stroke: var(--primary);
-  stroke-width: 1.25;
-  stroke-dasharray: 600;
-  stroke-dashoffset: 600;
-  opacity: 0.45;
-  transition: stroke-dashoffset 1200ms var(--ease), opacity 600ms var(--ease);
+  stroke-width: 1.5;
+  /* pathLength=100 normalizes the path so a single dash draws the
+   * whole line cleanly. The IO-driven .visible state animates
+   * dashoffset 100 → 0 over 1.4s with a sequential delay per link so
+   * the radial wires up "in order" (researcher first, then skeptic,
+   * operator, compliance). The --method-progress JS var stays around
+   * for a future traveling-pulse effect. */
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  opacity: 0.55;
+  transition: stroke-dashoffset 1400ms var(--ease), opacity 600ms var(--ease);
+}
+.l-solve-stage.visible .l-solve-svg .link:nth-of-type(1) {
+  stroke-dashoffset: 0;
+  transition-delay: 200ms;
+}
+.l-solve-stage.visible .l-solve-svg .link:nth-of-type(2) {
+  stroke-dashoffset: 0;
+  transition-delay: 400ms;
+}
+.l-solve-stage.visible .l-solve-svg .link:nth-of-type(3) {
+  stroke-dashoffset: 0;
+  transition-delay: 600ms;
+}
+.l-solve-stage.visible .l-solve-svg .link:nth-of-type(4) {
+  stroke-dashoffset: 0;
+  transition-delay: 800ms;
 }
 .l-solve-svg .link.dotted {
   stroke-dasharray: 3 4;
@@ -842,12 +1124,45 @@
   stroke: var(--border-strong);
   opacity: 0;
 }
-.l-solve-stage.visible .l-solve-svg .link {
-  stroke-dashoffset: 0;
-}
 .l-solve-stage.visible .l-solve-svg .link.dotted {
   opacity: 1;
   transition-delay: 1200ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Scroll-driven dashoffset doesn't run RAF, but if the user has
+   * reduced-motion on, LandingObservers won't write --method-progress
+   * and the lines would stay invisible. Force them on. */
+  .l-solve-svg .link {
+    stroke-dashoffset: 0 !important;
+  }
+}
+/* Ambient breathing on the agent dots — after arrival each dot
+ * gently scales 1 → 1.08 → 1 on a 3s loop, slightly out of phase per
+ * agent. Reads as "still listening" rather than "frozen card". */
+.l-solve-stage.visible .l-agent-node[data-i="0"] .l-agent-dot {
+  animation: l-agent-arrive 700ms var(--ease) 200ms both,
+    l-agent-breathe 3.4s var(--ease) 1100ms infinite;
+}
+.l-solve-stage.visible .l-agent-node[data-i="1"] .l-agent-dot {
+  animation: l-agent-arrive 700ms var(--ease) 350ms both,
+    l-agent-breathe 3.4s var(--ease) 1700ms infinite;
+}
+.l-solve-stage.visible .l-agent-node[data-i="2"] .l-agent-dot {
+  animation: l-agent-arrive 700ms var(--ease) 500ms both,
+    l-agent-breathe 3.4s var(--ease) 2300ms infinite;
+}
+.l-solve-stage.visible .l-agent-node[data-i="3"] .l-agent-dot {
+  animation: l-agent-arrive 700ms var(--ease) 650ms both,
+    l-agent-breathe 3.4s var(--ease) 2900ms infinite;
+}
+@keyframes l-agent-breathe {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.18); filter: brightness(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .l-solve-stage.visible .l-agent-node[data-i] .l-agent-dot {
+    animation: none;
+  }
 }
 
 .l-agent-node {
@@ -860,28 +1175,26 @@
   padding: 14px 16px;
   box-shadow: var(--shadow);
   opacity: 0;
-  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+  transition: opacity 600ms var(--ease), transform 600ms var(--ease),
+    box-shadow 280ms var(--ease), border-color 280ms var(--ease);
+  cursor: default;
 }
 .l-solve-stage.visible .l-agent-node {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
-/* One-shot dot pulse synchronized with each agent's arrival — gives the
- * sense of "agent activated" instead of just "card faded in". */
-.l-solve-stage.visible .l-agent-node .l-agent-dot {
-  animation: l-agent-arrive 700ms var(--ease) both;
+.l-solve-stage.visible .l-agent-node:hover {
+  transform: translate(-50%, -50%) scale(1.04) translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(15, 76, 58, 0.12);
+  border-color: var(--primary);
+  z-index: 4;
 }
-.l-solve-stage.visible .l-agent-node[data-i="0"] .l-agent-dot {
-  animation-delay: 200ms;
+.l-solve-stage.visible .l-agent-node:hover .l-agent-dot {
+  animation: l-agent-throb 1.4s var(--ease) infinite;
 }
-.l-solve-stage.visible .l-agent-node[data-i="1"] .l-agent-dot {
-  animation-delay: 350ms;
-}
-.l-solve-stage.visible .l-agent-node[data-i="2"] .l-agent-dot {
-  animation-delay: 500ms;
-}
-.l-solve-stage.visible .l-agent-node[data-i="3"] .l-agent-dot {
-  animation-delay: 650ms;
+@keyframes l-agent-throb {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.35); }
 }
 @keyframes l-agent-arrive {
   0% {
@@ -1412,14 +1725,16 @@
   font-size: 17px;
   letter-spacing: -0.018em;
   color: var(--muted-2);
-  transition: color 220ms var(--ease), transform 220ms var(--ease);
+  transition: color 220ms var(--ease), transform 220ms var(--ease),
+    opacity 600ms var(--ease);
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  position: relative;
 }
 .l-tech-row .mark svg {
   flex-shrink: 0;
-  transition: color 220ms var(--ease);
+  transition: color 220ms var(--ease), transform 220ms var(--ease);
 }
 .l-tech-row .mark .mark-text {
   font-feature-settings: "ss01" on, "cv11" on;
@@ -1430,12 +1745,41 @@
 }
 .l-tech-row .mark:hover svg {
   color: var(--primary);
+  animation: l-mark-bob 1.6s var(--ease) infinite;
+}
+/* Stagger reveal — each mark slides in from the right with a 110ms
+ * offset when the row enters the viewport. The IntersectionObserver
+ * in landing-observers.tsx adds .visible to [data-anim] elements;
+ * here we ride that signal. */
+.l-tech-row[data-anim] .mark {
+  opacity: 0;
+  transform: translateX(18px);
+  transition: opacity 600ms var(--ease), transform 600ms var(--ease),
+    color 220ms var(--ease);
+}
+.l-tech-row[data-anim].visible .mark {
+  opacity: 1;
+  transform: translateX(0);
+}
+.l-tech-row[data-anim].visible .mark:nth-child(1) { transition-delay: 0ms, 0ms, 0ms; }
+.l-tech-row[data-anim].visible .mark:nth-child(2) { transition-delay: 130ms, 130ms, 0ms; }
+.l-tech-row[data-anim].visible .mark:nth-child(3) { transition-delay: 260ms, 260ms, 0ms; }
+.l-tech-row[data-anim].visible .mark:nth-child(4) { transition-delay: 390ms, 390ms, 0ms; }
+@keyframes l-mark-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .l-tech-row .mark,
-  .l-tech-row .mark:hover {
+  .l-tech-row .mark:hover,
+  .l-tech-row[data-anim] .mark,
+  .l-tech-row[data-anim].visible .mark {
     transform: none;
+    opacity: 1;
     transition: color 220ms var(--ease);
+  }
+  .l-tech-row .mark:hover svg {
+    animation: none;
   }
 }
 
@@ -1499,11 +1843,16 @@
   font-family: var(--font-mono-l);
   font-size: 9.5px;
   letter-spacing: 0.06em;
-  color: var(--primary);
-  background: var(--primary-tint);
+  color: var(--muted-2);
+  background: var(--surface-2);
   padding: 2px 6px;
   border-radius: 999px;
   text-transform: uppercase;
+  transition: background 240ms var(--ease), color 240ms var(--ease);
+}
+.l-cta-side .h .pill.pill-done {
+  color: var(--primary);
+  background: var(--primary-tint);
 }
 .l-cta-side .list {
   display: grid;
@@ -1513,7 +1862,16 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--muted-2);
+  opacity: 0.55;
+  transition: color 240ms var(--ease), opacity 240ms var(--ease),
+    transform 280ms var(--ease);
+  transform: translateX(-3px);
+}
+.l-cta-side .list .item.is-passed {
   color: var(--ink);
+  opacity: 1;
+  transform: translateX(0);
 }
 .l-cta-side .list .item .check {
   display: inline-flex;
@@ -1522,10 +1880,22 @@
   width: 14px;
   height: 14px;
   border-radius: 999px;
-  background: var(--primary-tint);
-  color: var(--primary);
+  background: var(--surface-2);
+  color: var(--muted-2);
   font-size: 9px;
   flex-shrink: 0;
+  transition: background 240ms var(--ease), color 240ms var(--ease),
+    transform 320ms var(--ease);
+}
+.l-cta-side .list .item.is-passed .check {
+  background: var(--primary-tint);
+  color: var(--primary);
+  animation: l-check-pop 380ms var(--ease) both;
+}
+@keyframes l-check-pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.25); }
+  100% { transform: scale(1); }
 }
 
 /* ==================== FOOTER ==================== */

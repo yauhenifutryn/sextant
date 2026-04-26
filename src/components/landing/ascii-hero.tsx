@@ -3,32 +3,35 @@
 import Link from "next/link";
 
 import { Magnetic } from "./magnetic";
+import { PapersRain } from "./papers-rain";
 import { ProtocolStream } from "./protocol-stream";
 import { SextantMark } from "./sextant-mark";
 
 /**
- * AsciiHero — editorial hero with a typed agent-log column on the left.
+ * AsciiHero — three-layer editorial hero.
  *
- * Replaces the prior live-video → ASCII rendering. The video sampler
- * produced shapes that read as artifact, not as the product. This hero
- * is text-as-design: a slow-typed monospace transcript of what the four
- * agents actually do (cite a reagent, demand a sham control, swap a
- * supplier, run compliance), occupying the left half of the viewport.
- * The headline + CTA sit in the right half on clean paper. The two
- * columns face each other rather than the headline floating on noise.
+ *   Layer 0  PapersRain         full-bleed ASCII paper-rain (procedural
+ *                               physics, low opacity, ambient texture)
+ *   Layer 1  ProtocolStream     left-column typed agent log (what the
+ *                               four agents actually do — cite, challenge,
+ *                               source, gate). Soft right-edge mask so it
+ *                               dissolves into paper before the headline.
+ *   Layer 2  Stage              right-column eyebrow + headline + sub +
+ *                               CTAs on clean warm paper.
  *
- * Composition:
- *   .l-ascii-hero
- *     .l-ascii-hero-bg            ← ProtocolStream column (left half)
- *     <nav>                       ← brand + sections + CTA
- *     .l-ascii-stage              ← eyebrow + headline + sub + buttons (right)
+ * Replaces the prior video→ASCII sampler, which produced noisy human
+ * shapes that read as artifact. Now nothing is recorded — every glyph
+ * on screen is generated, either by the protocol-stream typing engine
+ * or the papers-rain physics simulation.
  */
 export function AsciiHero() {
   return (
     <header id="top" className="l-ascii-hero">
+      <PapersRain className="l-ascii-hero-papers" />
       <div className="l-ascii-hero-bg" aria-hidden="true">
         <ProtocolStream />
       </div>
+      <div className="l-ascii-hero-scrim" aria-hidden="true" />
 
       <nav id="sx-nav" className="l-ascii-nav">
         <div className="wrap l-ascii-nav-inner">

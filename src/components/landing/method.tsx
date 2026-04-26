@@ -22,10 +22,10 @@ export function LandingMethod() {
             preserveAspectRatio="none"
             aria-hidden="true"
           >
-            <path className="link" d="M 195 230 Q 350 230 500 230" />
-            <path className="link" d="M 500 110 Q 500 170 500 230" />
-            <path className="link" d="M 500 350 Q 500 290 500 230" />
-            <path className="link" d="M 805 230 Q 650 230 500 230" />
+            <path className="link" pathLength={100} d="M 195 230 Q 350 230 500 230" />
+            <path className="link" pathLength={100} d="M 500 110 Q 500 170 500 230" />
+            <path className="link" pathLength={100} d="M 500 350 Q 500 290 500 230" />
+            <path className="link" pathLength={100} d="M 805 230 Q 650 230 500 230" />
           </svg>
 
           <div className="l-agent-node" data-i="0">
