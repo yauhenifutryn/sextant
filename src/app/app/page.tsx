@@ -64,6 +64,20 @@ export default function Dashboard() {
       ? `${hypothesis}\n\n[Treat this as final — emit verdict, no-evidence, or error. Do not request further clarification.]`
       : hypothesis;
 
+    // D7-17 (revised): snapshot the CURRENT plan as previousPlan BEFORE clearing it.
+    // The earlier run_id-based effect was fragile — if the cache returned the same
+    // plan object on a second submission of the same hypothesis, the snapshot
+    // would silently no-op and the Compare button wouldn't appear. Capturing here
+    // is bulletproof: every fresh submission promotes the prior plan.
+    if (plan.plan) {
+      console.log("[dashboard] snapshotting previousPlan", {
+        prior_run_id: plan.plan.run_id,
+        prior_hypothesis: plan.plan.hypothesis,
+      });
+      setPreviousPlan(plan.plan);
+      lastSeenPlanRef.current = plan.plan;
+    }
+
     // Reset the previous response state on the canvas; new stream begins.
     qc.clear();
     lastCommittedHash.current = null;
@@ -168,24 +182,21 @@ export default function Dashboard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qc.object, qc.isLoading]);
 
-  // D7-17: snapshot the most recent plan as `previousPlan` whenever the
-  // current plan transitions into a NEW value. Sequence:
-  //   - First run: plan.plan transitions null → A. lastSeenPlanRef captures A.
-  //     previousPlan stays null (no prior plan to compare against).
-  //   - Second run: plan.plan transitions null → B (after a clear() and a fresh
-  //     stream). lastSeenPlanRef has A. We promote A → previousPlan, then
-  //     update lastSeenPlanRef to B.
-  // The user can now click "Compare with previous plan" on Plan B.
+  // D7-17: track the most-recently-seen non-null plan in lastSeenPlanRef.
+  // Snapshot promotion to `previousPlan` happens in submitHypothesis (above)
+  // — before plan.clear() runs and before the new stream starts. That timing
+  // is bulletproof: every fresh submission promotes whatever plan is currently
+  // on screen, regardless of run_id parity.
   useEffect(() => {
-    const next = plan.plan;
-    if (!next) return;
-    // De-dupe — only trigger on actual run_id change.
-    if (lastSeenPlanRef.current?.run_id === next.run_id) return;
-    if (lastSeenPlanRef.current) {
-      setPreviousPlan(lastSeenPlanRef.current);
-    }
-    lastSeenPlanRef.current = next;
-  }, [plan.plan]);
+    if (!plan.plan) return;
+    if (lastSeenPlanRef.current?.run_id === plan.plan.run_id) return;
+    console.log("[dashboard] new plan settled", {
+      run_id: plan.plan.run_id,
+      hypothesis: plan.plan.hypothesis,
+      hasPreviousPlan: previousPlan !== null,
+    });
+    lastSeenPlanRef.current = plan.plan;
+  }, [plan.plan, previousPlan]);
 
   // Generic fetch failure (network / 500) — treated as retryable error in chat.
   useEffect(() => {
