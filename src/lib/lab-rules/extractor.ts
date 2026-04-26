@@ -73,7 +73,7 @@ export async function extractLabRule(args: ExtractArgs): Promise<LabRuleDraft> {
           thinkingConfig: { thinkingBudget: 0 },
         },
       },
-      experimental_repairText: async ({ text: _text }) => {
+      experimental_repairText: async () => {
         // D7-06: if the model returns malformed JSON, return a structured stub
         // that obeys the schema. Better to capture the rule (verbatim user text)
         // than to lose it. The route still post-fills id + created_at.

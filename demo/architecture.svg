@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2825.97 473.5" width="2825.97" height="473.5" style="--bg:#ffffff;--fg:#1f2328;--line:#d1d9e0;--accent:#0969da;--muted:#59636e;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 30%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="4.8" refX="8" refY="2.4" orient="auto">
+    <polygon points="0 0, 8 2.4, 0 4.8" fill="var(--_arrow)" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="4.8" refX="0" refY="2.4" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.4, 8 4.8" fill="var(--_arrow)" />
+  </marker>
+</defs>
+<polyline points="765.97,58 1602.17,58 1602.17,217.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="1768.3200000000002,235.25 1878.12,235.25 1878.12,186.75 2009.3700000000001,186.75" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="2105.7200000000003,186.75 2147.17,186.75 2147.17,156.75 2167.17,156.75" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="2105.7200000000003,186.75 2147.17,186.75 2147.17,216.75 2227.9449999999997,216.75" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="2009.3700000000001,186.75 1878.12,186.75 1878.12,360.75 1602.17,360.75 1602.17,253.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="1436.02,235.25 1183.22,235.25 1183.22,396.5 95.325,396.5 95.325,354.5" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="150.65,336.5 170.65,336.5 170.65,138 190.65000000000003,138" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="150.65,336.5 170.65,336.5 170.65,198 201.37500000000003,198" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="150.65,336.5 170.65,336.5 170.65,292.25 197.8,292.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="150.65,336.5 170.65,336.5 170.65,352.25 190.65000000000003,352.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="337.05,138 421.11,138 421.11,118 633.8700000000001,118" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="337.05,138 717.7950000000001,138 717.7950000000001,194.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="326.32500000000005,198 421.11,198 421.11,178 717.7950000000001,178 717.7950000000001,194.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="329.90000000000003,292.25 421.11,292.25 421.11,262.25 717.7950000000001,262.25 717.7950000000001,230.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="337.05,352.25 421.11,352.25 421.11,332.25 717.7950000000001,332.25 717.7950000000001,230.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="337.05,138 421.11,138 421.11,158 717.7950000000001,158 717.7950000000001,254.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="326.32500000000005,198 421.11,198 421.11,228 717.7950000000001,228 717.7950000000001,254.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="329.90000000000003,292.25 421.11,292.25 421.11,312.25 717.7950000000001,312.25 717.7950000000001,290.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="337.05,352.25 421.11,352.25 421.11,362.25 717.7950000000001,362.25 717.7950000000001,290.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="930.4200000000001,272.25 1183.22,272.25 1183.22,235.25 1436.02,235.25" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="930.4200000000001,272.25 1183.22,272.25 1183.22,332.25 1602.17,332.25 1602.17,337.25" fill="none" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<polyline points="1768.3200000000002,235.25 1878.12,235.25 1878.12,241 2057.545,241 2057.545,258.75" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="2127.17,276.75 2202.92,276.75" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="2528.0699999999997,276.75 2694.895,276.75 2694.895,368.75" fill="none" stroke="var(--_line)" stroke-width="0.75" marker-end="url(#arrowhead)" />
+<polyline points="2603.82,392.25 2583.82,392.25 2583.82,425 95.325,425 95.325,354.5" fill="none" stroke="var(--_line)" stroke-width="0.75" stroke-dasharray="4 4" marker-end="url(#arrowhead)" />
+<rect x="1841.52" y="173.25" width="73.2" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="1878.12" y="186.75" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">hypothesis</text>
+<rect x="1784.32" y="347.25" width="187.6" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="1878.12" y="360.75" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">verdict + 3 cited URLs&lt;br/&gt;~4s</text>
+<rect x="353.05" y="383" width="136.12" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="421.11" y="396.5" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">auto-chain on verdict</text>
+<rect x="946.4200000000001" y="221.75" width="473.6" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="1183.22" y="235.25" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">Plan JSON + AgentEvents&lt;br/&gt;over single SSE stream&lt;br/&gt;via createUIMessageStream</text>
+<rect x="1132.32" y="318.75" width="101.8" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="1183.22" y="332.25" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">fire-and-forget</text>
+<rect x="1827.2199999999998" y="227.5" width="101.8" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="1878.12" y="241" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">line correction</text>
+<rect x="1471.19" y="411.5" width="261.96000000000004" height="27" rx="4" ry="4" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="0.5" />
+<text x="1602.17" y="425" text-anchor="middle" dy="0.35em" font-size="11" font-weight="400" fill="var(--_text-muted)">injected into next plan&#39;s&lt;br/&gt;agent prompts</text>
+<rect x="669.6200000000001" y="40" width="96.35000000000001" height="36" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<rect x="1436.02" y="217.25" width="332.3" height="36" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<rect x="2009.3700000000001" y="168.75" width="96.35000000000001" height="36" rx="0" ry="0" fill="#fef3e6" stroke="#3a4a3a" stroke-width="2px" />
+<rect x="2167.17" y="138.75" width="396.65000000000003" height="36" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<rect x="2227.9449999999997" y="198.75" width="275.1" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="40" y="318.5" width="110.65" height="36" rx="0" ry="0" fill="#fef3e6" stroke="#3a4a3a" stroke-width="2px" />
+<rect x="190.65000000000003" y="120" width="146.4" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="201.37500000000003" y="180" width="124.95" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="197.8" y="274.25" width="132.10000000000002" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="190.65000000000003" y="334.25" width="146.4" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="633.8700000000001" y="100" width="167.85000000000002" height="36" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+<rect x="644.595" y="194.25" width="146.4" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="505.1700000000001" y="254.25" width="425.25000000000006" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="1489.645" y="344.25" width="225.05" height="33" fill="#f0ede5" stroke="none" />
+<line x1="1489.645" y1="344.25" x2="1489.645" y2="377.25" stroke="#5a4a3a" stroke-width="0.75" />
+<line x1="1714.695" y1="344.25" x2="1714.695" y2="377.25" stroke="#5a4a3a" stroke-width="0.75" />
+<ellipse cx="1602.17" cy="377.25" rx="112.525" ry="7" fill="#f0ede5" stroke="#5a4a3a" stroke-width="0.75" />
+<ellipse cx="1602.17" cy="344.25" rx="112.525" ry="7" fill="#f0ede5" stroke="#5a4a3a" stroke-width="0.75" />
+<rect x="1987.92" y="258.75" width="139.25" height="36" rx="0" ry="0" fill="#fef3e6" stroke="#3a4a3a" stroke-width="2px" />
+<rect x="2202.92" y="258.75" width="325.15000000000003" height="36" rx="0" ry="0" fill="#e8f0e8" stroke="#3a4a3a" stroke-width="0.75" />
+<rect x="2603.82" y="375.75" width="182.15" height="33" fill="#f0ede5" stroke="none" />
+<line x1="2603.82" y1="375.75" x2="2603.82" y2="408.75" stroke="#5a4a3a" stroke-width="0.75" />
+<line x1="2785.9700000000003" y1="375.75" x2="2785.9700000000003" y2="408.75" stroke="#5a4a3a" stroke-width="0.75" />
+<ellipse cx="2694.895" cy="408.75" rx="91.075" ry="7" fill="#f0ede5" stroke="#5a4a3a" stroke-width="0.75" />
+<ellipse cx="2694.895" cy="375.75" rx="91.075" ry="7" fill="#f0ede5" stroke="#5a4a3a" stroke-width="0.75" />
+<text x="717.7950000000001" y="58" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="var(--_text)">Scientist</text>
+<text x="1602.17" y="235.25" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="var(--_text)">Next.js 16 App&lt;br/&gt;shadcn/ui + Tailwind v4</text>
+<text x="2057.545" y="186.75" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">&quot;/api/qc&quot;</text>
+<text x="2365.495" y="156.75" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="var(--_text)">Tavily Search&lt;br/&gt;arXiv + SemScholar + protocols.io</text>
+<text x="2365.495" y="216.75" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Gemini 2.5 Flash&lt;br/&gt;Lit-QC scorer</text>
+<text x="95.325" y="336.5" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">&quot;/api/plan&quot;</text>
+<text x="263.85" y="138" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Researcher Agent</text>
+<text x="263.85" y="198" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Skeptic Agent</text>
+<text x="263.85" y="292.25" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Operator Agent</text>
+<text x="263.85" y="352.25" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Compliance Agent</text>
+<text x="717.7950000000001" y="118" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="var(--_text)">Tavily protocols.io</text>
+<text x="717.7950000000001" y="212.25" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Gemini 2.5 Flash</text>
+<text x="717.7950000000001" y="272.25" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Consolidator&lt;br/&gt;Gemini 2.5 Flash&lt;br/&gt;+ thinking budget</text>
+<text x="1602.17" y="360.75" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">&quot;data/runs/&amp;lt;id&amp;gt;.json&quot;</text>
+<text x="2057.545" y="276.75" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">&quot;/api/lab-rule&quot;</text>
+<text x="2365.495" y="276.75" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">Gemini 2.5 Flash&lt;br/&gt;typed rule extractor</text>
+<text x="2694.895" y="392.25" text-anchor="middle" dy="0.35em" font-size="13" font-weight="500" fill="#1a2a1a">&quot;data/lab_rules.json&quot;</text>
+</svg>

@@ -57,7 +57,6 @@ export function usePlan(): UsePlanReturn {
     transport,
     onError: (err) => {
       // D-67: do NOT fabricate a fallback verdict / Plan here.
-      // eslint-disable-next-line no-console
       console.error("[plan] fetch error", err);
     },
     onData: (part) => {

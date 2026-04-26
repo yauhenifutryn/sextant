@@ -220,7 +220,6 @@ type Paper = {
 // top of the typewriter's paper outlet, horizontally centered on the
 // new wider paper-area (PAPER_AREA_X..+PAPER_AREA_W).
 const EJECT_X = TYPE_X + PAPER_AREA_X + Math.floor((PAPER_AREA_W - PAPER_W) / 2);
-const EJECT_Y = TYPE_Y - 3;
 
 function spawnQueued(p: Paper) {
   p.x = EJECT_X;

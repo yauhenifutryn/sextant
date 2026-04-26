@@ -23,7 +23,7 @@ export function LandingFinalCta() {
     if (!el) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
-      setCompleted(CHECKS.length);
+      queueMicrotask(() => setCompleted(CHECKS.length));
       return;
     }
     const obs = new IntersectionObserver(

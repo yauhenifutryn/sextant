@@ -25,11 +25,16 @@ export const runStore = new Map<string, Plan>(); // run_id → Plan
 const RUNS_DIR = path.join(process.cwd(), "data", "runs");
 
 /**
- * D7-11: hash the run input — hypothesis text + the sorted IDs of any
+ * D7-11: hash the run input — hypothesis text + the stable content of any
  * lab rules in effect. This guarantees that Plan A (no rules) and Plan B
  * (one or more rules captured) produce DIFFERENT cache keys, so Plan B
  * actually re-runs the agents instead of short-circuiting to the cached
  * Plan A.
+ *
+ * Do NOT use rule IDs here. The 60s demo pre-warms the post-correction plan,
+ * resets the local file to zero rules, then captures the same correction live.
+ * That creates a fresh rule ID, but the effective rule is identical. Keying by
+ * normalized source correction keeps that live capture on the warmed cache path.
  *
  * Note: hashRunInput(input, []) does NOT collide with the legacy
  * hashHypothesis(input) — the legacy hash was over the bare normalized
@@ -45,7 +50,9 @@ export async function hashRunInput(
 ): Promise<string> {
   const normalized = hypothesis.trim().toLowerCase();
   const ruleKey = JSON.stringify(
-    labRules.map((r) => r.id).sort((a, b) => a.localeCompare(b)),
+    labRules
+      .map((r) => `${r.scope}:${r.source_correction.trim().toLowerCase()}`)
+      .sort((a, b) => a.localeCompare(b)),
   );
   const buf = await crypto.subtle.digest(
     "SHA-256",

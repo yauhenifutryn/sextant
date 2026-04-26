@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [focusArrowSignal, setFocusArrowSignal] = useState(0);
   const [clarifyConsumed, setClarifyConsumed] = useState(false);
+  const [submittedHypothesis, setSubmittedHypothesis] = useState<string | null>(null);
   const lastCommittedHash = useRef<string | null>(null);
   const lastSubmittedRef = useRef<string>("");
 
@@ -70,6 +71,7 @@ export default function Dashboard() {
     // to /api/plan once the QC verdict resolves. `draft` may have been cleared
     // by the user typing again before the verdict settles.
     lastSubmittedRef.current = finalHypothesis;
+    setSubmittedHypothesis(finalHypothesis);
     plan.clear(); // reset previous plan state on a new submission
     qc.submit({ hypothesis: finalHypothesis });
   };
@@ -84,50 +86,58 @@ export default function Dashboard() {
     lastCommittedHash.current = hash;
 
     if (obj.ok === "verdict" && obj.verdict && obj.reasoning) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: "assistant",
-          variant: "verdict",
-          verdict: obj.verdict as "not-found" | "similar-work-exists" | "exact-match-found",
-          reasoning: obj.reasoning ?? "",
-        },
-      ]);
+      queueMicrotask(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            role: "assistant",
+            variant: "verdict",
+            verdict: obj.verdict as "not-found" | "similar-work-exists" | "exact-match-found",
+            reasoning: obj.reasoning ?? "",
+          },
+        ]);
+      });
     } else if (obj.ok === "clarify" && obj.clarify_question) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: "assistant",
-          variant: "clarify",
-          question: obj.clarify_question ?? "",
-        },
-      ]);
-      setClarifyConsumed(true); // D-46
+      queueMicrotask(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            role: "assistant",
+            variant: "clarify",
+            question: obj.clarify_question ?? "",
+          },
+        ]);
+        setClarifyConsumed(true); // D-46
+      });
     } else if (obj.ok === "no-evidence" && obj.message) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: "assistant",
-          variant: "no-evidence",
-          message: obj.message ?? "",
-        },
-      ]);
+      queueMicrotask(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            role: "assistant",
+            variant: "no-evidence",
+            message: obj.message ?? "",
+          },
+        ]);
+      });
     } else if (obj.ok === "error") {
       const message = obj.message ?? "Lit-QC service hit a hiccup — retry?";
       const retryable = obj.retryable ?? true;
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `a-${Date.now()}`,
-          role: "assistant",
-          variant: "error",
-          message,
-          retryable,
-        },
-      ]);
+      queueMicrotask(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `a-${Date.now()}`,
+            role: "assistant",
+            variant: "error",
+            message,
+            retryable,
+          },
+        ]);
+      });
       if (!retryable) {
         // D-48: explicit retryable=false copy.
         toast.error("Service unavailable — check API keys.");
@@ -180,16 +190,18 @@ export default function Dashboard() {
   // Generic fetch failure (network / 500) — treated as retryable error in chat.
   useEffect(() => {
     if (!qc.error) return;
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `a-err-${Date.now()}`,
-        role: "assistant",
-        variant: "error",
-        message: "Lit-QC service hit a hiccup — retry?",
-        retryable: true,
-      },
-    ]);
+    queueMicrotask(() => {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `a-err-${Date.now()}`,
+          role: "assistant",
+          variant: "error",
+          message: "Lit-QC service hit a hiccup — retry?",
+          retryable: true,
+        },
+      ]);
+    });
   }, [qc.error]);
 
   return (
@@ -213,7 +225,7 @@ export default function Dashboard() {
         plan={plan.plan}
         planIsLoading={plan.isLoading}
         previousPlan={previousPlan}
-        hypothesis={lastSubmittedRef.current || null}
+        hypothesis={submittedHypothesis}
         onRuleCaptured={labRules.refresh}
       />
       <TraceRail

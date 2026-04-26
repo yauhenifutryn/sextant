@@ -55,15 +55,19 @@ export function useDemoPacedEvents(events: AgentEvent[]): AgentEvent[] {
   const [paceMs, setPaceMs] = useState<number>(0);
 
   useEffect(() => {
-    setPaceMs(readPaceMs());
+    queueMicrotask(() => setPaceMs(readPaceMs()));
   }, []);
 
   const [paced, setPaced] = useState<AgentEvent[]>([]);
   const knownRef = useRef<Set<AgentEvent>>(new Set());
 
   useEffect(() => {
+    if (events.length === 0) {
+      knownRef.current.clear();
+      queueMicrotask(() => setPaced([]));
+      return;
+    }
     if (paceMs === 0) {
-      setPaced(events);
       return;
     }
     const newOnes = events.filter((e) => !knownRef.current.has(e));

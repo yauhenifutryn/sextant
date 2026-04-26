@@ -42,7 +42,7 @@ export function useLabRules(): UseLabRulesReturn {
   }, []);
 
   useEffect(() => {
-    void refresh();
+    queueMicrotask(() => void refresh());
   }, [refresh]);
 
   return {
