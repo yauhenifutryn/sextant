@@ -102,22 +102,40 @@ export function VideoAscii({ src = "/hero.mp4", className }: Props) {
       raf = requestAnimationFrame(loop);
     };
 
-    const onPlaying = () => {
+    // The hidden video can reach a usable state via several events, and
+    // the order isn't guaranteed across browsers (Safari sometimes never
+    // fires "playing" for muted autoplay-on-loop tags). Listen for all
+    // three transition events; the first one to fire kicks off the
+    // render loop. Re-firings after `started` are no-ops.
+    let started = false;
+    const startLoop = () => {
+      if (started) return;
+      if (video.readyState < 2) return; // need at least HAVE_CURRENT_DATA
+      started = true;
       setReady(true);
       if (!reduced) raf = requestAnimationFrame(loop);
       else drawFrame();
     };
-    video.addEventListener("playing", onPlaying);
+    video.addEventListener("playing", startLoop);
+    video.addEventListener("canplay", startLoop);
+    video.addEventListener("loadeddata", startLoop);
+
     video.muted = true;
     video.playsInline = true;
     video.loop = true;
+    video.preload = "auto";
     video.src = src;
-    video.play().catch(() => setReady(false));
+    // play() can reject on autoplay-policy errors. Even if it does, the
+    // video still loads, so we don't bail out of the loading state — the
+    // canplay/loadeddata listeners will start the loop anyway.
+    void video.play().catch(() => {});
 
     return () => {
       stopped = true;
       cancelAnimationFrame(raf);
-      video.removeEventListener("playing", onPlaying);
+      video.removeEventListener("playing", startLoop);
+      video.removeEventListener("canplay", startLoop);
+      video.removeEventListener("loadeddata", startLoop);
       video.pause();
       // remove src so it doesn't keep the connection alive
       video.removeAttribute("src");
