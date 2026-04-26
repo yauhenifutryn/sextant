@@ -67,7 +67,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. The agents produce a single consolidated plan as valid typed JSON with all five sections (Protocol, Materials, Budget, Timeline, Validation) populated
   3. The full generation cycle completes in under 60 seconds for the rehearsed sample hypothesis
   4. The structured JSON is available as a server-side artifact that subsequent phases can render
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 03-01-PLAN.md — Foundations: AgentEvent + Plan Zod schemas, in-memory + disk-read-through cache, data/runs/ directory + .gitignore (D-58, D-62, D-64, D-65; AGENT-03)
+- [ ] 03-02-PLAN.md — 4 agent runners (Researcher / Skeptic / Operator / Compliance) + Consolidator (D-54..D-57, D-61, D-66; AGENT-01, AGENT-02, AGENT-03)
+- [ ] 03-03-PLAN.md — POST /api/plan route + usePlan hook + dashboard auto-fire wire-in + UAT checkpoint (D-60, D-63, D-67, D-68; AGENT-01, AGENT-02, AGENT-03, AGENT-04)
 **UI hint**: no
 
 ### Phase 4: Plan Canvas UI
@@ -106,7 +109,9 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Active agents animate with a shimmer effect while working
   3. The validation grid lists at least 5 named tests (e.g., "Every reagent has a catalog URL", "Budget sums correctly", "No orphan protocol step", "Compliance pipeline passes", "Citations resolve")
   4. Tests visibly transition from pending to running to green (pass) as the plan finalizes — judges can watch the grid light up in real time
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 06-01-PLAN.md — Build agent-row.tsx + validation-grid.tsx leaf components (4 visual states + 6 deterministic checks; type-stub-free, duck-typed Plan shape) (TRACE-01..04 partial)
+- [ ] 06-02-PLAN.md — Wire trace-rail.tsx live render: AgentEvent reducer + 5 agent rows + ValidationGrid composition + STUB Phase-3 type fallback (TRACE-01..04 end-to-end)
 **UI hint**: yes
 
 ### Phase 7: Closed-Loop Corrections + Propagation Demo
@@ -148,9 +153,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-04-25 |
 | 2. Literature QC | 3/3 | Complete | 2026-04-26 |
-| 3. Multi-Agent Pipeline | 0/TBD | Not started | - |
+| 3. Multi-Agent Pipeline | 0/3 | Not started | - |
 | 4. Plan Canvas UI | 0/TBD | Not started | - |
 | 5. Grounding & Citations | 0/TBD | Not started | - |
-| 6. Live Trace & Validation Grid | 0/TBD | Not started | - |
+| 6. Live Trace & Validation Grid | 0/2 | Not started | - |
 | 7. Closed-Loop + Propagation Demo | 0/TBD | Not started | - |
 | 8. Polish, Demo, Pitch | 0/TBD | Not started | - |
