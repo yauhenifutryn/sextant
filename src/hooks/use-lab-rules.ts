@@ -21,6 +21,8 @@ export type UseLabRulesReturn = {
   refresh: () => Promise<void>;
 };
 
+export const LAB_RULES_CHANGED_EVENT = "sextant:lab-rules-changed";
+
 export function useLabRules(): UseLabRulesReturn {
   const [rules, setRules] = useState<LabRule[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -42,7 +44,14 @@ export function useLabRules(): UseLabRulesReturn {
   }, []);
 
   useEffect(() => {
+    const handleChanged = () => {
+      void refresh();
+    };
+    window.addEventListener(LAB_RULES_CHANGED_EVENT, handleChanged);
     queueMicrotask(() => void refresh());
+    return () => {
+      window.removeEventListener(LAB_RULES_CHANGED_EVENT, handleChanged);
+    };
   }, [refresh]);
 
   return {

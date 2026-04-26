@@ -26,6 +26,7 @@ import type {
   ValidationCheck,
   ComplianceNote,
 } from "@/lib/plan/schema";
+import type { LabRule } from "@/lib/lab-rules/schema";
 
 const DEMO_PACE_MS = Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0);
 
@@ -121,6 +122,47 @@ type ComplianceSlice = {
   compliance_summary: string;
 } | null;
 
+function appendSentence(value: string, sentence: string, maxLength: number): string {
+  if (value.toLowerCase().includes(sentence.toLowerCase().replace(/\.$/, ""))) {
+    return value;
+  }
+  const next = `${value.replace(/\s+$/, "")} ${sentence}`;
+  if (next.length <= maxLength) return next;
+  return sentence.length <= maxLength ? sentence : sentence.slice(0, maxLength);
+}
+
+function applyValidationLabRules(
+  validation: ValidationCheck[],
+  labRules: LabRule[] = [],
+): ValidationCheck[] {
+  const requiresControls = labRules.some((rule) => {
+    if (rule.scope !== "validation_check") return false;
+    const text = `${rule.rule} ${rule.source_correction}`.toLowerCase();
+    return text.includes("positive") && text.includes("negative") && text.includes("control");
+  });
+  if (!requiresControls) return validation;
+
+  return validation.map((check) => {
+    const existing = `${check.description} ${check.measurement_method} ${check.pass_criteria}`;
+    if (/positive/i.test(existing) && /negative/i.test(existing) && /control/i.test(existing)) {
+      return check;
+    }
+    return {
+      ...check,
+      description: appendSentence(
+        check.description,
+        "Includes explicit positive and negative controls.",
+        400,
+      ),
+      pass_criteria: appendSentence(
+        check.pass_criteria,
+        "Positive and negative controls are documented.",
+        280,
+      ),
+    };
+  });
+}
+
 export async function runConsolidator(args: {
   hypothesis: string;
   qc_run_id: string | null;
@@ -139,6 +181,7 @@ export async function runConsolidator(args: {
     compliance: AgentArtifact;
   };
   writer: UIMessageStreamWriter;
+  labRules?: LabRule[];
 }): Promise<Plan> {
   const t0 = Date.now();
 
@@ -162,7 +205,7 @@ export async function runConsolidator(args: {
   const o = args.slices.operator as OperatorSlice;
   const c = args.slices.compliance as ComplianceSlice;
 
-  const validation = (s?.validation ?? []).slice();
+  let validation = (s?.validation ?? []).slice();
   if (validation.length < 5) {
     // Top up to schema floor of 5 with VALIDATION_FALLBACK entries that
     // aren't already named.
@@ -172,6 +215,7 @@ export async function runConsolidator(args: {
       if (!existing.has(v.name)) validation.push(v);
     }
   }
+  validation = applyValidationLabRules(validation, args.labRules);
 
   const plan: Plan = {
     run_id: args.run_id,

@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { LAB_RULES_CHANGED_EVENT } from "@/hooks/use-lab-rules";
 import type { LabRuleScope } from "@/lib/lab-rules/schema";
 
 export type CorrectionTarget = {
@@ -89,6 +90,7 @@ export function CorrectionPopover({
       toast.success("Lab rule captured.");
       setText("");
       setOpen(false);
+      window.dispatchEvent(new CustomEvent(LAB_RULES_CHANGED_EVENT));
       if (onSuccess) await onSuccess();
     } catch {
       toast.error("Could not capture rule — try again.");
@@ -102,8 +104,10 @@ export function CorrectionPopover({
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         align="start"
-        sideOffset={6}
-        className="w-96"
+        side="top"
+        sideOffset={10}
+        collisionPadding={16}
+        className="w-80 border-borderwarm bg-paper text-ink shadow-doc"
         onOpenAutoFocus={(e) => {
           // Prevent default focus jump; we rely on the textarea autofocus below.
           e.preventDefault();

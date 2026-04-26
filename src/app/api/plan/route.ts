@@ -190,6 +190,7 @@ export async function POST(req: Request) {
           },
           artifacts,
           writer,
+          labRules,
         });
       } catch (err) {
         // Consolidator failure: emit error event + write a structurally-valid
