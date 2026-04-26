@@ -33,6 +33,22 @@ export function AsciiHero() {
   return (
     <header id="top" className="l-ascii-hero">
       <div className="l-ascii-hero-bg" aria-hidden="true">
+        {/* Soft colored video wash — same /hero.mp4 source as the ASCII
+         * sampler, played at low opacity + blur so the original colors
+         * (white coats, colored petri dishes, lab fixtures) bleed through
+         * and tint the ASCII pattern. The two playheads desync slightly
+         * over a few seconds; that's fine — it just adds a subtle
+         * shimmer instead of locked-step rendering. */}
+        <video
+          className="l-ascii-hero-color"
+          src="/hero.mp4"
+          autoPlay
+          muted
+          playsInline
+          loop
+          preload="auto"
+          aria-hidden="true"
+        />
         <VideoAscii className="l-ascii-hero-vascii" />
       </div>
       <div className="l-ascii-hero-scrim" aria-hidden="true" />

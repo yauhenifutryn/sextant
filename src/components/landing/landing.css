@@ -405,38 +405,58 @@
   align-items: stretch;
   justify-content: stretch;
 }
+/* Color-wash video layer — original hero.mp4 played behind the ASCII at
+ * low opacity, blurred so the lab scene reads as a soft colored photo
+ * underlay rather than a recognizable video. The ASCII characters on
+ * top trace the high-contrast luminance edges; the color comes from
+ * this layer. Saturation pushed up so the petri dishes' yellow/red/
+ * blue/green stays readable through the blur. */
+.l-ascii-hero-color {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0.32;
+  filter: blur(10px) saturate(1.45) contrast(1.1);
+  -webkit-filter: blur(10px) saturate(1.45) contrast(1.1);
+  pointer-events: none;
+}
 /* The VideoAscii's <pre> element gets an enlarged font + monospace
- * lineheight so its 96×54 character grid fills the viewport. Color is
- * deep ink — much higher contrast on warm off-white than the previous
- * forest-green-at-0.42-opacity, which read as washed grey. The ASCII
- * pattern should be PRESENT in the periphery, not whisper-quiet. */
+ * lineheight so its 96×54 character grid fills the viewport. Switched
+ * from forest-green at 0.78 opacity to deep ink at 0.92 — pairs better
+ * with the colored video wash behind it (forest-on-blurred-color was
+ * muddy; ink-on-color reads as a clean print over a tinted photo). */
 .l-ascii-hero-bg .l-vascii-out {
+  position: relative;
+  z-index: 1;
   font-size: clamp(8px, 1.1vw, 13px);
   line-height: 0.92;
   letter-spacing: 0.02em;
   font-weight: 500;
   color: #0F4C3A;
-  opacity: 0.78;
+  opacity: 0.92;
   display: block;
   text-align: left;
   padding: 28px;
+  mix-blend-mode: multiply;
 }
-/* Scrim — softer in the center where the headline sits, harder at the
- * edges so the ASCII fades naturally past the eye-line. The earlier
- * version was too solid in the middle (0.85) and washed everything
- * grey; the new mix lets the ASCII texture stay legible while the
- * headline still has full contrast under the dark text. */
+/* Scrim is now even softer because the colored video is doing some of
+ * the visual work. Just enough warm wash in the center to keep the
+ * headline legible while the colored ASCII layer stays vivid at the
+ * edges. */
 .l-ascii-hero-scrim {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
   background:
     radial-gradient(
-      ellipse 55% 45% at 50% 48%,
-      rgba(250, 250, 247, 0.72) 0%,
-      rgba(250, 250, 247, 0.42) 55%,
-      rgba(250, 250, 247, 0.18) 100%
+      ellipse 50% 40% at 50% 48%,
+      rgba(250, 250, 247, 0.62) 0%,
+      rgba(250, 250, 247, 0.28) 60%,
+      rgba(250, 250, 247, 0.08) 100%
     );
 }
 
@@ -517,7 +537,7 @@
 
 .l-ascii-stage {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   max-width: 920px;
   padding: 96px 0 80px;
   animation: l-ascii-rise 800ms var(--ease) 100ms both;
