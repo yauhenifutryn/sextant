@@ -105,11 +105,11 @@ The differentiator (hours 14-18). Stretch goal that wins the demo if completed.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INPUT-01 | Phase 2 | Pending |
-| INPUT-02 | Phase 2 | Pending |
+| INPUT-02 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
 | INPUT-03 | Phase 1 | Pending |
-| LITQC-01 | Phase 2 | Pending |
-| LITQC-02 | Phase 2 | Pending |
-| LITQC-03 | Phase 2 | Pending |
+| LITQC-01 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
+| LITQC-02 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
+| LITQC-03 | Phase 2 | Backend wired (02-02), UI pending (02-03) |
 | LITQC-04 | Phase 2 | Pending |
 | AGENT-01 | Phase 3 | Pending |
 | AGENT-02 | Phase 3 | Pending |
