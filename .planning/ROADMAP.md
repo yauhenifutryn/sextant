@@ -68,7 +68,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The full generation cycle completes in under 60 seconds for the rehearsed sample hypothesis
   4. The structured JSON is available as a server-side artifact that subsequent phases can render
 **Plans**: 3 plans
-- [ ] 03-01-PLAN.md — Foundations: AgentEvent + Plan Zod schemas, in-memory + disk-read-through cache, data/runs/ directory + .gitignore (D-58, D-62, D-64, D-65; AGENT-03)
+- [x] 03-01-PLAN.md — Foundations: AgentEvent + Plan Zod schemas, in-memory + disk-read-through cache, data/runs/ directory + .gitignore (D-58, D-62, D-64, D-65; AGENT-03) — completed 2026-04-26 (commits 395a861, c875bcf, 3a01168). 3 new modules + dir marker; zero deviations; phase 6 unblocked via trace.ts.
 - [ ] 03-02-PLAN.md — 4 agent runners (Researcher / Skeptic / Operator / Compliance) + Consolidator (D-54..D-57, D-61, D-66; AGENT-01, AGENT-02, AGENT-03)
 - [ ] 03-03-PLAN.md — POST /api/plan route + usePlan hook + dashboard auto-fire wire-in + UAT checkpoint (D-60, D-63, D-67, D-68; AGENT-01, AGENT-02, AGENT-03, AGENT-04)
 **UI hint**: no
@@ -153,7 +153,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete | 2026-04-25 |
 | 2. Literature QC | 3/3 | Complete | 2026-04-26 |
-| 3. Multi-Agent Pipeline | 0/3 | Not started | - |
+| 3. Multi-Agent Pipeline | 1/3 | In Progress | - |
 | 4. Plan Canvas UI | 0/TBD | Not started | - |
 | 5. Grounding & Citations | 0/TBD | Not started | - |
 | 6. Live Trace & Validation Grid | 0/2 | Not started | - |
