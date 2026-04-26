@@ -17,21 +17,51 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import type { Plan } from "./schema";
+import type { LabRule } from "@/lib/lab-rules/schema";
 
 const cacheIndex = new Map<string, string>(); // hypothesis_hash → run_id
 export const runStore = new Map<string, Plan>(); // run_id → Plan
 
 const RUNS_DIR = path.join(process.cwd(), "data", "runs");
 
-export async function hashHypothesis(input: string): Promise<string> {
-  const normalized = input.trim().toLowerCase();
+/**
+ * D7-11: hash the run input — hypothesis text + the sorted IDs of any
+ * lab rules in effect. This guarantees that Plan A (no rules) and Plan B
+ * (one or more rules captured) produce DIFFERENT cache keys, so Plan B
+ * actually re-runs the agents instead of short-circuiting to the cached
+ * Plan A.
+ *
+ * Note: hashRunInput(input, []) does NOT collide with the legacy
+ * hashHypothesis(input) — the legacy hash was over the bare normalized
+ * string, this one is over `${normalized}|[]`. This is an intentional
+ * one-time cache invalidation on Phase 7 deploy: any pre-Phase-7 cached
+ * Plan A entries become stale on the first request after deploy. The
+ * legacy hashHypothesis is preserved as a thin wrapper so any forgotten
+ * caller still compiles, and it now also produces the new keyspace.
+ */
+export async function hashRunInput(
+  hypothesis: string,
+  labRules: LabRule[] = [],
+): Promise<string> {
+  const normalized = hypothesis.trim().toLowerCase();
+  const ruleKey = JSON.stringify(
+    labRules.map((r) => r.id).sort((a, b) => a.localeCompare(b)),
+  );
   const buf = await crypto.subtle.digest(
     "SHA-256",
-    new TextEncoder().encode(normalized),
+    new TextEncoder().encode(`${normalized}|${ruleKey}`),
   );
   return Array.from(new Uint8Array(buf))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
+}
+
+/**
+ * Legacy alias. Kept so any forgotten caller compiles. Same hash as
+ * hashRunInput(input, []) — see hashRunInput for the cache-invalidation note.
+ */
+export async function hashHypothesis(input: string): Promise<string> {
+  return hashRunInput(input, []);
 }
 
 /**
