@@ -406,17 +406,26 @@
   justify-content: stretch;
 }
 /* The VideoAscii's <pre> element gets an enlarged font + monospace
- * lineheight so its 96×54 character grid fills the viewport. Color
- * stays forest green so the ASCII reads as part of the brand band. */
+ * lineheight so its 96×54 character grid fills the viewport. Color is
+ * deep ink — much higher contrast on warm off-white than the previous
+ * forest-green-at-0.42-opacity, which read as washed grey. The ASCII
+ * pattern should be PRESENT in the periphery, not whisper-quiet. */
 .l-ascii-hero-bg .l-vascii-out {
-  font-size: clamp(7px, 1.05vw, 12px);
+  font-size: clamp(8px, 1.1vw, 13px);
   line-height: 0.92;
-  color: var(--primary);
-  opacity: 0.42;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+  color: #0F4C3A;
+  opacity: 0.78;
   display: block;
   text-align: left;
-  padding: 32px;
+  padding: 28px;
 }
+/* Scrim — softer in the center where the headline sits, harder at the
+ * edges so the ASCII fades naturally past the eye-line. The earlier
+ * version was too solid in the middle (0.85) and washed everything
+ * grey; the new mix lets the ASCII texture stay legible while the
+ * headline still has full contrast under the dark text. */
 .l-ascii-hero-scrim {
   position: absolute;
   inset: 0;
@@ -424,10 +433,10 @@
   pointer-events: none;
   background:
     radial-gradient(
-      ellipse 65% 55% at 50% 45%,
-      rgba(250, 250, 247, 0.85) 0%,
-      rgba(250, 250, 247, 0.55) 50%,
-      rgba(250, 250, 247, 0.78) 100%
+      ellipse 55% 45% at 50% 48%,
+      rgba(250, 250, 247, 0.72) 0%,
+      rgba(250, 250, 247, 0.42) 55%,
+      rgba(250, 250, 247, 0.18) 100%
     );
 }
 
