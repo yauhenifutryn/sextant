@@ -82,6 +82,51 @@ A scientist enters a hypothesis, watches four agents debate it in parallel, and 
 | Path B for UI (Claude Design first, port to Next.js) | User wants aesthetic ownership; brief written and committed at `CLAUDE_DESIGN_BRIEF.md` | — Pending |
 | Hard cut-off rule: if learning loop not wired by hour 18, cut to manual before/after slide | Codex-flagged risk; do not leave half-built | — Pending |
 
+## Defensibility & Pitch Framing
+
+**Honest read (added 2026-04-26):** the *current build* is structurally a wrapper (5 Gemini calls + Tavily + a typed JSON schema). Code is not the moat. The *thesis* is defensible in three places, and the demo's job is to prove the thesis can close — not to claim the moat already exists.
+
+### Where defensibility actually lives
+
+1. **Typed lab-rule artifact + closed loop (the only real moat).** Each scientist correction extracts a typed, queryable rule into that lab's private store. Over months of real CRO usage, the rule store becomes a private asset competitors can't replicate. Data network effects at the lab-tenant level (weaker than platform-level network effects, but real). **Caveat:** the hackathon ships the seed (3-5 demo rules); real defensibility needs months of usage. The Phase 7 propagation demo is the moat-validation evidence — without it, the pitch reduces to "another GPT wrapper".
+2. **Grounded-typed-artifact contract.** ChatGPT writes prose; Sextant produces a queryable Plan with `citations: Citation[]` per line, a `grounded` flag, and a 5-section schema a CRO operator can dispatch. The schema + the provenance discipline (CLAUDE.md hard rule #1, repair callbacks, post-stream provenance check) is product judgment that compounds across the codebase. Replicable but not trivially.
+3. **Domain-calibrated multi-agent roles.** Researcher / Skeptic / CRO Operator / Compliance encode workflow assumptions a generic chat doesn't. Replaceable in isolation; valuable when calibrated against real CRO feedback over time.
+
+### Where it is NOT defensible
+
+- Against Anthropic / OpenAI / Google building it themselves. **Counter-argument:** model labs don't want to own a regulated B2B workflow with IRB, SOP, and procurement integrations — that's the actual gap.
+- Against another well-resourced solo dev cloning the orchestration in a weekend.
+- Against a competitor with a CRO design partner from day 1 (they outpace us on rule-store growth).
+
+### What must be true for the moat thesis to hold (demo + roadmap)
+
+**For the hackathon demo to validate the thesis:**
+- [ ] Phase 7 propagation demo MUST land — rule captured from Plan A visibly applies in Plan B without re-prompting (LOOP-03, PROP-02, PROP-03, PROP-04). This single moment IS the moat evidence. CLAUDE.md hard rule #3 (cut Phase 7 by hour 18 to a manual slide) is the safety valve, but the *real* outcome we want is the live closed loop.
+- [ ] Lab rules are stored as TYPED artifacts (not freeform text) with structured fields: `rule, scope, reasoning, source_correction`. Free-text rules don't compound.
+- [ ] At least one rule must apply across hypothesis types (not just within one chip) to prove the rule abstraction is meaningful. Pre-stage two demo hypotheses where the same rule applies to both.
+
+**For the post-hackathon product to be defensible:**
+- [ ] Pivot positioning from "AI Scientist" → "AI CRO Operations Platform". Own the *workflow*, not the AI.
+- [ ] One real CRO design partner feeding rules from day 1 (the rule store needs real friction, not synthetic data).
+- [ ] Build the rule lifecycle: typed schema with conflict resolution, time decay, review queue, provenance per rule.
+- [ ] Structural lock-ins via integrations: ELN, LIMS, procurement (Sigma-Aldrich punch-out), regulatory audit log. The brief explicitly punts these to out-of-scope for 24h — they ARE the actual moat for v2 of the product.
+- [ ] Audit log for regulatory sign-off (FDA / IRB) — turns the typed-rule store into a compliance asset, not just a productivity asset.
+
+### Judge-facing framing (Phase 8 pitch)
+
+**One-liner:** "Sextant turns a hypothesis into a fully-grounded experiment plan in 3 minutes — and every correction a scientist makes compounds into the next plan, automatically. We're an AI Operations Platform for the $100B Contract Research market."
+
+**Moat slide content (1 slide, 4 bullets):**
+- *Lab-tenant data network effect* — typed lab-rule artifacts compound per-customer over months. Not transferable; not commoditizable.
+- *Workflow lock-in via integrations* — ELN, LIMS, procurement, audit log. CROs don't switch tools they've wired into their procurement system.
+- *Regulated-domain trust infrastructure* — provenance-per-claim, audit log, no hallucinated catalog numbers. Built-in compliance posture model labs won't replicate.
+- *6-month head start in CRO-calibrated agent roles* — Researcher/Skeptic/Operator/Compliance encode workflow assumptions generic chat doesn't.
+
+**Anti-framing (do not say at the demo):**
+- Do NOT claim "data network effects" without evidence.
+- Do NOT pitch this as a defensible business at hour 24 — frame it as "the prototype that proves the loop closes; investment thesis is scaling the closure."
+- Do NOT compete on model quality. Always reframe to workflow + knowledge accumulation.
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.

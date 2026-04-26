@@ -111,6 +111,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 ### Phase 7: Closed-Loop Corrections + Propagation Demo
 **Goal**: A scientist can correct any line in the plan, capture it as a typed lab rule, and watch a second hypothesis plan automatically apply that rule — the closed loop is live and demo-ready
+
+**Strategic note (added 2026-04-26):** Success criteria 4 and 5 (second hypothesis applies stored rules + diff modal labels each changed line with the applied rule) ARE the moat-validation evidence for the entire pitch. Without this moment landing live, the project reduces to "another GPT wrapper" in judges' minds. CLAUDE.md hard rule #3 (cut to manual slide by hour 18) is the safety valve — but the *real* outcome is the live closed loop. Pre-stage two demo hypotheses where the same rule applies to both, to prove the rule abstraction transfers across hypothesis types (not just within one chip). See PROJECT.md "Defensibility & Pitch Framing" for the full thesis.
 **Depends on**: Phase 5, Phase 6
 **Requirements**: LOOP-01, LOOP-02, LOOP-03, LOOP-04, LOOP-05, PROP-01, PROP-02, PROP-03, PROP-04
 **Success Criteria** (what must be TRUE):
@@ -133,7 +135,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. If Phase 7 shipped: the closed-loop demo moment (rule captured → second plan applies rule → diff modal) runs without a manual fallback
   5. If Phase 7 did not ship: a before/after slide clearly communicates the propagation concept to judges
   6. The demo video is recorded and ready for submission
-  7. The pitch deck or talking points cover: problem, solution, technical depth, differentiator, and market framing (Sextant as a B2B SaaS wedge into the $100B contract research market)
+  7. The pitch deck or talking points cover: problem, solution, technical depth, differentiator, market framing (Sextant as a B2B SaaS wedge into the $100B contract research market), AND a moat slide explicitly addressing defensibility — typed lab-rule artifacts as a lab-tenant data network effect, workflow lock-in via integrations on the roadmap (ELN/LIMS/procurement), and regulated-domain trust infrastructure (provenance per claim). Anti-framing: do NOT claim "data network effects" without evidence; frame as "the prototype that proves the loop closes; investment thesis is scaling the closure." See PROJECT.md "Defensibility & Pitch Framing" for the full one-liner + 4-bullet moat slide content.
 **Plans**: TBD
 **UI hint**: yes
 
