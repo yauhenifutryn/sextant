@@ -22,7 +22,10 @@ export type TavilyResult = {
  * Run a single broad Tavily search. Throws on non-2xx; the route catches
  * and returns a typed `error` discriminant per D-48. No retry in v1 (D-33).
  *
- * AbortSignal.timeout(4000) caps the wait at 4s to honour latency budget D-52.
+ * AbortSignal.timeout(8000) — cold-start TLS handshake to api.tavily.com
+ * is ~5s on Vercel free tier; 4s was too tight (verified live, both prod
+ * and local hit it on first call). Direct probe with same key returns in
+ * ~500ms once warm, so this only adds ceiling, not normal-path latency.
  */
 export async function tavilySearch(query: string): Promise<TavilyResult[]> {
   const res = await fetch("https://api.tavily.com/search", {
@@ -39,7 +42,7 @@ export async function tavilySearch(query: string): Promise<TavilyResult[]> {
       include_raw_content: false, // D-32
       topic: "general", // D-32
     }),
-    signal: AbortSignal.timeout(4000),
+    signal: AbortSignal.timeout(8000),
   });
   if (!res.ok) throw new Error(`Tavily ${res.status}`);
   const json = (await res.json()) as { results: TavilyResult[] };
