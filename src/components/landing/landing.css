@@ -415,31 +415,32 @@
   pointer-events: none;
 }
 .l-papers-typewriter {
-  opacity: 0.36;
+  opacity: 0.46;
   z-index: 1;
   /* Slight underglow under the typewriter so it reads as "object on a
    * desk" rather than a floating icon. Pure CSS — no extra DOM. */
   filter: drop-shadow(0 1px 0 rgba(15, 76, 58, 0.18));
 }
 .l-papers-out {
-  opacity: 0.18;
+  opacity: 0.22;
   z-index: 0;
   overflow: hidden;
-  /* Vignette so the rain only shows at the screen edges (corners +
-   * the gap between the stream column and the headline column).
-   * The center cone — where the eyebrow + headline sit — is masked
-   * out so the type stays crisp. */
+  /* The scrim element (.l-ascii-hero-scrim) already handles headline
+   * readability with a warm-paper gradient, so the mask here can be
+   * tighter — just a small fade right where the headline center sits,
+   * so a paper drifting through doesn't visually collide with the
+   * type. The rest of the canvas shows pages freely. */
   -webkit-mask-image: radial-gradient(
-    ellipse 60% 85% at 72% 50%,
-    transparent 0%,
-    rgba(0, 0, 0, 0.45) 40%,
-    black 95%
+    ellipse 30% 50% at 75% 42%,
+    transparent 25%,
+    rgba(0, 0, 0, 0.55) 65%,
+    black 100%
   );
   mask-image: radial-gradient(
-    ellipse 60% 85% at 72% 50%,
-    transparent 0%,
-    rgba(0, 0, 0, 0.45) 40%,
-    black 95%
+    ellipse 30% 50% at 75% 42%,
+    transparent 25%,
+    rgba(0, 0, 0, 0.55) 65%,
+    black 100%
   );
 }
 
