@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: "Phase 4 Plan 03 (Plan Canvas UI Wave 3 — PlanTabs+PlanSkeleton wire-in to PlanCanvas + dashboard prop threading) COMPLETE. 0 new files, 2 modified at commits 064e9cc (Task 1: src/components/plan-canvas.tsx +35/-8 — extended Props with plan: Plan | null + planIsLoading: boolean, added 3-state coexistence per D4-12 with mutually-exclusive showPlan/showSkeleton/showHero guards below pinned VerdictCard), d3bc4f3 (Task 2: src/app/app/page.tsx +2 lines threading plan={plan.plan} + planIsLoading={plan.isLoading}). 0 deviations. Project-wide tsc green per task and final. All 6 PLAN-XX acceptance grep checks PASS. One acceptance-grep false positive documented: [0 sources] matched a JSDoc rule-documentation comment in citation-slot.tsx line 23 (Wave 1 locked file); actual code at line 33 returns null for empty arrays per CLAUDE.md hard rule #1 — not a violation. ~2m 38s wall, 2 commits. Phase 4 SHIPPED."
-last_updated: "2026-04-26T11:03:21.683Z"
-last_activity: 2026-04-26 -- Phase 4 Plan 03 (PlanCanvas wire-in + dashboard threading) COMPLETE — Phase 4 SHIPPED
+status: ready_to_record
+stopped_at: "Phase 7 SHIPPED. Closed-loop corrections + propagation demo wired end-to-end across 4 waves (07-01 backend foundation → 07-02 agent prompt injection + cache key → 07-03 correction popover + live header pill → 07-04 diff modal + previousPlan snapshot). 13 Phase 7 commits on main, tsc green, npm run build green. All 7 required REQ-IDs covered (LOOP-01..04 + PROP-01..03). LOOP-05 + PROP-04 explicitly deferred per DEFERRED.md. Phase 7 demo flow verified by read-only code trace: chip click → CorrectionPopover Submit → /api/lab-rules → data/lab_rules.json → header pill ticks; second chip → previousPlan snapshot → 'Compare with previous plan' button → PlanDiffModal with clay/rust highlights on differing rows. Ready for Phase 8 (cache-warm + record demo + submit)."
+last_updated: "2026-04-26T13:00:00.000Z"
+last_activity: 2026-04-26 -- Phase 7 SHIPPED — closed-loop corrections + diff modal end-to-end
 progress:
   total_phases: 8
-  completed_phases: 6
-  total_plans: 15
-  completed_plans: 15
+  completed_phases: 7
+  total_plans: 19
+  completed_plans: 19
   percent: 100
 ---
 

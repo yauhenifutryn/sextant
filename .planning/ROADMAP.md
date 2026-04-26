@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Plan Canvas UI** - Tabbed Protocol / Materials / Budget / Timeline / Validation views (completed 2026-04-26)
 - [x] **Phase 5: Grounding & Citations (LITE)** - 1 Tavily call/Plan enriches Materials, clickable citations w/ native tooltip (per-row + URL verify deferred to .planning/DEFERRED.md) — completed 2026-04-26
 - [ ] **Phase 6: Live Trace & Validation Grid** - Agent activity rail, test grid ticking green
-- [ ] **Phase 7: Closed-Loop Corrections + Propagation Demo** - Lab rules, correction popover, diff modal
+- [x] **Phase 7: Closed-Loop Corrections + Propagation Demo (LITE)** - Correction popover (Correct only), typed lab rules, agent prompt injection, diff modal with clay/rust highlights. LOOP-05 lab profile drawer + PROP-04 per-line rule labels deferred. Completed 2026-04-26 across 4 waves, 13 commits.
 - [ ] **Phase 8: Polish, Demo, Pitch** - Visual polish, demo rehearsal, video recording, submission
 
 ## Phase Details
@@ -160,5 +160,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Plan Canvas UI | 3/3 | Complete | 2026-04-26 |
 | 5. Grounding & Citations | 0/TBD | Not started | - |
 | 6. Live Trace & Validation Grid | 0/2 | Not started | - |
-| 7. Closed-Loop + Propagation Demo | 0/TBD | Not started | - |
+| 7. Closed-Loop + Propagation Demo | 4/4 | Complete | 2026-04-26 |
 | 8. Polish, Demo, Pitch | 0/TBD | Not started | - |
