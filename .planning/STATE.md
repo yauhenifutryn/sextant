@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 3 Plan 02 (Agent runners + Consolidator) COMPLETE. 5 LLM-call modules shipped at commits 61299fb (researcher.ts + skeptic.ts — protocols.io-grounded Researcher + Validation owner with 6-name skeleton guarantee), f85b245 (operator.ts + compliance.ts — 3-section Operator + notes/summary Compliance), 42b1ba6 (consolidator.ts — 5th call merging 4 slices via planSchema with thinkingBudget:4000 and server-side metadata post-fill). Zero deviations across all 3 tasks; project-wide tsc green per task; SEXTANT_DEMO_PACE_MS toggle present in all 5 modules (server-only, default 0 in production). Wave 2 of 3 complete (~10 min wall, 3 commits). Wave 3 (03-03-PLAN.md — POST /api/plan route + usePlan hook + dashboard auto-fire wire-in) is the last Phase 3 hop; will consume runResearcher/runSkeptic/runOperator/runCompliance via Promise.allSettled then pipe slices+artifacts through runConsolidator."
-last_updated: "2026-04-26T10:28:56.459Z"
-last_activity: 2026-04-26 -- Phase 4 execution started
+stopped_at: "Phase 4 Plan 01 (Plan Canvas UI Wave 1 — leaf renderers + Tabs primitive + CitationSlot + format helpers) COMPLETE. 8 new files shipped at commits 8342c82 (Task 1: @radix-ui/react-tabs@^1.1.13 dep + src/components/ui/tabs.tsx shadcn wrapper with forest underline + ink text on active per D4-04 + forest/40 focus ring per DESIGN-04), 7af21d3 (Task 2: src/lib/plan/format.ts with formatCurrency Intl.NumberFormat USD dual-format + computeSubtotal pessimistic numeric-prefix parser + src/components/plan/citation-slot.tsx returning null on empty arrays per CLAUDE.md hard rule #1), 7a6378a (Task 3: 5 leaf renderers — protocol-tab.tsx numbered <ol>, materials-tab.tsx 6-col <table> with sticky header + computeSubtotal + overflow-x-auto, budget-tab.tsx with bg-forest/30 proportional bars + Total row, timeline-tab.tsx with depends_on chip strip mirroring example-chips, validation-tab.tsx with 2-col Method/Pass criteria <dl>). 2 deviations auto-fixed: (1) Citation type derived locally via z.infer<typeof citationSchema> because qc/schema.ts is locked and exports no Citation alias, (2) JSDoc rephrased in validation-tab.tsx to satisfy strict planSchema-grep without changing behavior. Project-wide tsc green per task. ~5min wall, 3 commits. Wave 2 (04-02-PLAN.md — plan-tabs.tsx shell + plan-canvas.tsx wire-in) can now import all 5 leaves by name with zero churn."
+last_updated: "2026-04-26T10:36:19Z"
+last_activity: 2026-04-26 -- Phase 4 Plan 01 (leaf renderers) COMPLETE
 progress:
   total_phases: 8
   completed_phases: 4
   total_plans: 14
-  completed_plans: 11
-  percent: 79
+  completed_plans: 12
+  percent: 86
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-25)
 ## Current Position
 
 Phase: 4 (Plan Canvas UI) — EXECUTING
-Plan: 1 of 3
+Plan: 2 of 3 (next: plan-tabs.tsx shell + plan-canvas.tsx wire-in)
 Status: Executing Phase 4
-Last activity: 2026-04-26 -- Phase 4 execution started
+Last activity: 2026-04-26 -- Phase 4 Plan 01 (leaf renderers) COMPLETE
 
-Progress: [█████████░] ~90% (Phase 1 + Phase 2 done; Phase 3 Wave 1+2 done)
+Progress: [█████████░] ~93% (Phase 1 + Phase 2 + Phase 3 done; Phase 4 Wave 1 of 3 done)
 
 ## Production environment
 
@@ -44,9 +44,9 @@ Progress: [█████████░] ~90% (Phase 1 + Phase 2 done; Phase 3
 
 **Velocity:**
 
-- Total plans completed: 8 (3 in Phase 1 + 3 in Phase 2 + 2 in Phase 3)
-- Average duration: ~8 min 30 sec
-- Total execution time: ~69 min 26 sec
+- Total plans completed: 9 (3 in Phase 1 + 3 in Phase 2 + 2 in Phase 3 + 1 in Phase 4)
+- Average duration: ~8 min 16 sec
+- Total execution time: ~74 min 40 sec
 
 **By Phase:**
 
@@ -55,11 +55,12 @@ Progress: [█████████░] ~90% (Phase 1 + Phase 2 done; Phase 3
 | 1. Foundation | 3/3 | ~12 min 30 sec | ~6 min 15 sec |
 | 2. Literature QC | 3/3 | ~44 min 35 sec | ~14 min 52 sec |
 | 3. Multi-Agent Pipeline | 2/3 | ~12 min 20 sec | ~6 min 10 sec |
+| 4. Plan Canvas UI | 1/3 | ~5 min 14 sec | ~5 min 14 sec |
 
 **Recent Trend:**
 
-- Last 8 plans: 03-02 (~10m wall, 3 commits, 0 deviations — 5 LLM-call modules with verbatim plan-supplied file bodies; all grep acceptance chains passed first-time; tsc green per task; consolidator's server-side metadata post-fill prevents LLM-injected provenance), 03-01 (~2m 20s, 3 commits, 0 deviations — pure-data Zod + Node fs work; all grep acceptance chains passed first-time; Phase 6 unblocked at commit 395a861; tsc green; git check-ignore negation proven), 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
-- Trend: 03-02 sustains the verbatim-plan-body advantage from 03-01 — when the plan supplies full module bodies + strict grep acceptance criteria, executor work reduces to mechanical Write + tsc + commit. 5 LLM-call modules in ~10 minutes wall, 0 deviations, fully type-checked, ready for Wave 3 to consume.
+- Last 9 plans: 04-01 (~5m 14s, 3 commits, 2 auto-fixed deviations — Citation type derived locally via z.infer because qc/schema.ts is locked + JSDoc planSchema rephrase to satisfy strict grep; verbatim plan-body advantage held; project-wide tsc green per task; 8 leaf files + 1 dep ready for Wave 2 to wire), 03-02 (~10m wall, 3 commits, 0 deviations — 5 LLM-call modules with verbatim plan-supplied file bodies; all grep acceptance chains passed first-time; tsc green per task; consolidator's server-side metadata post-fill prevents LLM-injected provenance), 03-01 (~2m 20s, 3 commits, 0 deviations — pure-data Zod + Node fs work; all grep acceptance chains passed first-time; Phase 6 unblocked at commit 395a861; tsc green; git check-ignore negation proven), 02-03 (~10m 9s, 4 commits, 1 commit-hygiene incident documented — stray landing-polish files swept into Task 3 commit by parallel-process race; otherwise zero implementation deviations, all 4 grep chains passed first-time, end-to-end live smoke green at 3.8s cache-miss / 65ms cache-hit), 02-02 (~29m 17s, 3 commits, 6 auto-fixed deviations — Gemini 2.5 thinking-mode + discriminatedUnion-collapse + D-53 fallback chain), 02-01 (~5m 9s, 6 commits, 0 deviations — orchestrator pre-released Task 0 chip gate), 01-03 (deploy + verify), 01-02 (~7m 30s, 2 commits, 4 auto-fixed deviations), 01-01 (~5 min, 2 commits, 3 auto-fixed deviations)
+- Trend: 04-01 confirms the verbatim-plan-body advantage extends to UI work — leaf renderers shipped in ~5min wall with zero schema mutations, every design token applied per D4-04..D4-16, both deviations were constraint-conflict resolutions (plan body referenced types/symbols that don't exist or trip strict acceptance greps), not implementation bugs. Wave 2 has zero churn risk: imports compile against the locked Plan type.
 
 *Updated after each plan completion*
 
@@ -70,6 +71,12 @@ Progress: [█████████░] ~90% (Phase 1 + Phase 2 done; Phase 3
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
+- 04-01: CitationSlot returns null for empty arrays at the leaf-component layer per CLAUDE.md hard rule #1 — no `[0 sources]` placeholder, no fake-citation badge. The truth of an empty array IS silence. Phase 5 will replace the badge surface (when length > 0) with hovercards but the empty-state branch stays.
+- 04-01: Citation type derived locally via `type Citation = z.infer<typeof citationSchema>` inside citation-slot.tsx instead of editing src/lib/qc/schema.ts to add an export — Plan 04-01 success-criteria forbids modifying that file. Equivalent shape, zero schema mutation. If future leaves need Citation, copy this 3-line pattern; do NOT add a project-wide alias without revisiting the lock.
+- 04-01: computeSubtotal in src/lib/plan/format.ts is pessimistic — accepts unit-prefixed quantities ('10 mL' → 10) but rejects bare units ('few drops' → null). Caller renders em-dash on null per D4-05. Better to render "unknown" than fabricate $0 that misleads the budget reader.
+- 04-01: formatCurrency uses Intl.NumberFormat dual-format — single module-scope instance for fractional values (max 2 decimals), per-call instance for whole numbers (max 0 decimals). Hot path is small enough that allocation cost is acceptable; alternative (manual decimal-trim) would re-implement i18n the formatter already does.
+- 04-01: All 5 leaf renderers are pure components (no useState/useEffect, no defensive null guards beyond schema-typed Props) per D4-16 — render layer is NOT a validation layer. usePlan().onData has already run planSchema.safeParse upstream; trusting the type is the contract.
+- 04-01: Validation tab does NOT use CitationSlot — schema's validationCheckSchema has no citations field (only ProtocolStep, MaterialRow, BudgetLine, TimelinePhase have one). Acceptance grep "4 of 5 leaves use CitationSlot" matches this exactly.
 - 03-02: Skeptic 6-name guarantee implemented as defense-in-depth — prompt instructs the model AND a post-parse Set-diff in the runner appends generic stubs for any names the model omits (description="Required validation check (auto-stub — model omitted).", measurement_method="TBD by Phase 6 evaluator.", pass_criteria="Manual review."). This is reconstruction (filling required schema fields), not invention; the bridge between trace-rail's hardcoded VALIDATION_SKELETON and live data CANNOT silently lose a row.
 - 03-02: Consolidator's metadata post-fill uses object-spread (`{...draft, run_id: args.run_id, model_id: args.modelId, latency_ms: ..., generated_at: ..., grounded: false, agent_artifacts: args.artifacts}`) rather than in-place mutation. Same observable behavior; immutable; satisfies the "server overwrites server-controlled fields" spirit of CLAUDE.md hard rule #1 — the LLM cannot inject false provenance into the Plan even if the prompt asked it to.
 - 03-02: SEXTANT_DEMO_PACE_MS toggle is server-only (no NEXT_PUBLIC_ prefix) and present in all 5 modules — Phase 8 demo recording can `SEXTANT_DEMO_PACE_MS=3000` env-var the trace-rail to a visible pace without code changes. Each module reads it at module load via `Number(process.env.SEXTANT_DEMO_PACE_MS ?? 0)` with default 0 so production runs are unaffected.
@@ -117,5 +124,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-04-26
-Stopped at: Phase 3 Plan 02 (Agent runners + Consolidator) COMPLETE. 5 LLM-call modules shipped at commits 61299fb (researcher.ts + skeptic.ts — protocols.io-grounded Researcher + Validation owner with 6-name skeleton guarantee), f85b245 (operator.ts + compliance.ts — 3-section Operator + notes/summary Compliance), 42b1ba6 (consolidator.ts — 5th call merging 4 slices via planSchema with thinkingBudget:4000 and server-side metadata post-fill). Zero deviations across all 3 tasks; project-wide tsc green per task; SEXTANT_DEMO_PACE_MS toggle present in all 5 modules (server-only, default 0 in production). Wave 2 of 3 complete (~10 min wall, 3 commits). Wave 3 (03-03-PLAN.md — POST /api/plan route + usePlan hook + dashboard auto-fire wire-in) is the last Phase 3 hop; will consume runResearcher/runSkeptic/runOperator/runCompliance via Promise.allSettled then pipe slices+artifacts through runConsolidator.
-Resume file: .planning/phases/03-multi-agent-pipeline/03-03-PLAN.md (Wave 3)
+Stopped at: Phase 4 Plan 01 (Plan Canvas UI Wave 1 — leaf renderers + Tabs primitive + CitationSlot + format helpers) COMPLETE. 8 new files shipped at commits 8342c82 (Task 1: @radix-ui/react-tabs@^1.1.13 dep + src/components/ui/tabs.tsx shadcn wrapper with forest underline + ink text on active per D4-04 + forest/40 focus ring per DESIGN-04), 7af21d3 (Task 2: src/lib/plan/format.ts with formatCurrency Intl.NumberFormat USD dual-format + computeSubtotal pessimistic numeric-prefix parser + src/components/plan/citation-slot.tsx returning null on empty arrays per CLAUDE.md hard rule #1), 7a6378a (Task 3: 5 leaf renderers — protocol-tab.tsx numbered <ol>, materials-tab.tsx 6-col <table> with sticky header + computeSubtotal + overflow-x-auto, budget-tab.tsx with bg-forest/30 proportional bars + Total row, timeline-tab.tsx with depends_on chip strip mirroring example-chips, validation-tab.tsx with 2-col Method/Pass criteria <dl>). 2 deviations auto-fixed: (1) Citation type derived locally via z.infer<typeof citationSchema> because qc/schema.ts is locked and exports no Citation alias, (2) JSDoc rephrased in validation-tab.tsx to satisfy strict planSchema-grep without changing behavior. Project-wide tsc green per task. ~5min wall, 3 commits. Wave 2 (04-02-PLAN.md — plan-tabs.tsx shell + plan-canvas.tsx wire-in) can now import all 5 leaves by name with zero churn.
+Resume file: .planning/phases/04-plan-canvas-ui/04-02-PLAN.md (Wave 2)

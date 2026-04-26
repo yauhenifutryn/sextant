@@ -115,12 +115,12 @@ The differentiator (hours 14-18). Stretch goal that wins the demo if completed.
 | AGENT-02 | Phase 3 | Pending |
 | AGENT-03 | Phase 3 | Pending |
 | AGENT-04 | Phase 3 | Pending |
-| PLAN-01 | Phase 4 | Pending |
-| PLAN-02 | Phase 4 | Pending |
-| PLAN-03 | Phase 4 | Pending |
-| PLAN-04 | Phase 4 | Pending |
-| PLAN-05 | Phase 4 | Pending |
-| PLAN-06 | Phase 4 | Pending |
+| PLAN-01 | Phase 4 | Renderer shipped 04-01 (commit 7a6378a, ProtocolTab); display pending 04-03 wire-in |
+| PLAN-02 | Phase 4 | Renderer shipped 04-01 (commit 7a6378a, MaterialsTab); display pending 04-03 wire-in |
+| PLAN-03 | Phase 4 | Renderer shipped 04-01 (commit 7a6378a, BudgetTab); display pending 04-03 wire-in |
+| PLAN-04 | Phase 4 | Renderer shipped 04-01 (commit 7a6378a, TimelineTab); display pending 04-03 wire-in |
+| PLAN-05 | Phase 4 | Renderer shipped 04-01 (commit 7a6378a, ValidationTab); display pending 04-03 wire-in |
+| PLAN-06 | Phase 4 | Tabs primitive shipped 04-01 (commit 8342c82, keyboard nav via Radix); active-tab styling per D4-04; full keyboard nav verification pending 04-03 |
 | GROUND-01 | Phase 5 | Pending |
 | GROUND-02 | Phase 5 | Pending |
 | GROUND-03 | Phase 5 | Pending |

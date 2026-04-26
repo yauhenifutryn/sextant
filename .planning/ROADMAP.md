@@ -85,7 +85,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. Validation tab lists success criteria with measurement methods
   6. All five tabs are navigable by keyboard (Tab / arrow keys) and the active tab is visually distinct
 **Plans**: 3 plans
-- [ ] 04-01-PLAN.md — Add shadcn Tabs primitive + 5 leaf renderers (Protocol/Materials/Budget/Timeline/Validation) + CitationSlot + format helpers (D4-02, D4-05..D4-08, D4-10, D4-15; PLAN-01..PLAN-05)
+- [x] 04-01-PLAN.md — Add shadcn Tabs primitive + 5 leaf renderers (Protocol/Materials/Budget/Timeline/Validation) + CitationSlot + format helpers (D4-02, D4-05..D4-08, D4-10, D4-15; PLAN-01..PLAN-05) — completed 2026-04-26 (commits 8342c82, 7af21d3, 7a6378a). 8 new files + 1 dep (@radix-ui/react-tabs@^1.1.13). 2 deviations auto-fixed: Citation type derived locally via z.infer (qc/schema lock), JSDoc planSchema-grep alignment. Project-wide tsc green per task. ~5min wall, 3 commits. Wave 2 unblocked: all 5 leaves importable by name with zero churn.
 - [ ] 04-02-PLAN.md — Build PlanTabs shell (compose 5 leaves, route compliance_notes by target_kind, render compliance_summary footer) + PlanSkeleton loading scaffold (D4-03, D4-04, D4-09, D4-11, D4-13; PLAN-01..PLAN-06)
 - [ ] 04-03-PLAN.md — Wire PlanTabs into PlanCanvas (3-state coexistence per D4-12) + thread plan prop from dashboard + final acceptance gate (D4-12; PLAN-01..PLAN-06)
 **UI hint**: yes
